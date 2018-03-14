@@ -18,9 +18,6 @@ public class MaksukorttiTest {
     }
     
     @Test
-    public void hello() {}
-     
-    @Test
     public void konstruktoriAsettaaSaldonOkein() {
         Maksukortti kortti = new Maksukortti(10);
         assertEquals("Kortilla on rahaa 10.0 euroa", kortti.toString());
