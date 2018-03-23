@@ -1,10 +1,10 @@
 # Alustava määrittelydokumentti #
 
 ## Sovelluksen tarkoitus ##
-Sovelluksen tarkoitus on toimia liikuntapäiväkirjana niin, että käyttäjä voi kirjata liikuntamäärän sovelluksessa, jonka avulla voi seurata omaa liikuntaa ja asettaa itselleen viikko-tavoitteet. Sovellusta on mahdollista käyttää useamman rekisteräityneen käyttäjän, joilla kaikilla on omat yksilölliset "päiväkirjat" tietoineen ja tavoitteineen.
+Sovelluksen tarkoitus on toimia liikuntapäiväkirjana niin, että käyttäjä voi kirjata liikuntamäärän sovelluksessa, jonka avulla voi seurata omaa liikuntaa ja asettaa itselleen viikkotavoitteet. Sovellusta on mahdollista käyttää useamman rekisteräityneen käyttäjän, joilla kaikilla on omat yksilölliset "päiväkirjat" tietoineen ja tavoitteineen.
 
 ## Käyttäjät ##
-Sovelluksella on (ainakin alkuvaiheessa) vain yksi käyttäjärooli, normaali käyttäjä, mutta myöhemmin olisi mahdollisesti mahdollista lisätä "trainer-rooli", joka esimerkiksi voisi nähdä tiettyjen käyttäjien tiedot.
+Sovelluksella on vain yksi käyttäjärooli, normaali käyttäjä (mutta myöhemmin olisi mahdollisesti mahdollista lisätä "trainer-rooli", joka esimerkiksi voisi nähdä tiettyjen käyttäjien tiedot, sekä ylläpitäjä.)
 
 ## Suunnitellut toiminnallisuudet ##
 
@@ -24,11 +24,20 @@ Sovelluksella on (ainakin alkuvaiheessa) vain yksi käyttäjärooli, normaali k�
 * Käyttäjä näkee kyseisen viikon jo syötetyt tuntimäärät ja pisteet
    * Nämä ovat järjestetty aina päivän mukaan
 * Käyttäjä näkee 4 viimeisten viikkojen yhteistunnit ja pisteet
-   * Käyttäjä voi myös nähdä vanhemmat tiedot + yksittäiset päivät (?)
 * Käyttäjä näkee tuloslistoja:
    * Käyttäjän omat 3 parasta viikkotulosta (tunnit ja pisteet)
    * Mahdollisesti myös 3 parasta viikkotulosta sovelluksen kaikkien käyttäjien kesken
 * Käyttäjä voi kirjautua ulos järjestelmästä
 
 ## Jatkokehitysideoita ##
-Tulossa
+* Käyttäjä voisi muokata ja/tai poistaa jo täytettyjä tietoja
+* Käyttäjä voisi nähdä kaikki edellisten viikkojen tiedot + tiedot yksittäisistä päivistä
+* Ohjelma voisi merkitä kuinka paljon pisteitä käyttäjä tarvitsee siihen, että tavoitteeseen päästään + jos viikkotavoite toteutui
+* Erilaisista liikuntatapoista saisi eri määrän pisteen, esim. ”rankimmat” liikuntamuodot antaisivat enemmän pisteitä kuin esim. perus juokseminen
+* Ylläpitäjä-käyttäjien luominen, joka voi esim. poistaa käyttäjiä
+   * Voisi myös jotenkin valvoa käyttäjien antamat liikuntatunnit
+* Trainer-käyttäjien luominen, joka voi "valvoa" tiettyjen käyttäjien liikuntaa, muokata tavoitteita ym.
+* Käyttäjätiimit, jotka näkevät muiden liikuntatunnit + pisteet ja jotka voivat asettaa yhteisiä tavoitteita
+
+* Jos perusversiossa ei ole käyttäjätunnuksen yhteydessä salasana, sitä voisi lisätä
+* Käyttäjätunnuksen ja siihen liittyvien tietojen poisto
