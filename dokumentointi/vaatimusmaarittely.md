@@ -38,6 +38,5 @@ Sovelluksella on vain yksi käyttäjärooli, normaali käyttäjä (mutta myöhem
    * Voisi myös jotenkin valvoa käyttäjien antamat liikuntatunnit
 * Trainer-käyttäjien luominen, joka voi "valvoa" tiettyjen käyttäjien liikuntaa, muokata tavoitteita ym.
 * Käyttäjätiimit, jotka näkevät muiden liikuntatunnit + pisteet ja jotka voivat asettaa yhteisiä tavoitteita
-
 * Jos perusversiossa ei ole käyttäjätunnuksen yhteydessä salasana, sitä voisi lisätä
 * Käyttäjätunnuksen ja siihen liittyvien tietojen poisto
