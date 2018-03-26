@@ -9,19 +9,21 @@ Sovelluksella on vain yksi käyttäjärooli, normaali käyttäjä (mutta myöhem
 ## Suunnitellut toiminnallisuudet ##
 
 **Kirjautuminen**
-* Kirjautuminen tapahtuu syöttämällä käyttäjän käyttäjätunnuksen (sekä salasanan?) 
-* Jos käyttäjällä ei ole käyttäjätunnusta, voi hän luoda järjestelmään itselleen käyttäjätunnuksen (sekä salasanan?):
-    * käyttäjätunnuksen täytyy olla uniikki ja pituudeltaan vähintään 3 merkkiä
+* Kirjautuminen tapahtuu syöttämällä käyttäjän käyttäjätunnuksen sekä salasanan
+* Jos käyttäjällä ei ole käyttäjätunnusta, voi hän luoda järjestelmään itselleen käyttäjätunnuksen sekä salasanan:
+   * käyttäjätunnuksen täytyy olla uniikki ja pituudeltaan vähintään 3 merkkiä
+   * salasanan pitää olla pituudeltaan vähintään 6 merkkiä
 * Käyttäjä voi sitten kirjautua järjestelmään:
-    * kirjautuminen onnistuu kun käyttäjä syöttää olemassaolevan käyttäjätunnuksen (sekä salasanan?)
+    * kirjautuminen onnistuu kun käyttäjä syöttää olemassaolevan käyttäjätunnuksen sekä salasanan
 
 **Kirjautumisen jälkeen**
 * Käyttäjä voi lisätä kuinka monta tuntia päivässä on harrastanut liikuntaa
   * (Tämän voi tehdä monta kertaa päivässä, aina liikunnan jälkeen)
-  * Käyttäjä voi myös lisätä lyhyen kuvauksen (max. XXX merkkiä)
-* Käyttäjä näkee oman viikkotavoitteet, joka koostuu tietystä pistemäärästä
+  * Käyttäjä voi myös lisätä lyhyen kuvauksen (max. 200 merkkiä)
+* Käyttäjä voi luoda oman viikkotavoitteen, joka koostuu tietystä pistemäärästä
+* Käyttäjä voi nähdä kyseisen viikon viikkopisteet:
    * Pistemäärä korreloituu käyttäjän syöttämisten liikuntatuntien mukaan
-* Käyttäjä näkee kyseisen viikon jo syötetyt tuntimäärät ja pisteet
+* Käyttäjä näkee kyseisen viikon jo syötetyt tuntimäärät (ja pisteet?)
    * Nämä ovat järjestetty aina päivän mukaan
 * Käyttäjä näkee 4 viimeisten viikkojen yhteistunnit ja pisteet
 * Käyttäjä näkee tuloslistoja:
@@ -38,5 +40,5 @@ Sovelluksella on vain yksi käyttäjärooli, normaali käyttäjä (mutta myöhem
    * Voisi myös jotenkin valvoa käyttäjien antamat liikuntatunnit
 * Trainer-käyttäjien luominen, joka voi "valvoa" tiettyjen käyttäjien liikuntaa, muokata tavoitteita ym.
 * Käyttäjätiimit, jotka näkevät muiden liikuntatunnit + pisteet ja jotka voivat asettaa yhteisiä tavoitteita
-* Jos perusversiossa ei ole käyttäjätunnuksen yhteydessä salasana, sitä voisi lisätä
+* Parempi systeemi salasanalle
 * Käyttäjätunnuksen ja siihen liittyvien tietojen poisto
