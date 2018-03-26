@@ -1,10 +1,117 @@
-commit 99c1b4162b518788ab66843462fbdeedec9ef474
+elgecaro@da5-cs-b221-23:/home/ad/lxhome/e/elgecaro/Linux/otm_viikko1$ git log --stat | cat
+commit 86eefe6a38c693c2a3080a8c640655948acf5bfa
 Author: Caroline <elgertcaroline@gmail.com>
-Date:   Wed Mar 14 11:46:37 2018 +0200
+Date:   Wed Mar 14 11:43:42 2018 +0200
 
-    initial commit
+    tiedosto poistettu ja toinen uudelleennimetty
 
- README.md | 0
+ tiedostoja/file1  | 0
+ tiedostoja/file2  | 0
+ tiedostoja/file22 | 0
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+
+commit d8fcb9ab5d821a11ed9848c1b662a01674adb1b0
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:40:03 2018 +0200
+
+    Tiedostoja lisätty
+
+ tiedostoja/file1 | 0
+ tiedostoja/file2 | 0
+ tiedostoja/file3 | 0
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 826b6ea01aed5723b2d0ce76923d4d2b74fd1728
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:34:09 2018 +0200
+
+    tiedostojen muokkaamista
+
+ eka.txt    | 7 +++----
+ kolmas.txt | 4 +++-
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+
+commit bd24cc27e1d487964a1cc395980bf2c28eeb22c9
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:31:33 2018 +0200
+
+    tiedosto uudelleennimetty
+
+ eka.txt      | 22 ++++++++++++++++++++++
+ tiedosto.txt | 22 ----------------------
+ 2 files changed, 22 insertions(+), 22 deletions(-)
+
+commit 678a875c9bbfdbc3dd73b9d63476509e545a60df
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:29:01 2018 +0200
+
+    toinen.txt poistettu
+
+ toinen.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit a58650984e6d2c172a09ca130c89758c90458e94
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:26:50 2018 +0200
+
+    tekstiä poistettu ja lisätty
+
+ tiedosto.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+commit 383e7c68e371da96d4db440131e8512717456d83
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:25:02 2018 +0200
+
+    tekstiä lisätty
+
+ tiedosto.txt | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+commit bdff77d058f8e121562d8b1e4ff9e88abd85284b
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:19:56 2018 +0200
+
+    hakemisto stuff ja tiedosto lisätty
+
+ stuff/stufftiedosto.txt | 0
  1 file changed, 0 insertions(+), 0 deletions(-)
 
-Muutos.
+commit 70fd6a948ffe7f1e845a673d87965ba3620e6ab5
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:18:08 2018 +0200
+
+    toinen.txt ja kolmas.txt muokattu
+
+ kolmas.txt | 1 +
+ toinen.txt | 1 +
+ 2 files changed, 2 insertions(+)
+
+commit 5de5fe1201f9a18f05ae0c6fdac1acc8fb801131
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:15:56 2018 +0200
+
+    kolmas.txt luotu
+
+ kolmas.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 797797659953d7c55321aaa7ed9b892478942b6f
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:13:45 2018 +0200
+
+    muutos ja lisäys
+
+ tiedosto.txt | 1 +
+ toinen.txt   | 0
+ 2 files changed, 1 insertion(+)
+
+commit 13cf66cb6bacf15b78ddda86af80677a7ab3f853
+Author: Caroline <elgertcaroline@gmail.com>
+Date:   Wed Mar 14 11:10:38 2018 +0200
+
+    tiedosto.txt luotu
+
+ tiedosto.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
