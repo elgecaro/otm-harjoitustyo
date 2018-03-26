@@ -2,23 +2,14 @@
 package liikuntapaivakirja.ui;
 
 import java.sql.*;
+import liikuntapaivakirja.dao.Database;
 
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
         
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:tietokanta.db");
-
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT 1");
-        if(resultSet.next()) {
-            System.out.println("Hei tietokantamaailma!");
-        } else {
-            System.out.println("Yhteyden muodostaminen epäonnistui.");
-        }
+        Database testi = new Database("jdbc:sqlite:tietokanta.db");
+        
     }
     
 }
