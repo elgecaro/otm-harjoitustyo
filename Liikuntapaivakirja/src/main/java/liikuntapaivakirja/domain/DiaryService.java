@@ -5,6 +5,7 @@ import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import java.util.ArrayList;
 import java.util.List;
+import liikuntapaivakirja.dao.DbUserDao;
 
 // Sovelluslogiikka, kirjautuminen, päiväkirjaan tuntien kirjaaminen ym
 
@@ -28,12 +29,20 @@ public class DiaryService {
         return true;
     }
     
-    public List<Diary> getAll() {
+    public boolean createWeeklyGoal(int goal) {
+        try {
+            diaryDao.setWeeklyGoal(goal, loggedIn);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+    
+    public List<Diary> getAll() throws Exception {
         if (loggedIn == null) {
             return new ArrayList<>();
         }
-        return diaryDao.getAll();
-        // Kesken
+        return diaryDao.getAll(loggedIn);
     }
     
     public boolean login(String username) throws Exception {
@@ -49,6 +58,10 @@ public class DiaryService {
         return loggedIn;
     }
     
+    public String getUsername() {
+        return loggedIn.getUsername();
+    }
+    
     public void logout() {
         loggedIn = null;
     }
@@ -58,11 +71,7 @@ public class DiaryService {
             return false;
         }
         User user = new User(username, password);
-        try {
-            userDao.create(user);
-        } catch(Exception e) {
-            return false;
-        }
+        userDao.create(user);
         return true;
     }
 

@@ -9,6 +9,7 @@ public class Diary {
     private int week;
     private int day;
     private String content;
+    private int weeklyGoal;
 
     public Diary(User user, double hour, int week, int day, String content) {
         this.user = user;
@@ -25,6 +26,11 @@ public class Diary {
         this.day = day;
         this.content = "";
     }
+    
+//    public void setWeeklyGoal(int goal) {
+//        this.weeklyGoal = goal;
+//        user.setWeeklyGoal(goal);
+//    }
 
     public void setUser(User user) {
         this.user = user;
@@ -32,6 +38,10 @@ public class Diary {
 
     public User getUser() {
         return user;
+    }
+    
+    public String getUsername() {
+        return user.getUsername();
     }
 
     public double getHour() {
@@ -49,5 +59,14 @@ public class Diary {
     public String getContent() {
         return content;
     }
+    
+    @Override
+    public String toString() {
+        return "Tunteja: " + this.hour + ", päivä: " + this.day + ", viikko " + this.week + ", kuvaus: " + this.content;
+    }
+    
+//    public int getWeeklyGoal() {
+//        return weeklyGoal;
+//    }
 
 }

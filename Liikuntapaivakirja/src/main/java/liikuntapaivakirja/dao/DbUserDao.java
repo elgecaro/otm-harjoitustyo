@@ -20,20 +20,18 @@ public class DbUserDao implements UserDao {
     @Override
     public User create(User t) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("INSERT INTO User(username, password) VALUES (username = ?, password = ?)");
-        stmt.setObject(1, t.getUsername());
-        stmt.setObject(2, t.getPassword());
-
-        ResultSet rs = stmt.executeQuery();
-        String username = rs.getString("username");
-        String password = rs.getString("password");
-
+        PreparedStatement stmt = connection.prepareStatement("INSERT INTO User (username, password)"
+                + "VALUES (?,?)");
+        String username = t.getUsername();
+        String password = t.getPassword();
+        stmt.setString(1, username);
+        stmt.setString(2, password);
         stmt.execute();
-        stmt.close();
         connection.close();
 
         return null;
     }
+    
     
     @Override
     public User findByUsername(String key) throws SQLException {

@@ -6,32 +6,61 @@ import java.sql.*;
 import liikuntapaivakirja.domain.Diary;
 import java.util.List;
 import java.util.*;
+import liikuntapaivakirja.domain.User;
 
 public class DbDiaryDao implements DiaryDao {
     private Database database;
     private int points;
+    private User user;
     
-    // Kesken!
+    public DbDiaryDao(Database database) {
+        this.database = database;
+    }
     
     @Override
-    public Diary create(Diary diary) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void create(Diary diary) throws Exception {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Diary (username, hour, day, week, description)"
+                + "VALUES (?, ?, ?, ?, ?)");
+        stmt.setString (1, diary.getUsername());
+        stmt.setDouble(2, diary.getHour());
+        stmt.setInt(3, diary.getDay());
+        stmt.setInt(4, diary.getWeek());
+        stmt.execute();
+
+        connection.close();
+        
     }
 
     @Override
-    public List<Diary> getAll() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Diary> getAll(User user) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ?");
+        stmt.setObject(1, user.getUsername());
+
+        ResultSet rs = stmt.executeQuery();
+        List<Diary> diaryEntrys = new ArrayList<>();
+        while (rs.next()) {
+            String username = rs.getString("username");
+            double hour = rs.getDouble("hour");
+            int day = rs.getInt("day");
+            int week = rs.getInt("week");
+            String description = rs.getString("description");
+
+            diaryEntrys.add(new Diary(user, hour, day, week, description));
+        }
+
+        rs.close();
+        stmt.close();
+        connection.close();
+
+        return diaryEntrys;
     }
 
-    @Override
-    public void setDone(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
     public int userPointsWeek(String key, String week) throws SQLException {
-        // Kesken!
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM ExcerciseDiary WHERE username = ? AND week = ?");
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? AND week = ?");
         stmt.setObject(1, key);
         stmt.setObject(2, week);
         
@@ -49,6 +78,27 @@ public class DbDiaryDao implements DiaryDao {
         connection.close();
         
         return points;
+    }
+
+    public int getWeeklyGoal(String key) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT weeklyGoal FROM Diary WHERE username = ?");
+        stmt.setObject(1, key);
+        
+        ResultSet rs = stmt.executeQuery();
+        int goal = rs.getInt("weeklyGoal");
+        
+        return goal;
+    }
+    
+    @Override
+    public void setWeeklyGoal(int goal, User user) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("UPDATE Diary SET weeklyGoal = ? WHERE username = ?");
+        stmt.setObject(1, goal);
+        String key = user.getUsername();
+        stmt.setObject(2, key);     
+        stmt.executeQuery();
     }
     
 }

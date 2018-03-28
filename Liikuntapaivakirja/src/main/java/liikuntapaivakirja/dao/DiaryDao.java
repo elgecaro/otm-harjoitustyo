@@ -3,11 +3,12 @@ package liikuntapaivakirja.dao;
 
 import java.util.List;
 import liikuntapaivakirja.domain.Diary;
+import liikuntapaivakirja.domain.User;
 
 
 public interface DiaryDao {
-    Diary create(Diary diary) throws Exception;
-    List<Diary> getAll();
-    void setDone(int id) throws Exception;
+    void create(Diary diary) throws Exception;
+    List<Diary> getAll(User user) throws Exception;
+    void setWeeklyGoal(int goal, User user) throws Exception;
 
 }
