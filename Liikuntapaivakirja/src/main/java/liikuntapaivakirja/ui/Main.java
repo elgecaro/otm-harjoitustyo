@@ -14,7 +14,6 @@ public class Main {
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException, Exception {
         
-        
         Database testitietokanta = new Database("jdbc:sqlite:tietokanta.db");
         testitietokanta.getConnection();
         UserDao userdao = new DbUserDao(testitietokanta);
