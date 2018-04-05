@@ -27,17 +27,17 @@ public class Main {
         String vastaus = lukija.nextLine();
         
         if (vastaus.equals("1")) {             
-        System.out.println("Anna nimi: ");
-        String username = lukija.nextLine();
-        System.out.println("salasana (7 merkkiä tai enemmän!):");
-        String password = lukija.nextLine();
+            System.out.println("Anna nimi: ");
+            String username = lukija.nextLine();
+            System.out.println("salasana (7 merkkiä tai enemmän!):");
+            String password = lukija.nextLine();
         
         if (service.createUser(username, password) == true) {
             System.out.println("Testikäyttäjä " + username + " on nyt luotu");
         } else {
             System.out.println("Käyttäjän luominen ei onnistunut, käyttäjänimi on jo käytössä");
             }
-        // Ilmoittaa jos käyttäjä jo on olemassa
+        // Ilmoittaa jos käyttäjä jo on olemassa ja/tai jos salasana on liian lyhyt
         }
         
         if (vastaus.equals ("2")) {
@@ -53,39 +53,40 @@ public class Main {
                 System.out.println("Syötit väärän käyttäjätunnuksen tai salasananan");
             }
         
-        System.out.println("Käyttäjäsi kirjatut tiedot tähän asti:" + service.getAll());
-        // Tulostus vielä väärä + tulostaa kuvauksen väärin ("null")
-        
-        System.out.println("Haluatko lisätä käyttäjälle liikuntatunteja? Kirjoita 1");
-        String vastaus2 = lukija.nextLine();
-        
-        if (vastaus2.equals(1)) {  
-            System.out.print("Lisää käyttäjälle päiväkirjaan liikuntatunteja.");
-            System.out.print("Kuinka monta tuntia? ");
-            Double hour = lukija.nextDouble();
-            System.out.print("Mikä päivä? ");
-            Integer day = lukija.nextInt();
-            System.out.print("Mikä viikko? ");
-            Integer week = lukija.nextInt();
-            System.out.print("Kuvaus: ");
-            String tyhja = lukija.nextLine();
-            String content = lukija.nextLine();
-
-            service.createExcerise(hour, day, week, content);
             System.out.println("Käyttäjäsi kirjatut tiedot tähän asti:" + service.getAll());
             // Tulostus vielä väärä + tulostaa kuvauksen väärin ("null")
+        
+            System.out.println("Haluatko lisätä käyttäjälle liikuntatunteja? Kirjoita 1");
+            String vastaus2 = lukija.nextLine();
+        
+            if (vastaus2.equals(1)) {  
+                System.out.print("Lisää käyttäjälle päiväkirjaan liikuntatunteja.");
+                System.out.print("Kuinka monta tuntia? ");
+                Double hour = lukija.nextDouble();
+                System.out.print("Mikä päivä? ");
+                Integer day = lukija.nextInt();
+                System.out.print("Mikä viikko? ");
+                Integer week = lukija.nextInt();
+                System.out.print("Kuvaus: ");
+                String tyhja = lukija.nextLine();
+                String content = lukija.nextLine();
+
+                service.createExcerise(hour, day, week, content);
+                System.out.println("Käyttäjäsi kirjatut tiedot tähän asti:" + service.getAll());
+                // Tulostus vielä väärä + tulostaa kuvauksen väärin ("null")
+            }
+        
+            System.out.println("Viikko 1 pisteet: " + service.getPointsWeek(1));
+            System.out.println("Viikko 2 pisteet: " + service.getPointsWeek(2));
+        
+            System.out.println("Aseta viikkotavoite");
+            int userGoal = lukija.nextInt();
+            service.createWeeklyGoal(userGoal);
+        
+            System.out.println("Nykyinen viikkotavoite:");
+            System.out.println(service.getWeeklyGoal());
+            // Ei vielä toimi oikein
         }
-        
-        System.out.println("Viikko 1 pisteet: " + service.getPointsWeek(1));
-        System.out.println("Viikko 2 pisteet: " + service.getPointsWeek(2));
-        
-        System.out.println("Aseta viikkotavoite");
-        int userGoal = lukija.nextInt();
-        service.createWeeklyGoal(userGoal);
-        
-        System.out.println("Nykyinen viikkotavoite:");
-        System.out.println(service.getWeeklyGoal());
-        // Ei vielä toimi oikein
 
     }
     
