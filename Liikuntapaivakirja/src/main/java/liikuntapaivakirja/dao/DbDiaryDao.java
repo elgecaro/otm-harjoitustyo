@@ -28,8 +28,7 @@ public class DbDiaryDao implements DiaryDao {
         stmt.setInt(4, diary.getWeek());
         stmt.execute();
 
-        connection.close();
-        
+        connection.close();        
     }
 
     @Override
@@ -45,9 +44,9 @@ public class DbDiaryDao implements DiaryDao {
             double hour = rs.getDouble("hour");
             int day = rs.getInt("day");
             int week = rs.getInt("week");
-            String description = rs.getString("description");
+            String content = rs.getString("description");
 
-            diaryEntrys.add(new Diary(user, hour, day, week, description));
+            diaryEntrys.add(new Diary(user, hour, day, week, content));
         }
 
         rs.close();
@@ -58,17 +57,17 @@ public class DbDiaryDao implements DiaryDao {
     }
 
     
-    public int userPointsWeek(String key, String week) throws SQLException {
+    public int userPointsWeek(String key, int week) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? AND week = ?");
         stmt.setObject(1, key);
         stmt.setObject(2, week);
+        int hours = 0;
         
         ResultSet rs = stmt.executeQuery();
-        int hours = 0;
         while (rs.next()) {
-            Integer hour = rs.getInt("hour");
-            hours =+ hour;
+            int hour = rs.getInt("hour");
+            hours = hours + hour;
         }
         
         points = hours * 10;
@@ -80,25 +79,23 @@ public class DbDiaryDao implements DiaryDao {
         return points;
     }
 
+    @Override
     public int getWeeklyGoal(String key) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT weeklyGoal FROM Diary WHERE username = ?");
         stmt.setObject(1, key);
         
         ResultSet rs = stmt.executeQuery();
-        int goal = rs.getInt("weeklyGoal");
-        
-        return goal;
+        return rs.getInt("weeklyGoal");
     }
     
     @Override
-    public void setWeeklyGoal(int goal, User user) throws SQLException {
+    public void setWeeklyGoal(int goal, String user) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("UPDATE Diary SET weeklyGoal = ? WHERE username = ?");
+        PreparedStatement stmt = connection.prepareStatement("UPDATE Diary SET weeklyGoal = ?, WHERE username = ?");
         stmt.setObject(1, goal);
-        String key = user.getUsername();
-        stmt.setObject(2, key);     
-        stmt.executeQuery();
+        stmt.setObject(2, user);     
+        stmt.execute();
     }
     
 }

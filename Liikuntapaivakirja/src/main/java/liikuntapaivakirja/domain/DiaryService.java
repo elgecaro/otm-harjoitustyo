@@ -19,8 +19,8 @@ public class DiaryService {
         this.diaryDao = diaryDao;
     }
     
-    public boolean createExcerise(double hour, int week, int day, String content) {
-        Diary diary = new Diary(loggedIn, hour, week, day, content);
+    public boolean createExcerise(double hour, int day, int week, String content) {
+        Diary diary = new Diary(loggedIn, hour, day, week, content);
         try {
             diaryDao.create(diary);
         } catch (Exception ex) {
@@ -31,25 +31,35 @@ public class DiaryService {
     
     public boolean createWeeklyGoal(int goal) {
         try {
-            diaryDao.setWeeklyGoal(goal, loggedIn);
+            diaryDao.setWeeklyGoal(goal, loggedIn.getUsername());
         } catch (Exception ex) {
             return false;
         }
         return true;
     }
     
+    public int getWeeklyGoal() throws Exception {
+        return diaryDao.getWeeklyGoal(loggedIn.getUsername());
+    }
+    
     public List<Diary> getAll() throws Exception {
         if (loggedIn == null) {
             return new ArrayList<>();
         }
-        return diaryDao.getAll(loggedIn);
+        List<Diary> diaryEntrys = new ArrayList<>();
+        diaryEntrys = diaryDao.getAll(loggedIn);
+        return diaryEntrys;
     }
     
-    public boolean login(String username) throws Exception {
+    public boolean login(String username, String password) throws Exception {
         User user = userDao.findByUsername(username);
         if (user == null) {
             return false;
         }
+        if (userDao.UsernameAndPasswordMatch(username, password) == false) {
+            return false;
+        }
+        
         loggedIn = user;
         return true;
     }
@@ -73,6 +83,10 @@ public class DiaryService {
         User user = new User(username, password);
         userDao.create(user);
         return true;
+    }
+    
+    public int getPointsWeek(int week) throws Exception {
+        return diaryDao.userPointsWeek(loggedIn.getUsername(), week);
     }
 
 }

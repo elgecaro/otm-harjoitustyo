@@ -16,6 +16,7 @@ public class Main {
         
         Database testitietokanta = new Database("jdbc:sqlite:tietokanta.db");
         testitietokanta.getConnection();
+        
         UserDao userdao = new DbUserDao(testitietokanta);
         DiaryDao diarydao = new DbDiaryDao(testitietokanta);
         DiaryService service = new DiaryService(diarydao, userdao);
@@ -31,13 +32,12 @@ public class Main {
         System.out.println("salasana (7 merkkiä tai enemmän!):");
         String password = lukija.nextLine();
         
-        service.createUser(username, password);
-        if (service.createUser(username, password) == false) {
+        if (service.createUser(username, password) == true) {
+            System.out.println("Testikäyttäjä " + username + " on nyt luotu");
+        } else {
             System.out.println("Käyttäjän luominen ei onnistunut, käyttäjänimi on jo käytössä");
-        }
-//      Ei toimi oikein tällä hetkellä
-
-        System.out.println("Testikäyttäjä " + username + " on nyt luotu");
+            }
+        // Ilmoittaa jos käyttäjä jo on olemassa
         }
         
         if (vastaus.equals ("2")) {
@@ -46,28 +46,47 @@ public class Main {
             System.out.println("Salasana:");
             String password = lukija.nextLine();
             
-            service.login(username);
+            if (service.login(username, password) == true) {
             System.out.println("Tervetuloa " + service.getUsername());
-        } 
+            } 
+            else {
+                System.out.println("Syötit väärän käyttäjätunnuksen tai salasananan");
+            }
         
-        System.out.println("Käyttäjäsi kirjatut tiedot tähän asti:");
-        System.out.println(service.getAll());
+        System.out.println("Käyttäjäsi kirjatut tiedot tähän asti:" + service.getAll());
+        // Tulostus vielä väärä + tulostaa kuvauksen väärin ("null")
         
-        System.out.print("Lisää käyttäjälle päiväkirjaan liikuntatunteja.");
-        System.out.print("Kuinka monta tuntia? ");
-        Double hour = lukija.nextDouble();
-        System.out.print("Mikä päivä? ");
-        Integer day = lukija.nextInt();
-        System.out.print("Mikä viikko? ");
-        Integer week = lukija.nextInt();
-        System.out.print("Kuvaus: ");
-        String content = lukija.nextLine();
-        lukija.nextLine();
+        System.out.println("Haluatko lisätä käyttäjälle liikuntatunteja? Kirjoita 1");
+        String vastaus2 = lukija.nextLine();
+        
+        if (vastaus2.equals(1)) {  
+            System.out.print("Lisää käyttäjälle päiväkirjaan liikuntatunteja.");
+            System.out.print("Kuinka monta tuntia? ");
+            Double hour = lukija.nextDouble();
+            System.out.print("Mikä päivä? ");
+            Integer day = lukija.nextInt();
+            System.out.print("Mikä viikko? ");
+            Integer week = lukija.nextInt();
+            System.out.print("Kuvaus: ");
+            String tyhja = lukija.nextLine();
+            String content = lukija.nextLine();
 
-        service.createExcerise(hour, day, week, content);
-        // Tulostus vielä väärä + 
-        // Tulostaa kuvauksen väärin
+            service.createExcerise(hour, day, week, content);
+            System.out.println("Käyttäjäsi kirjatut tiedot tähän asti:" + service.getAll());
+            // Tulostus vielä väärä + tulostaa kuvauksen väärin ("null")
+        }
         
+        System.out.println("Viikko 1 pisteet: " + service.getPointsWeek(1));
+        System.out.println("Viikko 2 pisteet: " + service.getPointsWeek(2));
+        
+        System.out.println("Aseta viikkotavoite");
+        int userGoal = lukija.nextInt();
+        service.createWeeklyGoal(userGoal);
+        
+        System.out.println("Nykyinen viikkotavoite:");
+        System.out.println(service.getWeeklyGoal());
+        // Ei vielä toimi oikein
+
     }
     
 }

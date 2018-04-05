@@ -11,19 +11,19 @@ public class Diary {
     private String content;
     private int weeklyGoal;
 
-    public Diary(User user, double hour, int week, int day, String content) {
+    public Diary(User user, double hour, int day, int week, String content) {
         this.user = user;
         this.hour = hour;
-        this.week = week;
         this.day = day;
+        this.week = week;
         this.content = content;
     }
 
-    public Diary(User user, double hour, int week, int day) {
+    public Diary(User user, double hour, int day, int week) {
         this.user = user;
         this.hour = hour;
-        this.week = week;
         this.day = day;
+        this.week = week;
         this.content = "";
     }
     
