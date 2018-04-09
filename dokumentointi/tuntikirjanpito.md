@@ -6,4 +6,5 @@
 | 25.3 | 1,5h| Sovelluksen tarkempi suunnittelu
 | 26.3 |  3h | Sovelluksen luokat ja rajapintat luotu + sovelluksen alustava runko tehty
 | 28.3 |  3h | Ohjelman luokat ja rajapinnat muokattu ja toiminallisuutta parannettu + pientä toiminnallisuutta "testattu" (uuden käyttäjän lisääminen, tuntien lisääminen ym)
-|  5.4    |  3h    | Sovelluksen muokkaaminen + toiminallisuutta lisätty. Testi"pohjat" lisätty.
+|  5.4    |  3h    | Sovelluksen muokkaaminen + toiminallisuutta lisätty. Testi"pohjat" lisätty
+|  9.4    |  1h    | Pientä fiksailua: README.md, gitignore ja ohjelman testipakkaukset kuntoon
