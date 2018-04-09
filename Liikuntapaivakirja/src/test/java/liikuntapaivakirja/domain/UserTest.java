@@ -1,3 +1,5 @@
+package liikuntapaivakirja.domain;
+
 
 import liikuntapaivakirja.domain.User;
 import org.junit.After;

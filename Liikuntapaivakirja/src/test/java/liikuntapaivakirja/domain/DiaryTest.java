@@ -1,3 +1,5 @@
+package liikuntapaivakirja.domain;
+
 
 import liikuntapaivakirja.domain.Diary;
 import liikuntapaivakirja.domain.User;
