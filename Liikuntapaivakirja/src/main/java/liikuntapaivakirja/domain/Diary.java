@@ -62,7 +62,7 @@ public class Diary {
     
     @Override
     public String toString() {
-        return "Tunteja: " + this.hour + ", päivä: " + this.day + ", viikko " + this.week + ", kuvaus: " + this.content;
+        return "Tunteja: " + this.hour + ", päivä: " + this.day + ", viikko: " + this.week + ", kuvaus: " + this.content;
     }
     
 //    public int getWeeklyGoal() {

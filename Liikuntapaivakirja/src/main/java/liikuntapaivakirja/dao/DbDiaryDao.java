@@ -96,6 +96,7 @@ public class DbDiaryDao implements DiaryDao {
         stmt.setObject(1, goal);
         stmt.setObject(2, user);     
         stmt.execute();
+        connection.close();
     }
     
 }
