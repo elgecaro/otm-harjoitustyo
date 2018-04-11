@@ -9,3 +9,4 @@
 |  5.4    |  3h    | Sovelluksen muokkaaminen + toiminallisuutta lisätty. Testi"pohjat" lisätty
 |  9.4    |  1h    | Pientä fiksailua: README.md, gitignore ja ohjelman testipakkaukset kuntoon
 |  11.4    |  0,5h    | Checkstyle otettu käyttöön ja pienet virheet korjattu
+|  11.4    |  2,5h    | Testien muokkaaminen ja lisääminen + sovelluksen virheiden korjaaminen
