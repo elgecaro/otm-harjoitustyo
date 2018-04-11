@@ -56,7 +56,7 @@ public class DiaryService {
         if (user == null) {
             return false;
         }
-        if (userDao.UsernameAndPasswordMatch(username, password) == false) {
+        if (userDao.usernameAndPasswordMatch(username, password) == false) {
             return false;
         }
         

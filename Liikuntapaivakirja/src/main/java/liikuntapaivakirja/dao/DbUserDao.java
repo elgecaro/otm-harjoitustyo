@@ -33,7 +33,7 @@ public class DbUserDao implements UserDao {
     }
     
     @Override
-    public boolean UsernameAndPasswordMatch(String user, String password) throws SQLException {
+    public boolean usernameAndPasswordMatch(String user, String password) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM User WHERE username = ? AND password = ?");
         stmt.setString(1, user);

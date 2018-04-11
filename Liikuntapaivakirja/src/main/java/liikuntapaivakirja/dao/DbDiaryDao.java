@@ -22,7 +22,7 @@ public class DbDiaryDao implements DiaryDao {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO Diary (username, hour, day, week, description)"
                 + "VALUES (?, ?, ?, ?, ?)");
-        stmt.setString (1, diary.getUsername());
+        stmt.setString(1, diary.getUsername());
         stmt.setDouble(2, diary.getHour());
         stmt.setInt(3, diary.getDay());
         stmt.setInt(4, diary.getWeek());
