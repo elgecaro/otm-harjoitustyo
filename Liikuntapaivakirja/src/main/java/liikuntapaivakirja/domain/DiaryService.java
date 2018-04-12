@@ -39,7 +39,8 @@ public class DiaryService {
     }
     
     public int getWeeklyGoal() throws Exception {
-        return diaryDao.getWeeklyGoal(loggedIn.getUsername());
+        int goal = diaryDao.getWeeklyGoal(loggedIn.getUsername());
+        return goal;
     }
     
     public List<Diary> getAll() throws Exception {

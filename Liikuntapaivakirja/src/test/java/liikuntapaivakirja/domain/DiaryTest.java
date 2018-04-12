@@ -21,7 +21,7 @@ public class DiaryTest {
     @Before
     public void setUp() {
         user = new User("Testikayttaja", "testisalasana");
-        diary = new Diary(user, 1, 2, 3);
+        diary = new Diary(user, 1, 2, 3, "content");
     }
     
     @Test
@@ -30,11 +30,12 @@ public class DiaryTest {
         assertEquals(1, diary.getHour(), 0);
         assertEquals(2, diary.getDay());
         assertEquals(3, diary.getWeek());
+        assertEquals("content", diary.getContent());
     }
     
     @Test
     public void newDiaryEntryCorrectContent() {
-        diary = new Diary(user, 1, 2, 3, "olin juoksemassa");
+        Diary diary = new Diary(user, 2, 2, 3, "olin juoksemassa");
         assertEquals("olin juoksemassa", diary.getContent());
     }
     
@@ -46,8 +47,13 @@ public class DiaryTest {
     
     @Test
     public void toStringWorking() {
-        assertEquals("Tunteja: 1.0, päivä: 2, viikko: 3, kuvaus: olin juoksemassa", diary.toString());
-        // Väärä kuvaus, ei tulosta mitään
+        assertEquals("Tunteja: 1.0, päivä: 2, viikko: 3, kuvaus: content", diary.toString());
+    }
+    
+    @Test
+    public void setAndGetWeeklyGoal() {
+        diary.setWeeklyGoal(20);
+        assertEquals(20, diary.getWeeklyGoal());
     }
     
     @BeforeClass

@@ -12,6 +12,7 @@ public class DbDiaryDao implements DiaryDao {
     private Database database;
     private int points;
     private User user;
+    private int goal;
     
     public DbDiaryDao(Database database) {
         this.database = database;
@@ -26,6 +27,7 @@ public class DbDiaryDao implements DiaryDao {
         stmt.setDouble(2, diary.getHour());
         stmt.setInt(3, diary.getDay());
         stmt.setInt(4, diary.getWeek());
+        stmt.setString(5, diary.getContent());
         stmt.execute();
 
         connection.close();        
@@ -86,13 +88,19 @@ public class DbDiaryDao implements DiaryDao {
         stmt.setObject(1, key);
         
         ResultSet rs = stmt.executeQuery();
-        return rs.getInt("weeklyGoal");
+        goal = rs.getInt("weeklyGoal");
+        
+        rs.close();
+        stmt.close();
+        connection.close();
+        
+        return goal;
     }
     
     @Override
     public void setWeeklyGoal(int goal, String user) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("UPDATE Diary SET weeklyGoal = ?, WHERE username = ?");
+        PreparedStatement stmt = connection.prepareStatement("UPDATE Diary SET weeklyGoal = ? WHERE username = ?");
         stmt.setObject(1, goal);
         stmt.setObject(2, user);     
         stmt.execute();

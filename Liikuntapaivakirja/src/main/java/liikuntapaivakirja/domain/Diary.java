@@ -18,19 +18,14 @@ public class Diary {
         this.week = week;
         this.content = content;
     }
-
-    public Diary(User user, double hour, int day, int week) {
-        this.user = user;
-        this.hour = hour;
-        this.day = day;
-        this.week = week;
-        this.content = "";
+    
+    public void setWeeklyGoal(int goal) {
+        this.weeklyGoal = goal;
     }
     
-//    public void setWeeklyGoal(int goal) {
-//        this.weeklyGoal = goal;
-//        user.setWeeklyGoal(goal);
-//    }
+    public int getWeeklyGoal() {
+        return this.weeklyGoal;
+    }
 
     public void setUser(User user) {
         this.user = user;

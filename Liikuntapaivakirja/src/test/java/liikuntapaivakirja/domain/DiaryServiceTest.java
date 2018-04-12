@@ -82,9 +82,14 @@ public class DiaryServiceTest {
     }
     
     @Test 
-    public void setAndGetWeeklyGoal() throws Exception {
+    public void setWeeklyGoalTrue() throws Exception {
         diaryService.login("testUser1", "testpassword");
-        diaryService.createWeeklyGoal(10);
+        assertTrue(diaryService.createWeeklyGoal(10));
+    }
+    
+    @Test
+    public void getWeeklyGoal() throws Exception {
+        diaryService.login("testUser1", "testpassword");
         assertEquals(10, diaryService.getWeeklyGoal());
     }
     

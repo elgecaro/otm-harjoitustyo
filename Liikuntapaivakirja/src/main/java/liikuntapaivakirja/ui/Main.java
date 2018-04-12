@@ -8,7 +8,9 @@ import liikuntapaivakirja.dao.DbDiaryDao;
 import liikuntapaivakirja.dao.DbUserDao;
 import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
+import liikuntapaivakirja.domain.Diary;
 import liikuntapaivakirja.domain.DiaryService;
+import liikuntapaivakirja.domain.User;
 
 public class Main {
 
@@ -21,7 +23,73 @@ public class Main {
         DiaryDao diarydao = new DbDiaryDao(testitietokanta);
         DiaryService service = new DiaryService(diarydao, userdao);
         
+        User user = new User("testiuser", "salasanana");
+        service.login("testiuser", "salasanana");
+        
+        System.out.println(service.getUsername());
+        
+        System.out.println(service.getAll());
+//        System.out.println(service.getWeeklyGoal());
+//        service.createWeeklyGoal(10);
+//        System.out.println(service.getWeeklyGoal());
+
+        
+        Connection con = DriverManager.getConnection(
+            "jdbc:sqlite:tietokanta.db","username", "password");
+        
+        Statement st = con.createStatement();
+        st = con.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM Diary");
+        
+        ResultSetMetaData metadata = rs.getMetaData();
+
+	
+	int columnCount = metadata.getColumnCount();
+	 
+	 
+	System.out.println("test_table columns : ");
+
+
+for (int i=1; i<=columnCount; i++) {
+
+	  String columnName = metadata.getColumnName(i);
+
+	 
+	  System.out.println(columnName);
+}
+         
+//         Statement stmt = con.createStatement();
+//         ResultSet rs = stmt.executeQuery("SELECT * FROM User");
+//         System.out.println("username  password");
+//         
+//         while (rs.next()) {
+//            String username = rs.getString("username");
+//            String password = rs.getString("password");
+//            System.out.println(username+"   "+password);
+        
+            
+        Statement stmt2 = con.createStatement();
+        ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Diary");
+        System.out.println("User mm");
+         
+        while (rs.next()) {
+            String username2 = rs.getString("username");
+            double hour = rs.getDouble("hour");
+            int day = rs.getInt("day");
+            int week = rs.getInt("week");
+            String content = rs.getString("description");
+            int weeklyGoal = rs.getInt("weeklyGoal");
+            System.out.println(username2+"   "+hour+"  " + day + "   " + week + "  " + content + "  " + weeklyGoal);
+            
+        }
+
+        
+   
+        
 //        service.login("Ella111", "salasananionpitka");
+//        System.out.println(service.getUsername());
+//        service.createWeeklyGoal(10);
+//        System.out.println(service.getWeeklyGoal());
 //        service.createExcerise(1, 2, 3, "testaan");
 //        System.out.println(service.getAll());
 //        service.createWeeklyGoal(100);
