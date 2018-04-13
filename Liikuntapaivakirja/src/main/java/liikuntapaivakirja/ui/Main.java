@@ -10,7 +10,7 @@ import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import liikuntapaivakirja.domain.Diary;
 import liikuntapaivakirja.domain.DiaryService;
-import liikuntapaivakirja.domain.TextBasedUITest;
+import liikuntapaivakirja.domain.TestTextBasedUI;
 import liikuntapaivakirja.domain.User;
 
 public class Main {
@@ -25,7 +25,7 @@ public class Main {
         DiaryService service = new DiaryService(diarydao, userdao);
         
         Scanner reader = new Scanner(System.in);
-        TextBasedUITest UI = new TextBasedUITest(reader, service);
-        UI.start();
+        TestTextBasedUI uI = new TestTextBasedUI(reader, service);
+        uI.start();
     }
 }

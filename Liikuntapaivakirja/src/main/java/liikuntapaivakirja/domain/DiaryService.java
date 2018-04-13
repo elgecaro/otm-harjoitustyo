@@ -19,7 +19,7 @@ public class DiaryService {
         this.diaryDao = diaryDao;
     }
     
-    public boolean createExcerise(double hour, int day, int week, String content) {
+    public boolean createExercise(double hour, int day, int week, String content) {
         Diary diary = new Diary(loggedIn, hour, day, week, content);
         try {
             diaryDao.create(diary);
@@ -79,6 +79,9 @@ public class DiaryService {
     
     public boolean createUser(String username, String password) throws Exception {
         if (userDao.findByUsername(username) != null) {
+            return false;
+        }
+        if (password.length() < 7) {
             return false;
         }
         User user = new User(username, password);

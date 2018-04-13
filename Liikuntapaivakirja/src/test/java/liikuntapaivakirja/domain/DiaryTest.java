@@ -15,9 +15,6 @@ public class DiaryTest {
     Diary diary;
     User user;
     
-    public DiaryTest() {
-    }
-    
     @Before
     public void setUp() {
         user = new User("Testikayttaja", "testisalasana");
@@ -54,14 +51,6 @@ public class DiaryTest {
     public void setAndGetWeeklyGoal() {
         diary.setWeeklyGoal(20);
         assertEquals(20, diary.getWeeklyGoal());
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
     }
     
     @After

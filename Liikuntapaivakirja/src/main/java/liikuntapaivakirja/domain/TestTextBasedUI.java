@@ -6,14 +6,14 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 
-public class TextBasedUITest {
+public class TestTextBasedUI {
     
     private Scanner reader;
     private Map<String, String> commandsStart;
     private Map<String, String> commandsLogged;
     private DiaryService service;
 
-    public TextBasedUITest(Scanner reader, DiaryService service) {
+    public TestTextBasedUI(Scanner reader, DiaryService service) {
         this.reader = reader;
         this.service = service;
  

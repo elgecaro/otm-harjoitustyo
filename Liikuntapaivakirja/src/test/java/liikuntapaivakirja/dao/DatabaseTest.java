@@ -17,9 +17,6 @@ public class DatabaseTest {
     
     Database database;
     
-    public DatabaseTest() {
-    }
-    
     @Before
     public void setUp() throws SQLException {
         database = new Database("jdbc:sqlite:test.db");
@@ -48,20 +45,7 @@ public class DatabaseTest {
         stmt.executeUpdate(); 
         stmt.close();    
         connection.close();
-
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @After
-    public void tearDown() {
-    }           
+    }         
     
     @Test
     public void newTableUserIsEmpty() throws SQLException {
@@ -89,4 +73,7 @@ public class DatabaseTest {
         
     }
 
+    @After
+    public void tearDown() {
+    }  
 }
