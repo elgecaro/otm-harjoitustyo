@@ -6,7 +6,8 @@
 
 [Tuntikirjanpito](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/tuntikirjanpito.md)
 
-Arkkitehtuuri (tulossa)
+[Arkkitehtuuri](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/arkkitehtuuri.md)
+
 
 ## Komentorivitoiminnot ##
 ### Testaus ###
