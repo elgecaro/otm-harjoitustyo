@@ -13,3 +13,5 @@
 |  12.4    |  1h    | Testejä lisätty ja muokattu + virheiden korjaaminen
 |  |  1,5h    | Tekstuaalisen testikäyttöliittymän lisääminen ja kokeilu
 | 13.4 |  2h    | Testien muokaaminen, refraktorointia (DiaryServiceUserTest ja DiaryServiceDiaryTest eri testiluokat) sekä lisää testejä luotu
+| 14.4 |  0,5h    | Sovelluksen alustavan rakenne luokka/pakkauskaaviona tehty ja lisätty
+
