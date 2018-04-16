@@ -51,12 +51,12 @@ public class DiaryServiceDiaryTest {
     
     @Test
     public void getPoints() throws Exception {
-        assertEquals(10, diaryService.getPointsWeek(3));
+        assertEquals(10, diaryService.getPointsWeek(3), 0.0);
     }
    
     @Test
     public void getNoPoints() throws Exception {
-        assertEquals(0, diaryService.getPointsWeek(1));
+        assertEquals(0, diaryService.getPointsWeek(1), 0.0);
     }
     
     @Test
