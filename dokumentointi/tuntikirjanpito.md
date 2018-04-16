@@ -17,7 +17,7 @@
 |  |  3h  | Tutustuminen JavaFX:ään ja koodauskokeilu
 | 16.4 |  0,5h    | Testi korjattu + testikattavuus ei tarkista testikäyttöliittymää
 | |  4h    | Sovelluksen testikäyttöliittymä korjattu ja parannettu + vähän toiminallisuutta lisätty: päiväkirjan kirjoitukset viikko- ja päiväjärjestyksessä, viimeisen viikon pisteet toimii ja käyttäjän 3 parasta viikkopistettä (ei kuitenkin vielä toimi kunnolla)
+| |  1h    | Käyttäjän 3 parasta viikkotulosta ja 3 parasta viikkotulosta käyttäjien kesken korjattu 
 
-**Yhteensä:** 29h
-
+**Yhteensä:** 30h
 
