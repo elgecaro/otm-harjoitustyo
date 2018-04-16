@@ -127,23 +127,24 @@ public class DbDiaryDao implements DiaryDao {
     
     @Override
     public Map bestUserPointsWeeks(String key) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT week, "
-                + "SUM(hour) AS hours FROM Diary WHERE username = ? "
-                + "GROUP BY week  "
+        Connection connection = database.getConnection();       
+        PreparedStatement stmt = connection.prepareStatement("SELECT week, TOTAL(hour) AS hours "
+                + "FROM Diary WHERE username = ? "
+                + "GROUP BY week "
                 + "ORDER BY hours DESC "
-                + "LIMIT 3");
+                + "LIMIT 3"
+        );
         stmt.setObject(1, key);
         ResultSet rs = stmt.executeQuery();
         
-        Map<Double,Integer> bestWeeks = new HashMap<>();
+        Map<Double,Integer> bestWeeks = new LinkedHashMap<>();
         while (rs.next()) {
             double hour = rs.getDouble("hours");
             double points = hour * 10;
             int week = rs.getInt("week");
-
             bestWeeks.put(points, week);
         }
+
 
         rs.close();
         stmt.close();
@@ -182,22 +183,19 @@ public class DbDiaryDao implements DiaryDao {
     public Map bestPointsWeeks() throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT week, username, "
-                + "SUM(hour) AS hours FROM Diary"
-                + "GROUP BY week "
+                + "SUM(hour) AS hours FROM Diary "
+                + "GROUP BY week, username "
                 + "ORDER BY hours DESC "
                 + "LIMIT 3");
         ResultSet rs = stmt.executeQuery();
         
-        
-        Map<String, String> bestWeeks = new HashMap<>();
+        Map<String, Double> bestWeeks = new LinkedHashMap<>();
         while (rs.next()) {
             double hour = rs.getDouble("hours");
             double points = hour * 10;
-            int week = rs.getInt("week");
             String username = rs.getString("username");
-
-            bestWeeks.put(username, points + " " + week);
-        }
+            bestWeeks.put(username, points);
+      }
 
         rs.close();
         stmt.close();

@@ -36,6 +36,8 @@ public class TestTextBasedUI {
         commandsLogged.put("6", "6 hae käyttäjän viikottaiset pisteet");
         commandsLogged.put("7", "7 hae käyttäjän viikkotavoite");
         commandsLogged.put("8", "8 aseta uusi viikkotavoite");
+        commandsLogged.put("9", "9 näe omat 3 parhaat viikkotulokset");
+        commandsLogged.put("10", "10 näe 3 parhaat viikkotulokset käyttäjien kesken");
         commandsLogged.put("u", "kirjaudu ulos");
   
     }
@@ -58,8 +60,6 @@ public class TestTextBasedUI {
  
             if (command.equals("x")) {
                 break;
-                // JOS käyttäjä on kirjautunut ulos ja kirjoittaa x, 
-                // mitään ei tapahdu, jos kirjoiittaa x uudestaan sovellus sulkeutuu
             } else if (command.equals("1")) {
                 addUser();
             } else if (command.equals("2")) {
@@ -73,30 +73,29 @@ public class TestTextBasedUI {
         while (true) {
             System.out.println();
             System.out.print("komento: ");
-            String command = reader.nextLine();
-            if (!commandsLogged.keySet().contains(command)) {
+            String commandLogged = reader.nextLine();
+            if (!commandsLogged.keySet().contains(commandLogged)) {
                 System.out.println("virheellinen komento.");
                 printInstruction();
             }
         
-            if (command.equals("3")) {
+            if (commandLogged.equals("3")) {
                 createExercise();
-            } else if (command.equals("4")) {
+            } else if (commandLogged.equals("4")) {
                 getDiaryEntrys();
-            } else if (command.equals("5")) {
+            } else if (commandLogged.equals("5")) {
                 getLatestWeeklyPoints();
-            } else if (command.equals("6")) {
+            } else if (commandLogged.equals("6")) {
                 getWeeklyPoints();
-            } else if (command.equals("7")) {
+            } else if (commandLogged.equals("7")) {
                 getWeeklyGoal();
-            } else if (command.equals("8")) {
+            } else if (commandLogged.equals("8")) {
                 setWeeklyGoal();
-            } else if (command.equals("9")) {
+            } else if (commandLogged.equals("9")) {
                 getUserHighscoreWeeks();
-//            } else if (command.equals("10")) {
-//                getHighscoreWeeks();
-//              Ei vielä toimi toivotusti
-            } else if (command.equals("u")) {
+            } else if (commandLogged.equals("10")) {
+                getHighscoreWeeks();
+            } else if (commandLogged.equals("u")) {
                 logout();
                 break;
             }
@@ -105,20 +104,22 @@ public class TestTextBasedUI {
     
     private void printInstructionStart() {
         System.out.println("Käytettävissä olevat komennot ovat:");
-        System.out.println("1 lisää käyttäjä\n" +
-            "2 kirjaudu sisään\n" +
-            "x lopeta");
+        System.out.println("1 lisää käyttäjä\n" 
+                + "2 kirjaudu sisään\n"
+                + "x lopeta");
     }
     
     private void printInstruction() {
         System.out.println("Käytettävissä olevat komennot ovat:");
-        System.out.println("3 lisää liikuntatunteja käyttäjälle\n" +
-            "4 hae käyttäjän kirjoittamat liikuntatunnit\n" +
-            "5 hae käyttäjän viimeisen viikon pisteet\n" +
-            "6 hae käyttäjän viikottaiset pisteet\n" +
-            "7 hae käyttäjän viikkotavoite\n" +
-            "8 aseta uusi viikkotavoite\n" +
-            "u kirjaudu ulos");
+        System.out.println("3 lisää liikuntatunteja käyttäjälle\n" 
+                + "4 hae käyttäjän kirjoittamat liikuntatunnit\n"
+                + "5 hae käyttäjän viimeisen viikon pisteet\n" 
+                + "6 hae käyttäjän viikottaiset pisteet\n"
+                + "7 hae käyttäjän viikkotavoite\n"
+                + "8 aseta uusi viikkotavoite\n"
+                + "9 näe omat 3 parhaat viikkotulokset\n"
+                + "10 näe 3 parhaat viikkotulokset"
+                + "u kirjaudu ulos");
     }
     
     private void addUser() throws Exception {
@@ -198,7 +199,7 @@ public class TestTextBasedUI {
 
     private void logout() throws Exception {
         service.logout();
-        start();
+        printInstructionStart();
     }
 
     private void createExercise() throws Exception {     
@@ -238,22 +239,28 @@ public class TestTextBasedUI {
     }
     
     private void getUserHighscoreWeeks() throws Exception {
+        System.out.println();
+        System.out.println("Parhaat viikkopisteesi");
         Map<Double, Integer> bestWeeks = service.getUsersBestWeeks();
-        
+        int number = 1;
         Iterator<Map.Entry<Double, Integer>> entries = bestWeeks.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry<Double, Integer> entry = entries.next();
-            System.out.println("Pisteet: " + entry.getKey() + ", Viikko: " + entry.getValue());    
+            System.out.println(number + ". Pisteet: " + entry.getKey() + ", viikko: " + entry.getValue());
+            number++;
         }
     }
     
-    private void getHighscoreWeeks() throws Exception {     
-        Map<Double, Integer> bestWeeks = service.getBestWeeks();
-        
-        Iterator<Map.Entry<Double, Integer>> entries = bestWeeks.entrySet().iterator();
+    private void getHighscoreWeeks() throws Exception {
+        System.out.println();
+        System.out.println("Tuloslista (3 parhaat viikkopisteet)");
+        Map<String, Double> bestWeeks = service.getBestWeeks();
+        int number = 1;
+        Iterator<Map.Entry<String, Double>> entries = bestWeeks.entrySet().iterator();
         while (entries.hasNext()) {
-            Map.Entry<Double, Integer> entry = entries.next();
-            System.out.println("Käyttäjä: " + entry.getKey() + ", Pisteet ja viikko: " + entry.getValue());
+            Map.Entry<String, Double> entry = entries.next();
+            System.out.println(number + ". Käyttäjä: " + entry.getKey() + ", pisteet: " + entry.getValue());
+            number++;
         }
     }
     
