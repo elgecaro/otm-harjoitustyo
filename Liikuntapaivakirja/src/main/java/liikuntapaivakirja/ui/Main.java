@@ -26,6 +26,7 @@ public class Main {
         
         Scanner reader = new Scanner(System.in);
         TestTextBasedUI uI = new TestTextBasedUI(reader, service);
+        
         uI.start();
     }
 }

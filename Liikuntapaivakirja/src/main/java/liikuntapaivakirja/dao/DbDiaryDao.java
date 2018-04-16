@@ -10,7 +10,7 @@ import liikuntapaivakirja.domain.User;
 
 public class DbDiaryDao implements DiaryDao {
     private Database database;
-    private int points;
+    private double points;
     private User user;
     private int goal;
     
@@ -36,6 +36,30 @@ public class DbDiaryDao implements DiaryDao {
     @Override
     public List<Diary> getAll(User user) throws SQLException {
         Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? ORDER BY week, day");
+        stmt.setObject(1, user.getUsername());
+
+        ResultSet rs = stmt.executeQuery();
+        List<Diary> diaryEntrys = new ArrayList<>();
+        while (rs.next()) {
+            String username = rs.getString("username");
+            double hour = rs.getDouble("hour");
+            int day = rs.getInt("day");
+            int week = rs.getInt("week");
+            String content = rs.getString("description");
+
+            diaryEntrys.add(new Diary(user, hour, day, week, content));
+        }
+
+        rs.close();
+        stmt.close();
+        connection.close();
+
+        return diaryEntrys;
+    }
+    
+    public List<Diary> getAllNotSorted(User user) throws SQLException {
+        Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ?");
         stmt.setObject(1, user.getUsername());
 
@@ -58,17 +82,37 @@ public class DbDiaryDao implements DiaryDao {
         return diaryEntrys;
     }
 
+    @Override
+    public int latestWeek(String key) throws Exception {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT week FROM Diary WHERE username = ? ORDER BY week DESC LIMIT 1");
+        stmt.setObject(1, key);
+        int week = 0;
+
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            week = rs.getInt("week");
+        }
+        
+        rs.close();
+        stmt.close();
+        connection.close();
+        
+        return week;
+    }
     
-    public int userPointsWeek(String key, int week) throws SQLException {
+    
+    @Override
+    public double userPointsWeek(String key, int week) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? AND week = ?");
         stmt.setObject(1, key);
         stmt.setObject(2, week);
-        int hours = 0;
+        double hours = 0;
         
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            int hour = rs.getInt("hour");
+            double hour = rs.getDouble("hour");
             hours = hours + hour;
         }
         
@@ -79,6 +123,33 @@ public class DbDiaryDao implements DiaryDao {
         connection.close();
         
         return points;
+    }
+    
+    @Override
+    public Map bestUserPointsWeeks(String key) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT week, "
+                + "SUM(hour) AS hours FROM Diary WHERE username = ? "
+                + "GROUP BY week  "
+                + "ORDER BY hours DESC "
+                + "LIMIT 3");
+        stmt.setObject(1, key);
+        ResultSet rs = stmt.executeQuery();
+        
+        Map<Double,Integer> bestWeeks = new HashMap<>();
+        while (rs.next()) {
+            double hour = rs.getDouble("hours");
+            double points = hour * 10;
+            int week = rs.getInt("week");
+
+            bestWeeks.put(points, week);
+        }
+
+        rs.close();
+        stmt.close();
+        connection.close();
+
+        return bestWeeks;
     }
 
     @Override
@@ -107,4 +178,32 @@ public class DbDiaryDao implements DiaryDao {
         connection.close();
     }
     
+    @Override
+    public Map bestPointsWeeks() throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT week, username, "
+                + "SUM(hour) AS hours FROM Diary"
+                + "GROUP BY week "
+                + "ORDER BY hours DESC "
+                + "LIMIT 3");
+        ResultSet rs = stmt.executeQuery();
+        
+        
+        Map<String, String> bestWeeks = new HashMap<>();
+        while (rs.next()) {
+            double hour = rs.getDouble("hours");
+            double points = hour * 10;
+            int week = rs.getInt("week");
+            String username = rs.getString("username");
+
+            bestWeeks.put(username, points + " " + week);
+        }
+
+        rs.close();
+        stmt.close();
+        connection.close();
+
+        return bestWeeks;
+    }
+
 }

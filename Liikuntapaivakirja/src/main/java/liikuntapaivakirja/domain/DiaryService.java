@@ -5,6 +5,7 @@ import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import liikuntapaivakirja.dao.DbUserDao;
 
 // Sovelluslogiikka, kirjautuminen, päiväkirjaan tuntien kirjaaminen ym
@@ -21,6 +22,7 @@ public class DiaryService {
     
     public boolean createExercise(double hour, int day, int week, String content) {
         Diary diary = new Diary(loggedIn, hour, day, week, content);
+
         try {
             diaryDao.create(diary);
         } catch (Exception ex) {
@@ -89,8 +91,20 @@ public class DiaryService {
         return true;
     }
     
-    public int getPointsWeek(int week) throws Exception {
+    public double getPointsWeek(int week) throws Exception {
         return diaryDao.userPointsWeek(loggedIn.getUsername(), week);
+    }
+    
+    public int getLatestWeek() throws Exception {
+        return diaryDao.latestWeek(loggedIn.getUsername());
+    }
+    
+    public Map getUsersBestWeeks() throws Exception {
+        return diaryDao.bestUserPointsWeeks(loggedIn.getUsername());
+    }
+    
+    public Map getBestWeeks() throws Exception {
+        return diaryDao.bestPointsWeeks();
     }
 
 }
