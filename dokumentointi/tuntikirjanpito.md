@@ -18,4 +18,6 @@
 | 16.4 |  0,5h    | Testi korjattu + testikattavuus ei tarkista testikäyttöliittymää
 | |  4h    | Sovelluksen testikäyttöliittymä korjattu ja parannettu + vähän toiminallisuutta lisätty: päiväkirjan kirjoitukset viikko- ja päiväjärjestyksessä, viimeisen viikon pisteet toimii ja käyttäjän 3 parasta viikkopistettä (ei kuitenkin vielä toimi kunnolla)
 
+**Yhteensä:** 29h
+
 
