@@ -1,5 +1,5 @@
 
-package liikuntapaivakirja.domain;
+package liikuntapaivakirja.ui;
 
 import java.util.ArrayList;
 import static java.util.Collections.list;
@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import liikuntapaivakirja.domain.Diary;
+import liikuntapaivakirja.domain.DiaryService;
 
 
 public class TestTextBasedUI {
@@ -123,13 +125,15 @@ public class TestTextBasedUI {
     }
     
     private void addUser() throws Exception {
-        System.out.println("Anna nimi: ");
+        System.out.println("Anna nimi (3 merkkiä tai enemmän): ");
         String username = reader.nextLine();
-        System.out.println("Anna salasana (7 merkkiä tai enemmän!):");
+        System.out.println("Anna salasana (7 merkkiä tai enemmän!):" );
         String password = reader.nextLine();
         
         if (password.length() < 7) {
             System.out.println("Salasana on liian lyhyt");
+        } else if (username.length() < 3) {
+            System.out.println("Käyttäjänimi on liian lyhyt");
         } else if (service.createUser(username, password) == true) {
             System.out.println("Testikäyttäjä " + username + " on nyt luotu");
             loginUser();

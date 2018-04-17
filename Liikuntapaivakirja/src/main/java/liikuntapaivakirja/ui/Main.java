@@ -10,7 +10,6 @@ import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import liikuntapaivakirja.domain.Diary;
 import liikuntapaivakirja.domain.DiaryService;
-import liikuntapaivakirja.domain.TestTextBasedUI;
 import liikuntapaivakirja.domain.User;
 
 public class Main {

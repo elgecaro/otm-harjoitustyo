@@ -130,21 +130,18 @@ public class DbDiaryDao implements DiaryDao {
         Connection connection = database.getConnection();       
         PreparedStatement stmt = connection.prepareStatement("SELECT week, TOTAL(hour) AS hours "
                 + "FROM Diary WHERE username = ? "
-                + "GROUP BY week "
-                + "ORDER BY hours DESC "
-                + "LIMIT 3"
+                + "GROUP BY week ORDER BY hours DESC LIMIT 3"
         );
         stmt.setObject(1, key);
         ResultSet rs = stmt.executeQuery();
         
-        Map<Double,Integer> bestWeeks = new LinkedHashMap<>();
+        Map<Double, Integer> bestWeeks = new LinkedHashMap<>();
         while (rs.next()) {
             double hour = rs.getDouble("hours");
             double points = hour * 10;
             int week = rs.getInt("week");
             bestWeeks.put(points, week);
         }
-
 
         rs.close();
         stmt.close();
@@ -195,7 +192,7 @@ public class DbDiaryDao implements DiaryDao {
             double points = hour * 10;
             String username = rs.getString("username");
             bestWeeks.put(username, points);
-      }
+        }
 
         rs.close();
         stmt.close();
