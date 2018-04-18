@@ -79,9 +79,5 @@ public class DiaryServiceUserTest {
         diaryService.logout();
         assertEquals(null, diaryService.getLoggedUser());        
     }
-    
-    @After
-    public void tearDown() {
-    }
 
 }

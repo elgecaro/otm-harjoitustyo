@@ -4,6 +4,7 @@ package liikuntapaivakirja.domain;
 import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import liikuntapaivakirja.dao.DbUserDao;

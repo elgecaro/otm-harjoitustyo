@@ -127,7 +127,7 @@ public class TestTextBasedUI {
     private void addUser() throws Exception {
         System.out.println("Anna nimi (3 merkkiä tai enemmän): ");
         String username = reader.nextLine();
-        System.out.println("Anna salasana (7 merkkiä tai enemmän!):" );
+        System.out.println("Anna salasana (7 merkkiä tai enemmän!):");
         String password = reader.nextLine();
         
         if (password.length() < 7) {

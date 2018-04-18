@@ -57,30 +57,6 @@ public class DbDiaryDao implements DiaryDao {
 
         return diaryEntrys;
     }
-    
-    public List<Diary> getAllNotSorted(User user) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ?");
-        stmt.setObject(1, user.getUsername());
-
-        ResultSet rs = stmt.executeQuery();
-        List<Diary> diaryEntrys = new ArrayList<>();
-        while (rs.next()) {
-            String username = rs.getString("username");
-            double hour = rs.getDouble("hour");
-            int day = rs.getInt("day");
-            int week = rs.getInt("week");
-            String content = rs.getString("description");
-
-            diaryEntrys.add(new Diary(user, hour, day, week, content));
-        }
-
-        rs.close();
-        stmt.close();
-        connection.close();
-
-        return diaryEntrys;
-    }
 
     @Override
     public int latestWeek(String key) throws Exception {
