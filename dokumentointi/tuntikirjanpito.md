@@ -21,6 +21,8 @@
 | 17.4 |  0,5h  | Refraktorointia (testiUI ui-pakkaukseen) + pieniä virheitä korjattu
 | 18.4 |  1,5h  | Testejä lisätty ja muokattu
 |      |  2h    | Alustava graafinen käyttöliittymä + pientä toiminnallisuutta lisätty siihen: käyttäjä voi luoda käyttäjän ja/tai kirjautua sisään
+| 19.4 |  2h    | Käyttöliittymään lisää toiminnallisuutta lisätty: käyttäjä näkee omat liikuntatiedot ja voi lisätä uusia. Database-luokkaan lisätty metodit, joka tarkistaa jos sisältää taulukot + luo niitä jos tietokanta on tyhjä
 
 
-**Yhteensä:** 34h
+
+**Yhteensä:** 36h
