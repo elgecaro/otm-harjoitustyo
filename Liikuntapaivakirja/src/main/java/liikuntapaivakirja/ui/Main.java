@@ -18,6 +18,11 @@ public class Main {
         
         Database testitietokanta = new Database("jdbc:sqlite:tietokanta.db");
         testitietokanta.getConnection();
+        if (testitietokanta.tableExist((testitietokanta.getConnection()), "User") == false) {
+            testitietokanta.createTableUser(testitietokanta.getConnection(), testitietokanta);
+        } if (testitietokanta.tableExist((testitietokanta.getConnection()), "Diary") == false) {
+            testitietokanta.createTableDiary(testitietokanta.getConnection(), testitietokanta);
+        }
         
         UserDao userdao = new DbUserDao(testitietokanta);
         DiaryDao diarydao = new DbDiaryDao(testitietokanta);
