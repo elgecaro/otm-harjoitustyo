@@ -177,4 +177,29 @@ public class DbDiaryDao implements DiaryDao {
         return bestWeeks;
     }
 
+    @Override
+    public List<Diary> get15Latest(User user) throws Exception {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? ORDER BY week DESC, day DESC LIMIT 15");
+        stmt.setObject(1, user.getUsername());
+
+        ResultSet rs = stmt.executeQuery();
+        List<Diary> diaryEntrys = new ArrayList<>();
+        while (rs.next()) {
+            String username = rs.getString("username");
+            double hour = rs.getDouble("hour");
+            int day = rs.getInt("day");
+            int week = rs.getInt("week");
+            String content = rs.getString("description");
+
+            diaryEntrys.add(new Diary(user, hour, day, week, content));
+        }
+
+        rs.close();
+        stmt.close();
+        connection.close();
+
+        return diaryEntrys;
+    }
+
 }

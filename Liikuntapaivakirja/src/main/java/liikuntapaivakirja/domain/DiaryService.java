@@ -55,6 +55,15 @@ public class DiaryService {
         return diaryEntrys;
     }
     
+    public List<Diary> get15Latest() throws Exception {
+        if (loggedIn == null) {
+            return new ArrayList<>();
+        }
+        List<Diary> diaryEntrys = new ArrayList<>();
+        diaryEntrys = diaryDao.get15Latest(loggedIn);
+        return diaryEntrys;
+    }
+    
     public boolean login(String username, String password) throws Exception {
         User user = userDao.findByUsername(username);
         if (user == null) {

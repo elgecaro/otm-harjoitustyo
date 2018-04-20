@@ -16,5 +16,6 @@ public interface DiaryDao {
     int latestWeek(String key) throws Exception;
     Map bestUserPointsWeeks(String key) throws Exception;
     Map bestPointsWeeks() throws Exception;
+    List<Diary> get15Latest(User user) throws Exception;
 
 }

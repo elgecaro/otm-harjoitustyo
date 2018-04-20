@@ -2,7 +2,11 @@
 package liikuntapaivakirja.ui;
 
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -25,6 +29,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import liikuntapaivakirja.dao.Database;
 import liikuntapaivakirja.dao.DbDiaryDao;
@@ -41,7 +47,10 @@ public class TestGUI extends Application {
     private Scene diaryScene;
     private Scene newUserScene;
     private Scene loginScene;
-    private VBox diaryNodes;    
+    private VBox diaryNodes;
+    private VBox userHighscoreNodes;
+    private VBox highscoreNodes;
+    private VBox weeklyPoints;
     
     @Override
     public void init() throws SQLException {
@@ -103,6 +112,9 @@ public class TestGUI extends Application {
                 start(primaryStage);
             });
             
+            // Tarkoitus on, että GridPanea EI käytetä lopullisessa sovelluksessa,
+            // sitä käytetään juuri nyt vain toimintojen testaukseen! :)
+            
             GridPane loginPane = new GridPane();
             loginPane.add(usernameLabel, 0, 0);
             loginPane.add(usernameField, 1, 0);
@@ -142,12 +154,12 @@ public class TestGUI extends Application {
                     } else if (newUsernameField.getText().length() < 3) {
                         loginMessage.setText("Käyttäjänimi on liian lyhyt");
                         loginMessage.setTextFill(Color.RED);
-                    } else if (!diaryService.createUser(username, password)) {
-                        loginMessage.setText("Käyttäjänimi on jo käyössä");
-                        loginMessage.setTextFill(Color.RED);
                     } else if (diaryService.createUser(username, password)) {
                         loginMessage.setText("Käyttäjäsi on nyt luotu");
                         loginMessage.setTextFill(Color.GREEN);
+                    } else {
+                        loginMessage.setText("Käyttäjänimi on jo käyössä");
+                        loginMessage.setTextFill(Color.RED);
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -204,9 +216,9 @@ public class TestGUI extends Application {
         Button createExcercise = new Button("lisää");
         Button logoutButton = new Button("kirjaudu ulos");
 
-        ScrollPane entriesScrollbar = new ScrollPane();       
-        BorderPane mainPane = new BorderPane(entriesScrollbar);
-        diaryScene = new Scene(mainPane, 400, 550);
+        ScrollPane entriesScrollbar = new ScrollPane();
+        entriesScrollbar.setPrefViewportHeight(300);   
+        entriesScrollbar.setPrefViewportWidth(400);        
 
         logoutButton.setOnAction(ev-> {
             diaryService.logout();
@@ -222,10 +234,10 @@ public class TestGUI extends Application {
             if (isDouble(hourS) != true) {
                 createMessage.setText("Tunnin muoto väärä");
                 createMessage.setTextFill(Color.RED);
-            } if (isInteger(dayS) != true) {
+            } else if (isInteger(dayS) != true) {
                 createMessage.setText("Päivän muoto väärä");
                 createMessage.setTextFill(Color.RED);
-            } if (isInteger(weekS) != true) {
+            } else if (isInteger(weekS) != true) {
                 createMessage.setText("Viikon muoto väärä");
                 createMessage.setTextFill(Color.RED);
             } else {
@@ -238,24 +250,62 @@ public class TestGUI extends Application {
                     createMessage.setTextFill(Color.GREEN);
                     try {
                         redrawDiaryList();
+                        redrawUserHighscoreList();
+                        redrawhighscoreList();
+                        redrawWeeklyPoints();
+
                     } catch (Exception ex) {
                         Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
                     createMessage.setText("Liikunnan lisääminen ei onnistunut");
                     createMessage.setTextFill(Color.RED);
-                    // pitää vielä korjata ettei ohjelma kaadu
                 }
             }
         });
         
+        Label entriesLabel = new Label("15 viimeistä kirjoitusta:");
+        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
         diaryNodes = new VBox(10);
-        diaryNodes.setMaxWidth(280);
+        diaryNodes.setMaxWidth(400);
         diaryNodes.setMinWidth(280);
         redrawDiaryList();
-        
         entriesScrollbar.setContent(diaryNodes);
         
+        ScrollPane userHighscoreScrollbar = new ScrollPane();
+        userHighscoreScrollbar.setPrefViewportHeight(200);   
+        userHighscoreScrollbar.setPrefViewportWidth(200); 
+        
+        Label userHighscoreLabel = new Label("3 parasta viikkopisteesi:");
+        userHighscoreNodes = new VBox(10);
+        userHighscoreNodes.setMaxWidth(280);
+        userHighscoreNodes.setMinWidth(200);
+        redrawUserHighscoreList();
+
+        userHighscoreScrollbar.setContent(userHighscoreNodes);
+        
+        ScrollPane highscoreScrollbar = new ScrollPane();
+        highscoreScrollbar.setPrefViewportHeight(200);   
+        highscoreScrollbar.setPrefViewportWidth(200); 
+        
+        Label highscoreLabel = new Label("3 parasta viikkopistettä käyttäjien kesken:");
+        highscoreNodes = new VBox(10);
+        highscoreNodes.setMaxWidth(280);
+        highscoreNodes.setMinWidth(200);
+        redrawhighscoreList();
+
+        highscoreScrollbar.setContent(highscoreNodes);
+        
+        Label weeklyPointsLabel = new Label("Tämän/viimeisen viikon pisteet:");
+        weeklyPoints = new VBox(10);
+        redrawWeeklyPoints();
+        
+        // Tulossa: näe viikkotavoite
+        // + aseta uusi viikkotavoite
+        // + näe kaikki (myös vanhemmat) kirjoitukset
+        // näe kaikkien viikkojen pisteet(?)
+
+
         GridPane loggedPane = new GridPane();
             loggedPane.add(loginText, 0, 0);
             loggedPane.add(newHourLabel, 0, 1);
@@ -268,10 +318,18 @@ public class TestGUI extends Application {
             loggedPane.add(newContentField, 1, 4);
             loggedPane.add(createExcercise, 1, 5);
             loggedPane.add(createMessage, 1, 6);
-            loggedPane.add(logoutButton, 0, 7);   
-            loggedPane.add(entriesScrollbar, 1,8);
+            loggedPane.add(entriesLabel, 1, 7);
+            loggedPane.add(entriesScrollbar, 1, 8);
+            loggedPane.add(userHighscoreLabel, 4, 7);
+            loggedPane.add(userHighscoreScrollbar, 4, 8);
+            loggedPane.add(highscoreLabel, 5, 7);
+            loggedPane.add(highscoreScrollbar, 5, 8);
+            loggedPane.add(weeklyPointsLabel, 5, 0);
+            loggedPane.add(weeklyPoints, 6, 0);
 
-            // tyylittelyä: lisätään tyhjää tilaa reunoille ym
+
+            loggedPane.add(logoutButton, 0, 9);
+
             loggedPane.setHgap(10);
             loggedPane.setVgap(10);
             loggedPane.setPadding(new Insets(10, 10, 10, 10));
@@ -302,29 +360,91 @@ public class TestGUI extends Application {
     
     public void redrawDiaryList() throws Exception {
         diaryNodes.getChildren().clear();
-        List<Diary> allEntries = diaryService.getAll();
+        List<Diary> allEntries = diaryService.get15Latest();
         allEntries.forEach(diary->{
             diaryNodes.getChildren().add(createDiaryNode(diary));
         });
+    }
+    
+    public void redrawUserHighscoreList() throws Exception {
+        userHighscoreNodes.getChildren().clear();
+        Map<Double, Integer> bestWeeks = diaryService.getUsersBestWeeks();
+        
+        int number = 1;
+        Iterator<Map.Entry<Double, Integer>> entries = bestWeeks.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<Double, Integer> entry = entries.next();
+            userHighscoreNodes.getChildren().add(createUserHighscoreNode(entry, number));
+            number++;
+        }
+    }
+    
+    private void redrawhighscoreList() throws Exception {
+        highscoreNodes.getChildren().clear();
+        Map<String, Double> allBestWeeks = diaryService.getBestWeeks();
+        int number = 1;
+        Iterator<Map.Entry<String, Double>> entries = allBestWeeks.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, Double> entry = entries.next();
+            highscoreNodes.getChildren().add(createhighscoreNode(entry, number));
+            number++;
+        
+        }
+    }
+    
+    private void redrawWeeklyPoints() throws Exception {
+        weeklyPoints.getChildren().clear();
+        
+        HBox box = new HBox(10);
+        double points = diaryService.getPointsWeek(diaryService.getLatestWeek());
+        String pointsString = String.valueOf(points);
+        
+        Label label = new Label(pointsString);
+        
+        label.setMinHeight(28);
+        box.setPadding(new Insets(0,5,0,5));
+        
+        box.getChildren().add(label);
+        weeklyPoints.getChildren().add(box);
+        
     }
     
     public Node createDiaryNode(Diary diary) {
         HBox box = new HBox(10);
         Label label = new Label(diary.toString());
         
-        label.setMinHeight(28);
-                
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        label.setMinHeight(28);     
         box.setPadding(new Insets(0,5,0,5));
         
-        box.getChildren().addAll(label, spacer);
+        box.getChildren().addAll(label);
         return box;
-}
-             
-            
+    }
+    
+    public Node createUserHighscoreNode(Entry entry, int number) throws Exception {
+        HBox box = new HBox(10);
+        Label label = new Label(number + ". Pisteet: " + entry.getKey() + ", viikko: " + entry.getValue());
+        
+        label.setMinHeight(28);
+        box.setPadding(new Insets(0,5,0,5));
+        
+        box.getChildren().add(label);
+        return box;
+    }
+    
+    public Node createhighscoreNode(Entry entry, int number) throws Exception {
+        HBox box = new HBox(10);
+        Label label = new Label(number + ". Käyttäjä: " + entry.getKey() + ", pisteet: " + entry.getValue());
+        
+        label.setMinHeight(28);
+        box.setPadding(new Insets(0,5,0,5));
+        
+        box.getChildren().add(label);
+        return box;
+    }
+          
     public static void main(String[] args) {
         launch(args);
     }
+
     
 }
