@@ -22,7 +22,8 @@
 | 18.4 |  1,5h  | Testejä lisätty ja muokattu
 |      |  2h    | Alustava graafinen käyttöliittymä + pientä toiminnallisuutta lisätty siihen: käyttäjä voi luoda käyttäjän ja/tai kirjautua sisään
 | 19.4 |  2h    | Käyttöliittymään lisää toiminnallisuutta lisätty: käyttäjä näkee omat liikuntatiedot ja voi lisätä uusia. Database-luokkaan lisätty metodit, joka tarkistaa jos sisältää taulukot + luo niitä jos tietokanta on tyhjä
+| 20.4 |  2h    | Käyttis parannettu + toiminallisuutta lisätty: käyttäjä näkee viikkopisteet, 15 viimeiset kirjoitukset sekä 3 omaa parasta + 3 käyttäjien kesken parasta viikkotulosta
+| 21.4 |  3h    | Käyttiksen ulkomuoto vähän parannettu (vielä paljon kesken) + toiminallisuutta: käyttäjä näkee viikkotavoitteet, voi asettaa uuden viikkotavoitteen + näkee kaikki kirjoitukset
 
 
-
-**Yhteensä:** 36h
+**Yhteensä:** 41h
