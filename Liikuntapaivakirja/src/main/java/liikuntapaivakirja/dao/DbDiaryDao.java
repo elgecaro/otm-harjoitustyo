@@ -131,9 +131,12 @@ public class DbDiaryDao implements DiaryDao {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT weeklyGoal FROM Diary WHERE username = ?");
         stmt.setObject(1, key);
+        goal = 0;
         
         ResultSet rs = stmt.executeQuery();
-        goal = rs.getInt("weeklyGoal");
+        while (rs.next()) {
+            goal = rs.getInt("weeklyGoal");
+        }
         
         rs.close();
         stmt.close();
