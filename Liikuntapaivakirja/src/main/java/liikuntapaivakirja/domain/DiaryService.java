@@ -34,7 +34,7 @@ public class DiaryService {
     
     public boolean createWeeklyGoal(int goal) {
         try {
-            diaryDao.setWeeklyGoal(goal, loggedIn.getUsername());
+            userDao.setWeeklyGoal(goal, loggedIn.getUsername());
         } catch (Exception ex) {
             return false;
         }
@@ -42,7 +42,7 @@ public class DiaryService {
     }
     
     public int getWeeklyGoal() throws Exception {
-        int goal = diaryDao.getWeeklyGoal(loggedIn.getUsername());
+        int goal = userDao.getWeeklyGoal(loggedIn.getUsername());
         return goal;
     }
     

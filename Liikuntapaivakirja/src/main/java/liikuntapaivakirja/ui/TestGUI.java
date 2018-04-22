@@ -13,16 +13,19 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -71,123 +74,25 @@ public class TestGUI extends Application {
         
         Label loginText = new Label("Tämä on sovelluksen testaus GUI.");
         loginText.setTranslateY(-40);
-        Label loginMessage = new Label("");
         Button loginButton = new Button("kirjaudu sisään");
         Button createButton = new Button("luo uusi käyttäjä");
         createButton.setTranslateY(30);
         
         loginButton.setOnAction((event)-> {
-            
-            Label usernameLabel = new Label("Käyttäjänimi:");
-            TextField usernameField = new TextField();
-            Label passwordLabel = new Label("Salasana:");
-            PasswordField passwordField = new PasswordField();
-            Button loginUserButton = new Button("Kirjaudu sisään");
-            Button goBackButton = new Button("takaisin");
-            
-            loginUserButton.setOnAction(e-> {
-                
-                String username = usernameField.getText();
-                String password = passwordField.getText();
-                
-                try {
-                    if (diaryService.login(username, password)) {
-                        loginMessage.setText("Kirjautuminen onnistui");
-                        loginMessage.setTextFill(Color.GREEN);
-                        loggedIn(primaryStage, username);
-
-                    } else {
-                        loginMessage.setText("Käyttäjänimi/salasana väärä");      
-                        loginMessage.setTextFill(Color.RED);
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            });
-            
-            goBackButton.setOnAction(ev-> {
-                start(primaryStage);
-            });
-            
-            GridPane loginPane = new GridPane();
-            loginPane.add(usernameLabel, 0, 0);
-            loginPane.add(usernameField, 1, 0);
-            loginPane.add(passwordLabel, 0, 1);
-            loginPane.add(passwordField, 1, 1);
-            loginPane.add(loginUserButton, 1, 2);
-            loginPane.add(loginMessage, 1, 3);
-            loginPane.add(goBackButton, 0, 4);
-
-            // tyylittelyä: lisätään tyhjää tilaa reunoille ym
-            loginPane.setHgap(10);
-            loginPane.setVgap(10);
-            loginPane.setPadding(new Insets(10, 10, 10, 10));
-                       
-            loginScene = new Scene(loginPane);
-
-            primaryStage.setScene(loginScene);
-            primaryStage.show();
+            try {
+                loginUser(primaryStage);
+            } catch (Exception ex) {
+                Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
             
-        createButton.setOnAction(e-> {
-            Label newUsernameLabel = new Label("Käyttäjänimi:");
-            TextField newUsernameField = new TextField();
-            Label newPasswordLabel = new Label("Salasana:");
-            PasswordField newPasswordField = new PasswordField();
-            Button createUserButton = new Button("Luo käyttäjä");
-            Button goBackButton = new Button("takaisin");
-            createUserButton.setOnAction(ev-> {
-                
-                try {
-                    String username = newUsernameField.getText();
-                    String password = newPasswordField.getText();
-
-                    if (newPasswordField.getText().length() < 7) {
-                        loginMessage.setText("Salasana on liian lyhyt");
-                        loginMessage.setTextFill(Color.RED);
-                    } else if (newUsernameField.getText().length() < 3) {
-                        loginMessage.setText("Käyttäjänimi on liian lyhyt");
-                        loginMessage.setTextFill(Color.RED);
-                    } else if (diaryService.createUser(username, password)) {
-                        loginMessage.setText("Käyttäjäsi on nyt luotu");
-                        loginMessage.setTextFill(Color.GREEN);
-                    } else {
-                        loginMessage.setText("Käyttäjänimi on jo käyössä");
-                        loginMessage.setTextFill(Color.RED);
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            }); 
-        
-            goBackButton.setOnAction(ev-> {
-                start(primaryStage);
-            });
             
-            GridPane createUserPane = new GridPane();
-            createUserPane.add(newUsernameLabel, 0, 0);
-            createUserPane.add(newUsernameField, 1, 0);
-            createUserPane.add(newPasswordLabel, 0, 1);
-            createUserPane.add(newPasswordField, 1, 1);
-            createUserPane.add(createUserButton, 1, 2);
-            createUserPane.add(loginMessage, 1, 3);
-            createUserPane.add(goBackButton, 0, 4);
-
-            // tyylittelyä: lisätään tyhjää tilaa reunoille ym
-            createUserPane.setHgap(10);
-            createUserPane.setVgap(10);
-            createUserPane.setPadding(new Insets(10, 10, 10, 10));
-                       
-            newUserScene = new Scene(createUserPane);
-
-            primaryStage.setScene(newUserScene);
-            primaryStage.show();
+        createButton.setOnAction(e-> {
+            createUser(primaryStage);
         });
         
         StackPane startPane = new StackPane();
-        startPane.getChildren().addAll(loginText, loginMessage, loginButton, createButton);
+        startPane.getChildren().addAll(loginText, loginButton, createButton);
    
         Scene startScene = new Scene(startPane, 260, 150);
         
@@ -196,49 +101,181 @@ public class TestGUI extends Application {
         primaryStage.show();
     }
     
+    public void loginUser(Stage primaryStage) throws Exception {
+        Label loginMessage = new Label("");
+        Label usernameLabel = new Label("Käyttäjänimi:");
+        TextField usernameField = new TextField();
+        Label passwordLabel = new Label("Salasana:");
+        PasswordField passwordField = new PasswordField();
+        Button loginUserButton = new Button("Kirjaudu sisään");
+        Button goBackButton = new Button("takaisin");
+            
+        loginUserButton.setOnAction(e-> {
+
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+                
+            try {
+                if (diaryService.login(username, password)) {
+                    loginMessage.setText("Kirjautuminen onnistui");
+                    loginMessage.setTextFill(Color.GREEN);
+                    loggedIn(primaryStage, username);
+
+                } else {
+                    loginMessage.setText("Käyttäjänimi/salasana väärä");      
+                    loginMessage.setTextFill(Color.RED);
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        });
+            
+        goBackButton.setOnAction(ev-> {
+            start(primaryStage);
+        });
+            
+        GridPane loginPane = new GridPane();
+        loginPane.add(usernameLabel, 0, 0);
+        loginPane.add(usernameField, 1, 0);
+        loginPane.add(passwordLabel, 0, 1);
+        loginPane.add(passwordField, 1, 1);
+        loginPane.add(loginUserButton, 1, 2);
+        loginPane.add(loginMessage, 1, 3);
+        loginPane.add(goBackButton, 0, 4);
+
+        // tyylittelyä: lisätään tyhjää tilaa reunoille ym
+        loginPane.setHgap(10);
+        loginPane.setVgap(10);
+        loginPane.setPadding(new Insets(10, 10, 10, 10));
+                       
+        loginScene = new Scene(loginPane);
+
+        primaryStage.setScene(loginScene);
+        primaryStage.show();
+
+    }
+    
+    public void createUser(Stage primaryStage) {
+        Label loginMessage = new Label("");
+
+        Label newUsernameLabel = new Label("Käyttäjänimi:");
+        TextField newUsernameField = new TextField();
+        Label newPasswordLabel = new Label("Salasana:");
+        PasswordField newPasswordField = new PasswordField();
+        Button createUserButton = new Button("Luo käyttäjä");
+        Button goBackButton = new Button("takaisin");
+        
+        createUserButton.setOnAction(ev-> {
+
+            try {
+                String username = newUsernameField.getText();
+                String password = newPasswordField.getText();
+
+                if (newPasswordField.getText().length() < 6) {
+                    loginMessage.setText("Salasana on liian lyhyt");
+                    loginMessage.setTextFill(Color.RED);
+                } else if (newUsernameField.getText().length() < 3) {
+                    loginMessage.setText("Käyttäjänimi on liian lyhyt");
+                    loginMessage.setTextFill(Color.RED);
+                } else if (diaryService.createUser(username, password)) {
+                    loginMessage.setText("Käyttäjäsi on nyt luotu");
+                    loginMessage.setTextFill(Color.GREEN);
+                    loginUser(primaryStage);
+                } else {
+                    loginMessage.setText("Käyttäjänimi on jo käyössä");
+                    loginMessage.setTextFill(Color.RED);
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }); 
+        
+        goBackButton.setOnAction(ev-> {
+        start(primaryStage);
+        });
+            
+        GridPane createUserPane = new GridPane();
+        createUserPane.add(newUsernameLabel, 0, 0);
+        createUserPane.add(newUsernameField, 1, 0);
+        createUserPane.add(newPasswordLabel, 0, 1);
+        createUserPane.add(newPasswordField, 1, 1);
+        createUserPane.add(createUserButton, 1, 2);
+        createUserPane.add(loginMessage, 1, 3);
+        createUserPane.add(goBackButton, 0, 4);
+
+        // tyylittelyä: lisätään tyhjää tilaa reunoille ym
+        createUserPane.setHgap(10);
+        createUserPane.setVgap(10);
+        createUserPane.setPadding(new Insets(10, 10, 10, 10));
+                       
+        newUserScene = new Scene(createUserPane);
+
+        primaryStage.setScene(newUserScene);
+        primaryStage.show();
+
+    }
+    
     public void loggedIn(Stage primaryStage, String username) throws Exception {
         BorderPane borderTestPane = new BorderPane();
                 
-        Label loginText = new Label("Olet nyt kirjautunut sisään käyttäjällä  " + username);
-        loginText.setFont((Font.font(null, FontWeight.BOLD, 12)));
+        Label titelText = new Label("Liikuntapäiväkirja");
+        titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
+        Label loginText = new Label("Olet kirjautunut sisään käyttäjällä " + username);
+        loginText.setFont((Font.font(null, FontWeight.NORMAL, 14)));
+        
+        VBox welcomeBox = new VBox();
+        welcomeBox.setSpacing(10);
+        welcomeBox.getChildren().addAll(titelText, loginText);
 
         Button logoutButton = new Button("kirjaudu ulos");
-        HBox hbox = new HBox();
-        hbox.setSpacing(10);
-        hbox.getChildren().addAll(loginText, logoutButton);
-        borderTestPane.setTop(hbox);
+        HBox buttonBox = new HBox(logoutButton);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        HBox.setHgrow(buttonBox, Priority.ALWAYS);
+        
+        HBox topBox = new HBox();
+        topBox.setSpacing(10);
+        topBox.getChildren().addAll(welcomeBox, buttonBox);
+        topBox.setPadding(new Insets(20));
+        topBox.setStyle("-fx-background-color: #d3efff;");
+        borderTestPane.setTop(topBox);
         
         logoutButton.setOnAction(ev-> {
             diaryService.logout();
             start(primaryStage);
         });
-        
+
         Label newHourLabel = new Label("Tuntia:");
         TextField newHourField = new TextField();
-        newHourField.setPrefWidth(50);
+        newHourField.setMaxWidth(50);
         Label newDayLabel = new Label("Päivä:");
         TextField newDayField = new TextField();
-        newDayField.setPrefWidth(50);
+        newDayField.setMaxWidth(50);
         Label newWeekLabel = new Label("Viikko:");
         TextField newWeekField = new TextField();
-        newWeekField.setPrefWidth(50);
+        newWeekField.setMaxWidth(50);
         Label newContentLabel = new Label("Kuvaus:");
-        TextField newContentField = new TextField();
-        newContentField.setPrefWidth(200);
+        TextArea newContentField = new TextArea();
+        newContentField.setPrefWidth(400);
+        newContentField.setPrefHeight(300);
         Label createMessage = new Label("");
         Button createExcercise = new Button("lisää");
         
         GridPane createPane = new GridPane();
-        createPane.add(newHourLabel, 0, 1);
-        createPane.add(newHourField, 1, 1);
-        createPane.add(newDayLabel, 0, 2);
-        createPane.add(newDayField, 1, 2);
-        createPane.add(newWeekLabel, 0, 3);
-        createPane.add(newWeekField, 1, 3);
-        createPane.add(newContentLabel, 0, 4);
-        createPane.add(newContentField, 1, 4);
-        createPane.add(createExcercise, 1, 5);
-        createPane.add(createMessage, 1, 6);
+        createPane.setHgap(15);
+        createPane.setVgap(15);
+        
+        createPane.add(newHourLabel, 0, 0);
+        createPane.add(newHourField, 1, 0);
+        createPane.add(newDayLabel, 2, 0);
+        createPane.add(newDayField, 3, 0);
+        createPane.add(newWeekLabel, 4, 0);
+        createPane.add(newWeekField, 5, 0);
+        createPane.add(newContentLabel, 0, 1);
+        createPane.add(newContentField, 0, 2, 6, 1);
+        createPane.add(createExcercise, 0, 3);
+        createPane.add(createMessage, 0, 4, 4, 1);
         
         createExcercise.setOnAction(e->{
             String hourS = newHourField.getText();
@@ -254,6 +291,9 @@ public class TestGUI extends Application {
                 createMessage.setTextFill(Color.RED);
             } else if (isInteger(weekS) != true) {
                 createMessage.setText("Viikon muoto väärä");
+                createMessage.setTextFill(Color.RED);
+            } else if (content.length() > 200) {
+                createMessage.setText("Liian pitkä kuvaus");
                 createMessage.setTextFill(Color.RED);
             } else {
                 double hour = Double.parseDouble(hourS);
@@ -284,23 +324,43 @@ public class TestGUI extends Application {
         });
         
         ScrollPane entriesScrollbar = new ScrollPane();
-        entriesScrollbar.setPrefViewportHeight(300);   
+        entriesScrollbar.setPrefViewportHeight(400);   
         entriesScrollbar.setPrefViewportWidth(400); 
+        entriesScrollbar.setMaxSize(700, 600);
+
         Label entriesLabel = new Label("15 viimeistä kirjoitusta:");
         entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
         diaryNodes = new VBox(10);
-        diaryNodes.setMaxWidth(400);
         diaryNodes.setMinWidth(280);
+        diaryNodes.setStyle("-fx-background-color: #ffffff;");
         redrawDiaryList();
         entriesScrollbar.setContent(diaryNodes);
+        entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
+        
+        Button viewAll = new Button("näe kaikki kirjoitukset");
+        
+        viewAll.setOnAction(ev-> {
+            try {
+                getAllEntries(primaryStage, username);
+            } catch (Exception ex) {
+                Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        Label addExerciseLabel = new Label("Lisää uusi kirjoitus:");
+        addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
         
         VBox allEntries = new VBox();
         allEntries.setSpacing(10);
-        allEntries.getChildren().addAll(createPane, entriesLabel, entriesScrollbar);
-        borderTestPane.setLeft(allEntries);
+        allEntries.setPadding(new Insets(20));
+        allEntries.setStyle("-fx-background-color: #f4f8ff;");
+
+        allEntries.getChildren().addAll(addExerciseLabel, createPane, entriesLabel, entriesScrollbar, viewAll);
+        borderTestPane.setCenter(allEntries);
 
         VBox userHighscores = new VBox();
-        Label userHighscoreLabel = new Label("3 parasta viikkopistettäsi:");
+        Label userHighscoreLabel = new Label("Parhaat viikkopisteeesi");
+        userHighscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+
         userHighscoreNodes = new VBox(10);
         userHighscoreNodes.setMaxWidth(200);
         userHighscoreNodes.setMinWidth(100);
@@ -308,7 +368,9 @@ public class TestGUI extends Application {
         userHighscores.getChildren().addAll(userHighscoreLabel, userHighscoreNodes);
 
         VBox highscores = new VBox();
-        Label highscoreLabel = new Label("3 parasta viikkopistettä käyttäjien kesken:");
+        Label highscoreLabel = new Label("Parhaat viikkopisteet käyttäjien kesken:");
+        highscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+
         highscoreNodes = new VBox(10);
         highscoreNodes.setMaxWidth(200);
         highscoreNodes.setMinWidth(100);
@@ -316,9 +378,13 @@ public class TestGUI extends Application {
         highscores.getChildren().addAll(highscoreLabel, highscoreNodes);
         
         VBox allHighscores = new VBox();
+        Label allHighscoresLabel = new Label("Tuloslistat");
+        allHighscoresLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+
         allHighscores.setSpacing(10);
-        allHighscores.getChildren().addAll(userHighscores, highscores);
-        borderTestPane.setCenter(allHighscores);
+        allHighscores.setPadding(new Insets(20));
+        allHighscores.getChildren().addAll(allHighscoresLabel, userHighscores, highscores);
+        borderTestPane.setRight(allHighscores);
         
         weeklyPoints = new VBox(10);
         redrawWeeklyPoints();
@@ -326,14 +392,16 @@ public class TestGUI extends Application {
         redrawWeeklyGoal();
         
         TextField newGoalField = new TextField();
-        newGoalField.setPrefWidth(20);
+        newGoalField.setMaxWidth(50);
         Button newGoalButton = new Button("aseta uusi tavoite");
         Label goalLabel = new Label("");
         
         VBox allPointsAndGoals = new VBox();
         allPointsAndGoals.setSpacing(10);
+        allPointsAndGoals.setAlignment(Pos.CENTER);
+        allPointsAndGoals.setPadding(new Insets(10));
         allPointsAndGoals.getChildren().addAll(weeklyPoints, weeklyGoal, newGoalField, newGoalButton, goalLabel);
-        borderTestPane.setRight(allPointsAndGoals);
+        borderTestPane.setLeft(allPointsAndGoals);
         
         newGoalButton.setOnAction(ev-> {
             String goalS = newGoalField.getText();
@@ -345,6 +413,7 @@ public class TestGUI extends Application {
                 int goal = Integer.parseInt(goalS);
                 diaryService.createWeeklyGoal(goal);
                 goalLabel.setText("");
+                newGoalField.clear();
                 try {
                     redrawWeeklyGoal();
                 } catch (Exception ex) {
@@ -353,40 +422,48 @@ public class TestGUI extends Application {
             }
         });
         
-        Button viewAll = new Button("näe kaikki kirjoitukset");
-        borderTestPane.setBottom(viewAll);
         
-        viewAll.setOnAction(ev-> {
-            try {
-                getAllEntries(primaryStage, username);
-            } catch (Exception ex) {
-                Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        
-        Scene scene = new Scene(borderTestPane, 1000, 500);
+        Scene scene = new Scene(borderTestPane, 1000, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
         
         // Tulossa: näe kaikkien viikkojen pisteet(?)
         // + parempi ulkomuoto sovellukseen :)
-        // + viikkotavoite user-taulukkoon? (muuten käyttäjä voi lisätä sen vasta kun on kirjoittanut jotain)
         
     }
     
     public void getAllEntries(Stage primaryStage, String username) throws Exception {
         // get all entries-view
-        VBox allEntries = new VBox();
         
+        Label titelText = new Label("Liikuntapäiväkirja");
+        titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
+        Label loginText = new Label("Olet kirjautunut sisään käyttäjällä " + username);
+        loginText.setFont((Font.font(null, FontWeight.NORMAL, 14)));
+        
+        VBox welcomeBox = new VBox();
+        welcomeBox.setSpacing(10);
+        welcomeBox.setPadding(new Insets(20));
+
+        welcomeBox.getChildren().addAll(titelText, loginText);
+        welcomeBox.setStyle("-fx-background-color: #d3efff;");
+        
+        //Yllä melkein sama koodi kun loggedIn alussa, muutetaan omaksi metodiksi?
+        // + muutetaan ehkä pohja BorderPane:ksi, niin voidaan myös helposti listätä tuloslista sivulle
+
+        VBox allEntries = new VBox();
+        allEntries.setPadding(new Insets(10));
         Label entriesLabel = new Label("Kaikki kirjoittamasi kirjoitukset");
         ScrollPane entriesScrollbar = new ScrollPane();
-        entriesScrollbar.setPrefViewportHeight(600);   
-        entriesScrollbar.setPrefViewportWidth(300); 
+        entriesScrollbar.setPrefViewportHeight(400);   
+        entriesScrollbar.setPrefViewportWidth(200); 
+        entriesScrollbar.setMaxSize(700, 600);
+        
         entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
         allDiaryNodes = new VBox(10);
-        allDiaryNodes.setMaxWidth(300);
         allDiaryNodes.setMinWidth(280);
         redrawAllDiaryList();
+        entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
+
         entriesScrollbar.setContent(allDiaryNodes);
         Button backButton = new Button("takaisin");
         
@@ -399,8 +476,14 @@ public class TestGUI extends Application {
         });
         
         allEntries.getChildren().addAll(entriesLabel, entriesScrollbar, backButton);
+        allEntries.setStyle("-fx-background-color: #f4f8ff;");
+        allEntries.setSpacing(10);
         
-        Scene scene = new Scene(allEntries, 1000, 500);
+        VBox allEntriesView = new VBox();
+        allEntriesView.getChildren().addAll(welcomeBox, allEntries);
+        
+        
+        Scene scene = new Scene(allEntriesView, 1000, 500);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -504,7 +587,6 @@ public class TestGUI extends Application {
     public Node createUserHighscoreNode(Entry entry, int number) throws Exception {
         HBox box = new HBox(10);
         Label label = new Label(number + ". Pisteet: " + entry.getKey() + ", viikko: " + entry.getValue());
-        label.setMinHeight(28);
         box.setPadding(new Insets(0,5,0,5));
         box.getChildren().add(label);
         return box;
@@ -513,7 +595,6 @@ public class TestGUI extends Application {
     public Node createhighscoreNode(Entry entry, int number) throws Exception {
         HBox box = new HBox(10);
         Label label = new Label(number + ". Käyttäjä: " + entry.getKey() + ", pisteet: " + entry.getValue()); 
-        label.setMinHeight(28);
         box.setPadding(new Insets(0,5,0,5));
         box.getChildren().add(label);
         return box;

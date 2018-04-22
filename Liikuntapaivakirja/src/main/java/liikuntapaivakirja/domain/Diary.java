@@ -9,7 +9,7 @@ public class Diary {
     private int week;
     private int day;
     private String content;
-    private int weeklyGoal;
+
 
     public Diary(User user, double hour, int day, int week, String content) {
         this.user = user;
@@ -17,14 +17,6 @@ public class Diary {
         this.day = day;
         this.week = week;
         this.content = content;
-    }
-    
-    public void setWeeklyGoal(int goal) {
-        this.weeklyGoal = goal;
-    }
-    
-    public int getWeeklyGoal() {
-        return this.weeklyGoal;
     }
 
     public void setUser(User user) {

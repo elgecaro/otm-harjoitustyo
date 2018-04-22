@@ -7,11 +7,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DbUserDao implements UserDao {
     private Database database;
     private List<User> users;
+    private int goal;
     
     public DbUserDao(Database database) {
         this.database = database;
@@ -68,6 +71,35 @@ public class DbUserDao implements UserDao {
         connection.close();
 
         return o;
+    }
+    
+    @Override
+    public int getWeeklyGoal(String key) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT weeklyGoal FROM User WHERE username = ?");
+        stmt.setObject(1, key);
+        goal = 0;
+        
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            goal = rs.getInt("weeklyGoal");
+        }
+        
+        rs.close();
+        stmt.close();
+        connection.close();
+        
+        return goal;
+    }
+    
+    @Override
+    public void setWeeklyGoal(int goal, String user) throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("UPDATE User SET weeklyGoal = ? WHERE username = ?");
+        stmt.setObject(1, goal);
+        stmt.setObject(2, user);     
+        stmt.execute();
+        connection.close();
     }
     
     @Override

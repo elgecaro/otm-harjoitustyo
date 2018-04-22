@@ -20,12 +20,12 @@ public class User {
         return password;
     }
     
-//    public void setWeeklyGoal(int goal) {
-//        this.weeklyGoal = goal;
-//    }
-//    
-//    public int getWeeklyGoal() {
-//        return weeklyGoal;
-//    }
+    public void setWeeklyGoal(int goal) {
+        this.weeklyGoal = goal;
+    }
+    
+    public int getWeeklyGoal() {
+        return this.weeklyGoal;
+    }
     
 }

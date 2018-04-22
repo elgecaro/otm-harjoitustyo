@@ -21,7 +21,7 @@ public class DbDiaryDao implements DiaryDao {
     @Override
     public void create(Diary diary) throws Exception {
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Diary (username, hour, day, week, description)"
+        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Diary (username, hour, day, week, content)"
                 + "VALUES (?, ?, ?, ?, ?)");
         stmt.setString(1, diary.getUsername());
         stmt.setDouble(2, diary.getHour());
@@ -46,7 +46,7 @@ public class DbDiaryDao implements DiaryDao {
             double hour = rs.getDouble("hour");
             int day = rs.getInt("day");
             int week = rs.getInt("week");
-            String content = rs.getString("description");
+            String content = rs.getString("content");
 
             diaryEntrys.add(new Diary(user, hour, day, week, content));
         }
@@ -101,6 +101,7 @@ public class DbDiaryDao implements DiaryDao {
         return points;
     }
     
+    
     @Override
     public Map bestUserPointsWeeks(String key) throws SQLException {
         Connection connection = database.getConnection();       
@@ -124,35 +125,6 @@ public class DbDiaryDao implements DiaryDao {
         connection.close();
 
         return bestWeeks;
-    }
-
-    @Override
-    public int getWeeklyGoal(String key) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT weeklyGoal FROM Diary WHERE username = ?");
-        stmt.setObject(1, key);
-        goal = 0;
-        
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            goal = rs.getInt("weeklyGoal");
-        }
-        
-        rs.close();
-        stmt.close();
-        connection.close();
-        
-        return goal;
-    }
-    
-    @Override
-    public void setWeeklyGoal(int goal, String user) throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("UPDATE Diary SET weeklyGoal = ? WHERE username = ?");
-        stmt.setObject(1, goal);
-        stmt.setObject(2, user);     
-        stmt.execute();
-        connection.close();
     }
     
     @Override
@@ -193,7 +165,7 @@ public class DbDiaryDao implements DiaryDao {
             double hour = rs.getDouble("hour");
             int day = rs.getInt("day");
             int week = rs.getInt("week");
-            String content = rs.getString("description");
+            String content = rs.getString("content");
 
             diaryEntrys.add(new Diary(user, hour, day, week, content));
         }

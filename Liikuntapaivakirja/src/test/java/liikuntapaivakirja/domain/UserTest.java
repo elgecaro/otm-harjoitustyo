@@ -45,5 +45,11 @@ public class UserTest {
         User user2 = new User("Testikayttaja2", "testisalasana");
         assertFalse(user.getUsername().equals(user2.getUsername()));
     } 
+    
+    @Test
+    public void setAndGetWeeklyGoal() {
+        user.setWeeklyGoal(20);
+        assertEquals(20, user.getWeeklyGoal());
+    }
 
 }

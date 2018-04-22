@@ -32,7 +32,8 @@ public class Database {
     public void createTableUser(Connection conn, Database database) throws SQLException {
         PreparedStatement stmt = database.getConnection().prepareStatement("CREATE TABLE User (\n" + 
             "username varchar(15) PRIMARY KEY CHECK (LENGTH (username) > 2), \n" + 
-            "password varchar NOT NULL CHECK (LENGTH (password) > 6) \n" +
+            "password varchar NOT NULL CHECK (LENGTH (password) > 5), \n" +
+            "weeklyGoal integer \n" +
             ");"); 
         stmt.executeUpdate(); 
         stmt.close();    
@@ -45,8 +46,7 @@ public class Database {
             "hour float NOT NULL, \n" +
             "day integer NOT NULL, \n" +
             "week INTEGER NOT NULL, \n" +
-            "description varchar(200), \n" +
-            "weeklyGoal integer, \n" +
+            "content varchar(200), \n" +
             "FOREIGN KEY(username) REFERENCES User(username) \n" +
             ");");
         stmt.executeUpdate(); 

@@ -47,11 +47,6 @@ public class DiaryTest {
         assertEquals("Tunteja: 1.0, päivä: 2, viikko: 3, kuvaus: content", diary.toString());
     }
     
-    @Test
-    public void setAndGetWeeklyGoal() {
-        diary.setWeeklyGoal(20);
-        assertEquals(20, diary.getWeeklyGoal());
-    }
     
     @After
     public void tearDown() {
