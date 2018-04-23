@@ -6,4 +6,6 @@
 
 <suppressions>
      <suppress files="liikuntapaivakirja.ui.TestGUI.java" checks="[a-zA-Z0-9]*"/>
+     <suppress files="liikuntapaivakirja.ui.TestTextBasedUI.java" checks="[a-zA-Z0-9]*"/>
+
 </suppressions>

@@ -227,6 +227,7 @@ public class TestGUI extends Application {
         
         VBox welcomeBox = new VBox();
         welcomeBox.setSpacing(10);
+
         welcomeBox.getChildren().addAll(titelText, loginText);
 
         Button logoutButton = new Button("kirjaudu ulos");
@@ -245,7 +246,7 @@ public class TestGUI extends Application {
             diaryService.logout();
             start(primaryStage);
         });
-
+        
         Label newHourLabel = new Label("Tuntia:");
         TextField newHourField = new TextField();
         newHourField.setMaxWidth(50);
@@ -347,7 +348,7 @@ public class TestGUI extends Application {
             }
         });
         Label addExerciseLabel = new Label("Lisää uusi kirjoitus:");
-        addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+        addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
         
         VBox allEntries = new VBox();
         allEntries.setSpacing(10);
@@ -361,17 +362,17 @@ public class TestGUI extends Application {
         Label userHighscoreLabel = new Label("Parhaat viikkopisteeesi");
         userHighscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
 
-        userHighscoreNodes = new VBox(10);
+        userHighscoreNodes = new VBox();
         userHighscoreNodes.setMaxWidth(200);
         userHighscoreNodes.setMinWidth(100);
         redrawUserHighscoreList();
         userHighscores.getChildren().addAll(userHighscoreLabel, userHighscoreNodes);
 
         VBox highscores = new VBox();
-        Label highscoreLabel = new Label("Parhaat viikkopisteet käyttäjien kesken:");
+        Label highscoreLabel = new Label("Parhaat viikkopisteet käyttäjien kesken");
         highscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
 
-        highscoreNodes = new VBox(10);
+        highscoreNodes = new VBox();
         highscoreNodes.setMaxWidth(200);
         highscoreNodes.setMinWidth(100);
         redrawhighscoreList();
@@ -386,21 +387,27 @@ public class TestGUI extends Application {
         allHighscores.getChildren().addAll(allHighscoresLabel, userHighscores, highscores);
         borderTestPane.setRight(allHighscores);
         
+        Label infoText =new Label("Jokaisesta liikuntatunnista ansaitset 10 pistettä (eli esim. 2.5 tuntia = 25 pistettä)");
+        infoText.setWrapText(true);
+        
         weeklyPoints = new VBox(10);
         redrawWeeklyPoints();
         weeklyGoal = new VBox(10);
         redrawWeeklyGoal();
         
+        HBox goalFieldAndButton = new HBox(10);
         TextField newGoalField = new TextField();
         newGoalField.setMaxWidth(50);
         Button newGoalButton = new Button("aseta uusi tavoite");
+        goalFieldAndButton.getChildren().addAll(newGoalButton, newGoalField);
         Label goalLabel = new Label("");
         
         VBox allPointsAndGoals = new VBox();
         allPointsAndGoals.setSpacing(10);
+        allPointsAndGoals.setMaxWidth(240);
         allPointsAndGoals.setAlignment(Pos.CENTER);
         allPointsAndGoals.setPadding(new Insets(10));
-        allPointsAndGoals.getChildren().addAll(weeklyPoints, weeklyGoal, newGoalField, newGoalButton, goalLabel);
+        allPointsAndGoals.getChildren().addAll(infoText, weeklyPoints, weeklyGoal, goalFieldAndButton, goalLabel);
         borderTestPane.setLeft(allPointsAndGoals);
         
         newGoalButton.setOnAction(ev-> {
@@ -552,8 +559,10 @@ public class TestGUI extends Application {
     private void redrawWeeklyPoints() throws Exception {
         weeklyPoints.getChildren().clear();
         
-        Label weeklyPointsLabel = new Label("Tämän/viimeisen viikon pisteet:");
-        HBox box = new HBox(10);
+        Label weeklyPointsLabel = new Label("Tämän/viimeisen viikon pisteet: ");
+        weeklyPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+
+        HBox box = new HBox();
         double points = diaryService.getPointsWeek(diaryService.getLatestWeek());
         String pointsString = String.valueOf(points);
         Label label = new Label(pointsString);
@@ -565,8 +574,10 @@ public class TestGUI extends Application {
     private void redrawWeeklyGoal() throws Exception {
         weeklyGoal.getChildren().clear();
         
-        Label weeklyGoalLabel = new Label("Viikkotavoitteesi:");
-        HBox box = new HBox(10);
+        Label weeklyGoalLabel = new Label("Viikkotavoitteesi: ");
+        weeklyGoalLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+
+        HBox box = new HBox();
         double points = diaryService.getWeeklyGoal();
         String pointsString = String.valueOf(points);
         Label label = new Label(pointsString);
@@ -585,17 +596,17 @@ public class TestGUI extends Application {
     }
     
     public Node createUserHighscoreNode(Entry entry, int number) throws Exception {
-        HBox box = new HBox(10);
+        HBox box = new HBox();
         Label label = new Label(number + ". Pisteet: " + entry.getKey() + ", viikko: " + entry.getValue());
-        box.setPadding(new Insets(0,5,0,5));
+        label.setPadding(new Insets(5));
         box.getChildren().add(label);
         return box;
     }
     
     public Node createhighscoreNode(Entry entry, int number) throws Exception {
-        HBox box = new HBox(10);
-        Label label = new Label(number + ". Käyttäjä: " + entry.getKey() + ", pisteet: " + entry.getValue()); 
-        box.setPadding(new Insets(0,5,0,5));
+        HBox box = new HBox();
+        Label label = new Label(number + ". Pisteet: " + entry.getValue() + ", käyttäjä: " + entry.getKey()); 
+        label.setPadding(new Insets(5));
         box.getChildren().add(label);
         return box;
     }
@@ -605,5 +616,4 @@ public class TestGUI extends Application {
     }
 
 
-    
 }

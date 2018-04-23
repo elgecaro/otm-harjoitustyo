@@ -38,7 +38,6 @@
             <configuration>
                 <excludes>
                     <exclude>liikuntapaivakirja/ui/*</exclude>
-                    <exclude>liikuntapaivakirja/domain/TestText*</exclude>
                 </excludes>
             </configuration>                
             <executions>
