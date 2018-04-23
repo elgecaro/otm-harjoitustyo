@@ -24,6 +24,8 @@
 | 19.4 |  2h    | Käyttöliittymään lisää toiminnallisuutta lisätty: käyttäjä näkee omat liikuntatiedot ja voi lisätä uusia. Database-luokkaan lisätty metodit, joka tarkistaa jos sisältää taulukot + luo niitä jos tietokanta on tyhjä
 | 20.4 |  2h    | Käyttis parannettu + toiminallisuutta lisätty: käyttäjä näkee viikkopisteet, 15 viimeiset kirjoitukset sekä 3 omaa parasta + 3 käyttäjien kesken parasta viikkotulosta
 | 21.4 |  3h    | Käyttiksen ulkomuoto vähän parannettu (vielä paljon kesken) + toiminallisuutta: käyttäjä näkee viikkotavoitteet, voi asettaa uuden viikkotavoitteen + näkee kaikki kirjoitukset
+| 22.4 |  1,5h    | 3 sekvenssikaaviota tehty ja tekstiä niihin lisätty
+|      |  2h    | Diary-taulukon weeklyGoal siiretty User-taulukkoon: tällöin uusi käyttäjä voi asettaa viikkotavoitteen jo ennen kuin on lisännyt kirjoituksen.
+| 23.4 |  1h    | Pieniä muutoksia tehty käyttikseen (vähän parempi layout)
 
-
-**Yhteensä:** 41h
+**Yhteensä:** 45,5h
