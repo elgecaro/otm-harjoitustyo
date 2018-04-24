@@ -27,5 +27,6 @@
 | 22.4 |  1,5h    | 3 sekvenssikaaviota tehty ja tekstiä niihin lisätty
 |      |  2h    | Diary-taulukon weeklyGoal siiretty User-taulukkoon: tällöin uusi käyttäjä voi asettaa viikkotavoitteen jo ennen kuin on lisännyt kirjoituksen.
 | 23.4 |  1h    | Pieniä muutoksia tehty käyttikseen (vähän parempi layout)
+| 24.4 |  0,5h  | Refraktorointia (vanha tekstuaalinen testikäyttöliittymä poistettu + testGuin uudelleennimentämistä) + github release
 
-**Yhteensä:** 45,5h
+**Yhteensä:** 46h
