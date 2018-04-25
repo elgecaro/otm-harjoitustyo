@@ -1,6 +1,7 @@
 
 package liikuntapaivakirja.ui;
 
+import java.io.FileInputStream;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +39,7 @@ import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import liikuntapaivakirja.domain.Diary;
 import liikuntapaivakirja.domain.DiaryService;
+import java.util.Properties;
 
 
 public class Main extends Application {
@@ -46,7 +48,6 @@ public class Main extends Application {
     // + toiminallisuutta, esim. käyttäjä näkee kaikkien viikkojen pisteet
         
     private DiaryService diaryService; 
-    private Scene diaryScene;
     private Scene newUserScene;
     private Scene loginScene;
     private VBox diaryNodes;
@@ -57,17 +58,22 @@ public class Main extends Application {
     private VBox weeklyGoal;
     
     @Override
-    public void init() throws SQLException {
-        Database testitietokanta = new Database("jdbc:sqlite:tietokanta.db");
-        testitietokanta.getConnection();
-        if (testitietokanta.tableExist((testitietokanta.getConnection()), "User") == false) {
-            testitietokanta.createTableUser(testitietokanta.getConnection(), testitietokanta);
-        } if (testitietokanta.tableExist((testitietokanta.getConnection()), "Diary") == false) {
-            testitietokanta.createTableDiary(testitietokanta.getConnection(), testitietokanta);
+    public void init() throws Exception {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("config.properties"));
+    
+        String databaseAddress = properties.getProperty("databaseAddress");
+
+        Database database = new Database(databaseAddress);
+        database.getConnection();
+        if (database.tableExist((database.getConnection()), "User") == false) {
+            database.createTableUser(database.getConnection(), database);
+        } if (database.tableExist((database.getConnection()), "Diary") == false) {
+            database.createTableDiary(database.getConnection(), database);
         }
         
-        UserDao userdao = new DbUserDao(testitietokanta);
-        DiaryDao diarydao = new DbDiaryDao(testitietokanta);
+        UserDao userdao = new DbUserDao(database);
+        DiaryDao diarydao = new DbDiaryDao(database);
         diaryService = new DiaryService(diarydao, userdao);
     }
     
@@ -312,10 +318,7 @@ public class Main extends Application {
                     newWeekField.clear();
                     newContentField.clear();
                     try {
-                        redrawDiaryList();
-                        redrawUserHighscoreList();
-                        redrawhighscoreList();
-                        redrawWeeklyPoints();
+                        redrawAll();
 
                     } catch (Exception ex) {
                         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -432,12 +435,10 @@ public class Main extends Application {
             }
         });
         
-        
         Scene scene = new Scene(borderTestPane, 1000, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
-        
-        
+         
     }
     
     public void getAllEntries(Stage primaryStage, String username) throws Exception {
@@ -456,17 +457,18 @@ public class Main extends Application {
         welcomeBox.setStyle("-fx-background-color: #d3efff;");
         
         //Yllä melkein sama koodi kun loggedIn alussa, muutetaan omaksi metodiksi?
-        // + muutetaan ehkä pohja BorderPane:ksi, niin voidaan myös helposti listätä tuloslista sivulle
+        // + muutetaan ehkä pohja BorderPane:ksi, niin voidaan myös helposti listätä esim. kaikkien viikkojem tuloslista sivulle
 
         VBox allEntries = new VBox();
         allEntries.setPadding(new Insets(10));
         Label entriesLabel = new Label("Kaikki kirjoittamasi kirjoitukset");
+        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+
         ScrollPane entriesScrollbar = new ScrollPane();
-        entriesScrollbar.setPrefViewportHeight(400);   
-        entriesScrollbar.setPrefViewportWidth(200); 
-        entriesScrollbar.setMaxSize(700, 600);
-        
-        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+        entriesScrollbar.setPrefViewportHeight(500);   
+        entriesScrollbar.setPrefViewportWidth(600); 
+        entriesScrollbar.setMaxSize(600, 600);
+
         allDiaryNodes = new VBox(10);
         allDiaryNodes.setMinWidth(280);
         redrawAllDiaryList();
@@ -490,8 +492,7 @@ public class Main extends Application {
         VBox allEntriesView = new VBox();
         allEntriesView.getChildren().addAll(welcomeBox, allEntries);
         
-        
-        Scene scene = new Scene(allEntriesView, 1000, 500);
+        Scene scene = new Scene(allEntriesView, 1000, 700);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -512,6 +513,15 @@ public class Main extends Application {
             return false; 
         }
         return true;
+    }
+    
+    public void redrawAll() throws Exception {
+        redrawDiaryList();
+        redrawUserHighscoreList();
+        redrawhighscoreList();
+        redrawWeeklyPoints();
+        redrawWeeklyGoal();
+        
     }
     
     public void redrawDiaryList() throws Exception {
@@ -562,37 +572,50 @@ public class Main extends Application {
         
         Label weeklyPointsLabel = new Label("Tämän/viimeisen viikon pisteet: ");
         weeklyPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-
+        
         HBox box = new HBox();
         double points = diaryService.getPointsWeek(diaryService.getLatestWeek());
         String pointsString = String.valueOf(points);
-        Label label = new Label(pointsString);
+        Label pointsLabel = new Label(pointsString);
         
-        box.getChildren().addAll(weeklyPointsLabel, label);
+        box.getChildren().addAll(weeklyPointsLabel, pointsLabel);
         weeklyPoints.getChildren().add(box);    
     }
     
     private void redrawWeeklyGoal() throws Exception {
         weeklyGoal.getChildren().clear();
         
+        Label goalText = new Label("");
         Label weeklyGoalLabel = new Label("Viikkotavoitteesi: ");
         weeklyGoalLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
 
+        VBox goalBox = new VBox();
+        
         HBox box = new HBox();
         double points = diaryService.getWeeklyGoal();
         String pointsString = String.valueOf(points);
         Label label = new Label(pointsString);
         
+        if (diaryService.getPointsWeek(diaryService.getLatestWeek()) >= points) {
+            goalText.setText("Tavoite saavutettu!");
+            goalText.setTextFill(Color.GREEN);
+        }
+        
         box.getChildren().addAll(weeklyGoalLabel, label);
-        weeklyGoal.getChildren().add(box);    
+        goalBox.getChildren().addAll(box, goalText);
+        weeklyGoal.getChildren().add(goalBox);    
+        
     }
         
     public Node createDiaryNode(Diary diary) {
         HBox box = new HBox(10);
         Label label = new Label(diary.toString());
-        label.setMinHeight(28);     
-        box.setPadding(new Insets(0,5,0,5));
-        box.getChildren().addAll(label);
+        label.setMinHeight(28); 
+        box.setPadding(new Insets(5));
+        box.setStyle("-fx-border-color: #ade1ff");
+        box.setMaxWidth(600);
+        label.setWrapText(true);
+        box.getChildren().add(label);
         return box;
     }
     
