@@ -28,5 +28,8 @@
 |      |  2h    | Diary-taulukon weeklyGoal siiretty User-taulukkoon: tällöin uusi käyttäjä voi asettaa viikkotavoitteen jo ennen kuin on lisännyt kirjoituksen.
 | 23.4 |  1h    | Pieniä muutoksia tehty käyttikseen (vähän parempi layout)
 | 24.4 |  0,5h  | Refraktorointia (vanha tekstuaalinen testikäyttöliittymä poistettu + testGuin uudelleennimentämistä) + github release
+| 25.4 |  1,5h  | Alustava käyttöohje aloitettu + sovelluksen tietokannan konfiguraatio ok + pientä muokkausta: käyttikseen "tavoite saavutettu"-teksti, merkinnöille kehys ja kuvaus uudelle riville
+| 26.4 |  3h    | JavaDoc otettu käyttöön + refraktorointia (Diary > DiaryEntry) ja arkkitehtuurikuvaus päivitetty
 
-**Yhteensä:** 46h
+
+**Yhteensä:** 50,5h
