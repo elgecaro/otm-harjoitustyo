@@ -1,12 +1,18 @@
 # Arkkitehtuurikuvaus # 
 
 ## Rakenne ##
-Tulossa
+Ohjelman rakenne noudattelee kolmitasoista kerrosarkkitehtuuria, ja koodin pakkausrakenne on seuraava:
+![rakennekaavio](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/rakennekaavio.png)
+
+Pakkaus liikuntapaivakirja.ui sisältää JavaFX:llä toteutetun käyttöliittymän, liikuntapaivakirja.domain sovelluslogiikan ja liikuntapaivakirja.dao tietojen pysyväistallennuksesta vastaavat luokat.
+
 
 ## Käyttöliittymä ##
 Tulossa
 
 ## Sovelluslogiikka ##
+![luokkakaavio](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/luokkakaavio.png)
+
 Tulossa
 
 DiaryServicen ja ohjelman muiden osien suhdetta kuvaava luokka/pakkauskaavio:
@@ -15,6 +21,8 @@ DiaryServicen ja ohjelman muiden osien suhdetta kuvaava luokka/pakkauskaavio:
 
 ## Tietojen pysyväistallennus ##
 Tulossa
+
+![tietokannan rakenne](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/relaatiokaavio_db.png)
 
 ## Päätoiminnallisuudet ##
 
@@ -33,11 +41,11 @@ Kun kirjautumisnäkymässä klikkaa painiketta *createButton*, etenee sovellus s
 
 Painikkeen painamiseen reagoiva tapahtumankäsittelijä kutsuu metodia *createUser* ja asettaa tällöin uuden näkymän käyttäjälle. *createUserButton*-painikkeen painamiseen reagoiva tapahtumakäsittelijä kontrolloi ensin jos käyttäjätunnus ja salasana ovat oikean pituiset, ja kutsuu sitten sovelluslogiikan diaryService metodia *create(username, password)* antaen parametriksi käyttäjän ilmoittama käyttäjätunnus ja salasana. Sovelluslogiikka kontrolloi userDao:n avulla jos käyttäjätunnus on jo olemassa, joka palauttaa arvon *null* jos ei ole olemassa. Tällöin sovelluslogiikka luo uuden User-olion ja tallettaa sen kutsumalla userDao:n metodia *create(user)*. Tämä palauttaa arvon *true*:n, ja käyttöliittymän näkymä vaihdetaan *loginUser*-näkymään, eli kirjautumisnäkymään. 
 
-### Liikunnan lisääminen/päiväkirjaan kirjoittaminen ###
+### Päiväkirjamerkinnän lisääminen ("Liikunnan lisääminen") ###
 
 Kun kirjautuneena oleva käyttäjä klikkaa painiketta *createExercise*, etenee sovellus seuraavasti:
 
-![liikunnan lisääminen](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/sekvenssikaavio_lisaaLiikunta.png)
+![Päiväkirjamerkinnän lisääminen](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/sekvenssikaavio_merkinnanLisaaminen.png)
 
 Tapahtumakäsittelijä tarkistaa ensin jos käyttäjän ilmoittaman tietojen muodot ovat oikeat (*isDouble* ja *isInteger*-metodien avulla), ja jos ovat, niin muuttavat nämä *String*-muodosta *Double* ja *Integer* muotoihin (*hour = parseDouble(hourS) mm*). Tämän jälkeen tapahtumakäsittelijä kutsuu sovelluslogiikan metodia *createExercise(hour, day, week, content)* annettujen parametrien mukaan. Sovelluslogiikka luo silloin uuden *Diary*-olion, ja tallettaa sen diaryDao:n avulla *create(diary)*-metodilla. Sovelluslogiikka palauttaa arvon *true* jos liikunnan lisääminen onnistui, ja tämän jälkeen käyttöliittymä päivittää näytettävät kirjoitukset/liikunnat metodilla *redrawDiaryList*, käyttäjän ja sovelluksen tuloslistat (*redrawHighscorelist* ja *redrawUserHighscoreList*) sekä käyttäjän viikkopisteet (*redrawWeeklyPoints*)
 
