@@ -33,13 +33,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import liikuntapaivakirja.dao.Database;
-import liikuntapaivakirja.dao.DbDiaryDao;
+import liikuntapaivakirja.dao.DbDiaryEntryDao;
 import liikuntapaivakirja.dao.DbUserDao;
-import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
-import liikuntapaivakirja.domain.Diary;
+import liikuntapaivakirja.domain.DiaryEntry;
 import liikuntapaivakirja.domain.DiaryService;
 import java.util.Properties;
+import liikuntapaivakirja.dao.DiaryEntryDao;
 
 
 public class Main extends Application {
@@ -73,7 +73,7 @@ public class Main extends Application {
         }
         
         UserDao userdao = new DbUserDao(database);
-        DiaryDao diarydao = new DbDiaryDao(database);
+        DiaryEntryDao diarydao = new DbDiaryEntryDao(database);
         diaryService = new DiaryService(diarydao, userdao);
     }
     
@@ -311,7 +311,7 @@ public class Main extends Application {
                 int week = Integer.parseInt(weekS);
                     
                 if (diaryService.createExercise(hour, day, week, content) == true) {
-                    createMessage.setText("Liikunnan lisääminen onnistui");
+                    createMessage.setText("Merkinnän lisääminen onnistui");
                     createMessage.setTextFill(Color.GREEN);
                     newHourField.clear();
                     newDayField.clear();
@@ -324,7 +324,7 @@ public class Main extends Application {
                         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    createMessage.setText("Liikunnan lisääminen ei onnistunut");
+                    createMessage.setText("Merkinnän lisääminen ei onnistunut");
                     createMessage.setTextFill(Color.RED);
                 }
             }
@@ -335,7 +335,7 @@ public class Main extends Application {
         entriesScrollbar.setPrefViewportWidth(400); 
         entriesScrollbar.setMaxSize(700, 600);
 
-        Label entriesLabel = new Label("15 viimeistä kirjoitusta:");
+        Label entriesLabel = new Label("15 viimeisintä merkintää:");
         entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
         diaryNodes = new VBox(10);
         diaryNodes.setMinWidth(280);
@@ -344,7 +344,7 @@ public class Main extends Application {
         entriesScrollbar.setContent(diaryNodes);
         entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
         
-        Button viewAll = new Button("näe kaikki kirjoitukset");
+        Button viewAll = new Button("näe kaikki merkinnät");
         
         viewAll.setOnAction(ev-> {
             try {
@@ -353,7 +353,7 @@ public class Main extends Application {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        Label addExerciseLabel = new Label("Lisää uusi kirjoitus:");
+        Label addExerciseLabel = new Label("Lisää uusi merkintä:");
         addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
         
         VBox allEntries = new VBox();
@@ -461,7 +461,7 @@ public class Main extends Application {
 
         VBox allEntries = new VBox();
         allEntries.setPadding(new Insets(10));
-        Label entriesLabel = new Label("Kaikki kirjoittamasi kirjoitukset");
+        Label entriesLabel = new Label("Kaikki kirjoittamasi merkinnät");
         entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
 
         ScrollPane entriesScrollbar = new ScrollPane();
@@ -526,17 +526,17 @@ public class Main extends Application {
     
     public void redrawDiaryList() throws Exception {
         diaryNodes.getChildren().clear();
-        List<Diary> allEntries = diaryService.get15Latest();
-        allEntries.forEach(diary->{
-            diaryNodes.getChildren().add(createDiaryNode(diary));
+        List<DiaryEntry> allEntries = diaryService.get15Latest();
+        allEntries.forEach(diaryEntry->{
+            diaryNodes.getChildren().add(createDiaryNode(diaryEntry));
         });
     }
     
     public void redrawAllDiaryList() throws Exception {
         allDiaryNodes.getChildren().clear();
-        List<Diary> allEntries = diaryService.getAll();
-        allEntries.forEach(diary->{
-            allDiaryNodes.getChildren().add(createDiaryNode(diary));
+        List<DiaryEntry> allEntries = diaryService.getAll();
+        allEntries.forEach(diaryEntry->{
+            allDiaryNodes.getChildren().add(createDiaryNode(diaryEntry));
         });
     }
     
@@ -607,9 +607,9 @@ public class Main extends Application {
         
     }
         
-    public Node createDiaryNode(Diary diary) {
+    public Node createDiaryNode(DiaryEntry entry) {
         HBox box = new HBox(10);
-        Label label = new Label(diary.toString());
+        Label label = new Label(entry.toString());
         label.setMinHeight(28); 
         box.setPadding(new Insets(5));
         box.setStyle("-fx-border-color: #ade1ff");

@@ -1,37 +1,54 @@
-
 package liikuntapaivakirja.domain;
 
-import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import liikuntapaivakirja.dao.DbUserDao;
+import liikuntapaivakirja.dao.DiaryEntryDao;
 
-// Sovelluslogiikka, kirjautuminen, päiväkirjaan tuntien kirjaaminen ym
+/**
+ * Sovelluslogiikasta vastaava luokka.
+ */
 
 public class DiaryService {
-    private DiaryDao diaryDao;
+    private DiaryEntryDao diaryEntryDao;
     private UserDao userDao;
     private User loggedIn;
     
-    public DiaryService(DiaryDao diaryDao, UserDao userDao) {
+    /**
+     * Metodi asettaa luokkaan diaryEntryDao:n ja UserDao:n.
+     * @param diaryEntryDao Sovelluksen diaryEntryDao
+     * @param userDao Sovelluksen userDao
+     */
+    public DiaryService(DiaryEntryDao diaryEntryDao, UserDao userDao) {
         this.userDao = userDao;
-        this.diaryDao = diaryDao;
+        this.diaryEntryDao = diaryEntryDao;
     }
     
+    /**
+     * Metodi luo käyttäjän ilmoittaman uuden liikunnan, eli merkinnän.
+     * @param hour Käyttäjän antama tunti
+     * @param day Käyttäjän antama päivä
+     * @param week Käyttäjän antama viikko
+     * @param content Käyttäjän antama kuvaus
+     * @return true jos liikunnan lisääminen onnistui, muuten false
+     */
     public boolean createExercise(double hour, int day, int week, String content) {
-        Diary diary = new Diary(loggedIn, hour, day, week, content);
+        DiaryEntry entry = new DiaryEntry(loggedIn, hour, day, week, content);
 
         try {
-            diaryDao.create(diary);
+            diaryEntryDao.create(entry);
         } catch (Exception ex) {
             return false;
         }
         return true;
     }
     
+    /**
+     * Käyttäjän ilmoittama tavoite asetetaan uudeksi viikkotavoitteeksi.
+     * @param goal Käyttäjän ilmoittama tavoite
+     * @return true jos tavoitteen lisääminen onnistui, muuten false
+     */
     public boolean createWeeklyGoal(int goal) {
         try {
             userDao.setWeeklyGoal(goal, loggedIn.getUsername());
@@ -41,29 +58,51 @@ public class DiaryService {
         return true;
     }
     
+    /**
+     * Metodi hakee käyttäjän viikkotavoitteen.
+     * @return Käyttäjän tavoite
+     * @throws Exception jos ilmestyy virhe?
+     */
     public int getWeeklyGoal() throws Exception {
         int goal = userDao.getWeeklyGoal(loggedIn.getUsername());
         return goal;
     }
     
-    public List<Diary> getAll() throws Exception {
+    /**
+     * Metodi listaa käyttäjän kaikki päiväkirja-merkinnät.
+     * @return listan kaikista merkinnöistä
+     * @throws Exception jos ilmestyy virhe?
+     */
+    public List<DiaryEntry> getAll() throws Exception {
         if (loggedIn == null) {
             return new ArrayList<>();
         }
-        List<Diary> diaryEntrys = new ArrayList<>();
-        diaryEntrys = diaryDao.getAll(loggedIn);
+        List<DiaryEntry> diaryEntrys = new ArrayList<>();
+        diaryEntrys = diaryEntryDao.getAll(loggedIn);
         return diaryEntrys;
     }
     
-    public List<Diary> get15Latest() throws Exception {
+    /**
+     * Metodi listaa käyttäjän 15 viimeistä merkintää.
+     * @return listan 15 viimeisestä merkinnästä
+     * @throws Exception jos ilmestyy virhe?
+     */
+    public List<DiaryEntry> get15Latest() throws Exception {
         if (loggedIn == null) {
             return new ArrayList<>();
         }
-        List<Diary> diaryEntrys = new ArrayList<>();
-        diaryEntrys = diaryDao.get15Latest(loggedIn);
+        List<DiaryEntry> diaryEntrys = new ArrayList<>();
+        diaryEntrys = diaryEntryDao.get15Latest(loggedIn);
         return diaryEntrys;
     }
     
+    /**
+     * Käyttäjän kirjautuminen sovellukseen.
+     * @param username Käyttäjän ilmoittama käyttäjätunnus
+     * @param password Käyttäjän ilmoittama salasana
+     * @return true jos kirjautumienn onnistuu, muuten false
+     * @throws Exception jos tapahtuu virhe?
+     */
     public boolean login(String username, String password) throws Exception {
         User user = userDao.findByUsername(username);
         if (user == null) {
@@ -85,10 +124,20 @@ public class DiaryService {
         return loggedIn.getUsername();
     }
     
+    /**
+     * Metodin avulla käyttäjä kirjaudutaan ulos.
+     */
     public void logout() {
         loggedIn = null;
     }
     
+    /**
+     * Metodi luo uuden käyttäjän.
+     * @param username Käyttäjän ilmoittama käyttäjätunnus
+     * @param password Käyttäjän ilmoittama salasana
+     * @return true jos uuden käyttäjän luominen onnistui, muuten false
+     * @throws Exception jos tapahtuu virhe?
+     */
     public boolean createUser(String username, String password) throws Exception {
         if (userDao.findByUsername(username) != null) {
             return false;
@@ -101,20 +150,42 @@ public class DiaryService {
         return true;
     }
     
+    /**
+     * Metodi palauttaa tietyn viikon pisteet.
+     * @param week Käyttäjän ilmoittama viikko
+     * @return viikon pisteet
+     * @throws Exception jos tapahtuu virhe?
+     */
     public double getPointsWeek(int week) throws Exception {
-        return diaryDao.userPointsWeek(loggedIn.getUsername(), week);
+        return diaryEntryDao.userPointsWeek(loggedIn.getUsername(), week);
     }
     
+    /**
+     * Metodi hakee käyttäjän viimeisen viikon päiväkirjasta.
+     * @return viimeisen viikon
+     * @throws Exception jos tapahtuu virhe
+     */
     public int getLatestWeek() throws Exception {
-        return diaryDao.latestWeek(loggedIn.getUsername());
+        return diaryEntryDao.latestWeek(loggedIn.getUsername());
     }
     
+    /**
+     * Metodi hakee käyttäjän 3 parhaat viikot viikkopisteiden perusteella.
+     * @return Käyttäjän 3 parhaat viikot
+     * @throws Exception jos tapahtuu virhe?
+     */
     public Map getUsersBestWeeks() throws Exception {
-        return diaryDao.bestUserPointsWeeks(loggedIn.getUsername());
+        return diaryEntryDao.bestUserPointsWeeks(loggedIn.getUsername());
     }
     
+    /**
+     * Metodi hakee kaikkien käyttäjien kesken 3 parhaat viikot viikkopisteiden
+     * perusteella.
+     * @return 3 parasta viikkoa kaikkien käyttäjien kesken
+     * @throws Exception jos taoahtuu virhe?
+     */
     public Map getBestWeeks() throws Exception {
-        return diaryDao.bestPointsWeeks();
+        return diaryEntryDao.bestPointsWeeks();
     }
 
 }

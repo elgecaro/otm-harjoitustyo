@@ -16,6 +16,10 @@ public class DbUserDao implements UserDao {
     private List<User> users;
     private int goal;
     
+    /**
+     * Metodi asettaa tietokannan osoitteen.
+     * @param database tietokannan osoite
+     */
     public DbUserDao(Database database) {
         this.database = database;
     }

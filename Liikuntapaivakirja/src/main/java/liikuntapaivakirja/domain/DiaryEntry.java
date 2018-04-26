@@ -1,8 +1,10 @@
-
 package liikuntapaivakirja.domain;
 
+/**
+ * Päiväkirjamerkintää edustava luokka.
+ */
 
-public class Diary {
+public class DiaryEntry {
 
     private User user;
     private double hour;
@@ -10,8 +12,15 @@ public class Diary {
     private int day;
     private String content;
 
-
-    public Diary(User user, double hour, int day, int week, String content) {
+    /**
+     * Metodi luo uuden kirjoituksen päiväkirjaan.
+     * @param user käyttäjä
+     * @param hour käyttäjän antama tunti
+     * @param day käyttäjän antama päivä
+     * @param week käyttäjän antama viikko
+     * @param content käyttäjän antama kuvaus
+     */
+    public DiaryEntry(User user, double hour, int day, int week, String content) {
         this.user = user;
         this.hour = hour;
         this.day = day;

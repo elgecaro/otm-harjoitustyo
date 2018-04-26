@@ -3,18 +3,38 @@ package liikuntapaivakirja.dao;
 
 import java.sql.*;
 
+/**
+ * Ohjelman tietokantaa edustavaa luokka.
+ */
+
 public class Database {
-    
+
     private String databaseAddress;
     
+    /**
+     * Asetetaan tietokannan osoite.
+     * @param databaseAddress tietokannan osoite
+     */
     public Database(String databaseAddress) {
         this.databaseAddress = databaseAddress;
     }
     
+    /**
+     * Luodaan yhteyden tietokantaan.
+     * @return yhteyden tietokantaan
+     * @throws SQLException jos tietokantaan ei saada yhteyttä
+     */
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(databaseAddress);
     }
     
+    /**
+     * Kontrolloidaan jos tietokannan taulukot ovat olemassa.
+     * @param conn yhteys tietokantaan
+     * @param tableName tietokannan taulukon nimi
+     * @return true jos taulukko löytyy tietokannasta, muuten false
+     * @throws SQLException jos tietokantaan ei saada yhteyttä
+     */
     public boolean tableExist(Connection conn, String tableName) throws SQLException {
         boolean tExists = false;
         try (ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null)) {
@@ -29,6 +49,12 @@ public class Database {
         return tExists;
     }
     
+    /**
+     * Jos tietokannassa ei ole User-taulukkoa, luodaan sellaista.
+     * @param conn yhteys tietokantaan
+     * @param database tietokanta
+     * @throws SQLException jos tulee virhe taulukon luonnissa
+     */
     public void createTableUser(Connection conn, Database database) throws SQLException {
         PreparedStatement stmt = database.getConnection().prepareStatement("CREATE TABLE User (\n" + 
             "username varchar(15) PRIMARY KEY CHECK (LENGTH (username) > 2), \n" + 
@@ -40,6 +66,12 @@ public class Database {
         conn.close();
     }
     
+    /**
+     * Jos tietokannassa ei ole Diary-taulukkoa, luodaan sellaista.
+     * @param conn yhteys tietokantaan
+     * @param database tietokanta
+     * @throws SQLException jos tulee virhe taulukon luonnissa
+     */
     public void createTableDiary(Connection conn, Database database) throws SQLException {
         PreparedStatement stmt = database.getConnection().prepareStatement("CREATE TABLE Diary (\n" + 
             "username varchar(15), \n" +

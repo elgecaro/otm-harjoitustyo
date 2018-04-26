@@ -3,44 +3,48 @@ package liikuntapaivakirja.dao;
 
 import java.sql.Connection;
 import java.sql.*;
-import liikuntapaivakirja.domain.Diary;
+import liikuntapaivakirja.domain.DiaryEntry;
 import java.util.List;
 import java.util.*;
 import liikuntapaivakirja.domain.User;
 
-public class DbDiaryDao implements DiaryDao {
+public class DbDiaryEntryDao implements DiaryEntryDao {
     private Database database;
     private double points;
     private User user;
     private int goal;
     
-    public DbDiaryDao(Database database) {
+    /**
+     * Metodi asettaa tietokannan osoitteen.
+     * @param database tietokannan osoite
+     */
+    public DbDiaryEntryDao(Database database) {
         this.database = database;
     }
     
     @Override
-    public void create(Diary diary) throws Exception {
+    public void create(DiaryEntry entry) throws Exception {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO Diary (username, hour, day, week, content)"
                 + "VALUES (?, ?, ?, ?, ?)");
-        stmt.setString(1, diary.getUsername());
-        stmt.setDouble(2, diary.getHour());
-        stmt.setInt(3, diary.getDay());
-        stmt.setInt(4, diary.getWeek());
-        stmt.setString(5, diary.getContent());
+        stmt.setString(1, entry.getUsername());
+        stmt.setDouble(2, entry.getHour());
+        stmt.setInt(3, entry.getDay());
+        stmt.setInt(4, entry.getWeek());
+        stmt.setString(5, entry.getContent());
         stmt.execute();
 
         connection.close();        
     }
 
     @Override
-    public List<Diary> getAll(User user) throws SQLException {
+    public List<DiaryEntry> getAll(User user) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? ORDER BY week, day DESC");
         stmt.setObject(1, user.getUsername());
 
         ResultSet rs = stmt.executeQuery();
-        List<Diary> diaryEntrys = new ArrayList<>();
+        List<DiaryEntry> diaryEntries = new ArrayList<>();
         while (rs.next()) {
             String username = rs.getString("username");
             double hour = rs.getDouble("hour");
@@ -48,14 +52,14 @@ public class DbDiaryDao implements DiaryDao {
             int week = rs.getInt("week");
             String content = rs.getString("content");
 
-            diaryEntrys.add(new Diary(user, hour, day, week, content));
+            diaryEntries.add(new DiaryEntry(user, hour, day, week, content));
         }
 
         rs.close();
         stmt.close();
         connection.close();
 
-        return diaryEntrys;
+        return diaryEntries;
     }
 
     @Override
@@ -79,10 +83,10 @@ public class DbDiaryDao implements DiaryDao {
     
     
     @Override
-    public double userPointsWeek(String key, int week) throws SQLException {
+    public double userPointsWeek(String username, int week) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? AND week = ?");
-        stmt.setObject(1, key);
+        stmt.setObject(1, username);
         stmt.setObject(2, week);
         double hours = 0;
         
@@ -103,13 +107,13 @@ public class DbDiaryDao implements DiaryDao {
     
     
     @Override
-    public Map bestUserPointsWeeks(String key) throws SQLException {
+    public Map bestUserPointsWeeks(String username) throws SQLException {
         Connection connection = database.getConnection();       
         PreparedStatement stmt = connection.prepareStatement("SELECT week, TOTAL(hour) AS hours "
                 + "FROM Diary WHERE username = ? "
                 + "GROUP BY week ORDER BY hours DESC LIMIT 3"
         );
-        stmt.setObject(1, key);
+        stmt.setObject(1, username);
         ResultSet rs = stmt.executeQuery();
         
         Map<Double, Integer> bestWeeks = new LinkedHashMap<>();
@@ -153,13 +157,13 @@ public class DbDiaryDao implements DiaryDao {
     }
 
     @Override
-    public List<Diary> get15Latest(User user) throws Exception {
+    public List<DiaryEntry> get15Latest(User user) throws Exception {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? ORDER BY week DESC, day DESC LIMIT 15");
         stmt.setObject(1, user.getUsername());
 
         ResultSet rs = stmt.executeQuery();
-        List<Diary> diaryEntrys = new ArrayList<>();
+        List<DiaryEntry> diaryEntrys = new ArrayList<>();
         while (rs.next()) {
             String username = rs.getString("username");
             double hour = rs.getDouble("hour");
@@ -167,7 +171,7 @@ public class DbDiaryDao implements DiaryDao {
             int week = rs.getInt("week");
             String content = rs.getString("content");
 
-            diaryEntrys.add(new Diary(user, hour, day, week, content));
+            diaryEntrys.add(new DiaryEntry(user, hour, day, week, content));
         }
 
         rs.close();

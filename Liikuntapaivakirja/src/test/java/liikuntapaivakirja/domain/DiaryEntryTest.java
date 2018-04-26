@@ -1,7 +1,7 @@
 package liikuntapaivakirja.domain;
 
 
-import liikuntapaivakirja.domain.Diary;
+import liikuntapaivakirja.domain.DiaryEntry;
 import liikuntapaivakirja.domain.User;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,40 +11,40 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-public class DiaryTest {
-    Diary diary;
+public class DiaryEntryTest {
+    DiaryEntry entry;
     User user;
     
     @Before
     public void setUp() {
         user = new User("Testikayttaja", "testisalasana");
-        diary = new Diary(user, 1, 2, 3, "content");
+        entry = new DiaryEntry(user, 1, 2, 3, "content");
     }
     
     @Test
     public void newDiaryEntryCorrectInformation() {
-        assertEquals("Testikayttaja", diary.getUsername());
-        assertEquals(1, diary.getHour(), 0);
-        assertEquals(2, diary.getDay());
-        assertEquals(3, diary.getWeek());
-        assertEquals("content", diary.getContent());
+        assertEquals("Testikayttaja", entry.getUsername());
+        assertEquals(1, entry.getHour(), 0);
+        assertEquals(2, entry.getDay());
+        assertEquals(3, entry.getWeek());
+        assertEquals("content", entry.getContent());
     }
     
     @Test
     public void newDiaryEntryCorrectContent() {
-        Diary diary = new Diary(user, 2, 2, 3, "olin juoksemassa");
+        DiaryEntry diary = new DiaryEntry(user, 2, 2, 3, "olin juoksemassa");
         assertEquals("olin juoksemassa", diary.getContent());
     }
     
     @Test
     public void setAndGetUser() {
-        diary.setUser(user);
-        assertEquals(user, diary.getUser());
+        entry.setUser(user);
+        assertEquals(user, entry.getUser());
     }
     
     @Test
     public void toStringWorking() {
-        assertEquals("Tunteja: 1.0, päivä: 2, viikko: 3, kuvaus: content", diary.toString());
+        assertEquals("Tunteja: 1.0        Päivä: 2        Viikko: 3" + "\n" + "Kuvaus: content", entry.toString());
     }
     
     

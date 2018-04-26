@@ -3,9 +3,8 @@ package liikuntapaivakirja.domain;
 import java.sql.SQLException;
 import java.util.Arrays;
 import liikuntapaivakirja.dao.Database;
-import liikuntapaivakirja.dao.DbDiaryDao;
+import liikuntapaivakirja.dao.DbDiaryEntryDao;
 import liikuntapaivakirja.dao.DbUserDao;
-import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,10 +12,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import liikuntapaivakirja.dao.DiaryEntryDao;
 
 
-public class DiaryServiceDiaryTest {
-    private DiaryDao diaryDao;
+public class DiaryServiceEntryTest {
+    private DiaryEntryDao diaryDao;
     private UserDao userDao;
     private DiaryService diaryService;
     
@@ -25,7 +25,7 @@ public class DiaryServiceDiaryTest {
         Database database = new Database("jdbc:sqlite:test.db");
         database.getConnection();
         userDao = new DbUserDao(database);
-        diaryDao = new DbDiaryDao(database);
+        diaryDao = new DbDiaryEntryDao(database);
         diaryService = new DiaryService(diaryDao, userDao);
         diaryService.createUser("testUser1", "testpassword");
         diaryService.createUser("testUser2", "testpassword");
@@ -83,7 +83,7 @@ public class DiaryServiceDiaryTest {
     @Test
     public void getAll() throws Exception {
         diaryService.createExercise(1, 2, 3, "running");
-        assertEquals("[Tunteja: 1.0, päivä: 2, viikko: 3, kuvaus: running]", diaryService.getAll().toString());
+        assertEquals("[Tunteja: 1.0        Päivä: 2        Viikko: 3" + "\n" + "Kuvaus: running]", diaryService.getAll().toString());
     }
     
     @Test

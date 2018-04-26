@@ -1,5 +1,8 @@
-
 package liikuntapaivakirja.domain;
+
+/**
+ * Käyttäjää edustava luokka.
+ */
 
 public class User {
     
@@ -7,6 +10,11 @@ public class User {
     private String password;
     private int weeklyGoal;
     
+    /**
+     * Metodi joka luo uuden käyttäjän.
+     * @param username käyttäjän ilmoittama käyttäjänimi
+     * @param password käyttäjän ilmoittama salasana
+     */
     public User(String username, String password) {
         this.username = username;
         this.password = password;

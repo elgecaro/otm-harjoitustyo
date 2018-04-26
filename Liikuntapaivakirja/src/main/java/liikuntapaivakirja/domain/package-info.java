@@ -1,0 +1,5 @@
+/**
+ * Sovelluslogiikka.
+ */
+
+package liikuntapaivakirja.domain;

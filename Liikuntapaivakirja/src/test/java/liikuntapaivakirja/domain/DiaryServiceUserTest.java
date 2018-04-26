@@ -3,9 +3,8 @@ package liikuntapaivakirja.domain;
 
 import java.sql.SQLException;
 import liikuntapaivakirja.dao.Database;
-import liikuntapaivakirja.dao.DbDiaryDao;
+import liikuntapaivakirja.dao.DbDiaryEntryDao;
 import liikuntapaivakirja.dao.DbUserDao;
-import liikuntapaivakirja.dao.DiaryDao;
 import liikuntapaivakirja.dao.UserDao;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,11 +12,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import liikuntapaivakirja.dao.DiaryEntryDao;
 
 
 public class DiaryServiceUserTest {
     
-    private DiaryDao diaryDao;
+    private DiaryEntryDao diaryDao;
     private UserDao userDao;
     private DiaryService diaryService;
     
@@ -26,7 +26,7 @@ public class DiaryServiceUserTest {
         Database database = new Database("jdbc:sqlite:test.db");
         database.getConnection();
         userDao = new DbUserDao(database);
-        diaryDao = new DbDiaryDao(database);
+        diaryDao = new DbDiaryEntryDao(database);
         diaryService = new DiaryService(diaryDao, userDao);
     }
     
