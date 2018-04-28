@@ -109,19 +109,19 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
     @Override
     public Map bestUserPointsWeeks(String username) throws SQLException {
         Connection connection = database.getConnection();       
-        PreparedStatement stmt = connection.prepareStatement("SELECT week, TOTAL(hour) AS hours "
+        PreparedStatement stmt = connection.prepareStatement("SELECT week, SUM(hour) AS hours "
                 + "FROM Diary WHERE username = ? "
-                + "GROUP BY week ORDER BY hours DESC LIMIT 3"
+                + "GROUP BY week, username ORDER BY hours DESC LIMIT 3"
         );
         stmt.setObject(1, username);
         ResultSet rs = stmt.executeQuery();
         
-        Map<Double, Integer> bestWeeks = new LinkedHashMap<>();
+        Map<Integer, Double> bestWeeks = new LinkedHashMap<>();
         while (rs.next()) {
             double hour = rs.getDouble("hours");
             double points = hour * 10;
             int week = rs.getInt("week");
-            bestWeeks.put(points, week);
+            bestWeeks.put(week, points);
         }
 
         rs.close();
@@ -131,14 +131,18 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         return bestWeeks;
     }
     
+
     @Override
     public Map bestPointsWeeks() throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT week, username, "
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM"
+                + " (SELECT username, week,  "
                 + "SUM(hour) AS hours FROM Diary "
-                + "GROUP BY week, username "
+                + "GROUP BY username, week "
                 + "ORDER BY hours DESC "
-                + "LIMIT 3");
+                + "LIMIT 3) "
+                + "GROUP BY username "
+                + "ORDER BY hours DESC");
         ResultSet rs = stmt.executeQuery();
         
         Map<String, Double> bestWeeks = new LinkedHashMap<>();
@@ -155,6 +159,36 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
 
         return bestWeeks;
     }
+//    @Override
+//    public Map bestPointsWeeks() throws SQLException {
+//        Connection connection = database.getConnection();
+//        PreparedStatement stmt = connection.prepareStatement("SELECT DISTINCT username, week,  "
+//                + "SUM(hour) AS hours FROM Diary "
+//                + "GROUP BY username, week "
+//                + "ORDER BY hours DESC "
+//                + "LIMIT 3");
+//        ResultSet rs = stmt.executeQuery();
+//        int number = 1;
+//        
+//        Map<String, Double> bestWeeks = new LinkedHashMap<>();
+//        while (rs.next()) {
+//            double hour = rs.getDouble("hours");
+//            double points = hour * 10;
+//            String username = rs.getString("username");
+//            bestWeeks.put(number + ". " + username, points);
+//            number++;
+//            // Haluaisin, että kysely palauttaisi tietyn käyttäjänimen vain kerran,
+//            // muttei (vielä) toimi niin...
+//        }
+//
+//        rs.close();
+//        stmt.close();
+//        connection.close();
+//
+//        return bestWeeks;
+//    }
+    
+    
 
     @Override
     public List<DiaryEntry> get15Latest(User user) throws Exception {
@@ -165,7 +199,6 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         ResultSet rs = stmt.executeQuery();
         List<DiaryEntry> diaryEntrys = new ArrayList<>();
         while (rs.next()) {
-            String username = rs.getString("username");
             double hour = rs.getDouble("hour");
             int day = rs.getInt("day");
             int week = rs.getInt("week");
@@ -179,6 +212,31 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         connection.close();
 
         return diaryEntrys;
+    }
+
+    @Override
+    public Map allPointsWeeks(String user) throws Exception {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT week, TOTAL(hour) AS hours "
+                + "FROM Diary WHERE username = ? "
+                + "GROUP BY week, username "
+                + "ORDER BY week");
+        stmt.setObject(1, user);
+        ResultSet rs = stmt.executeQuery();
+        
+        Map<Integer, Double> allWeekPoints = new LinkedHashMap<>();
+        while (rs.next()) {
+            double hour = rs.getDouble("hours");
+            double points = hour * 10;
+            int week = rs.getInt("week");
+            allWeekPoints.put(week, points);
+        }
+
+        rs.close();
+        stmt.close();
+        connection.close();
+
+        return allWeekPoints;
     }
 
 }

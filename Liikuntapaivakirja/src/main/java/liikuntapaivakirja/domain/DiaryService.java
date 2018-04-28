@@ -161,8 +161,17 @@ public class DiaryService {
     }
     
     /**
+     * Meotdi hakee käyttäjän kaikki viikkopisteet
+     * @return Käyttäjän kaikki viikkopisteet (viikko + piste)
+     * @throws Exception jos tapahtuu virhe?
+     */
+    public Map getAllWeekPoints() throws Exception {
+        return diaryEntryDao.allPointsWeeks(loggedIn.getUsername());
+    }
+    
+    /**
      * Metodi hakee käyttäjän viimeisen viikon päiväkirjasta.
-     * @return viimeisen viikon
+     * @return Käyttäjän viimeisen viikon
      * @throws Exception jos tapahtuu virhe
      */
     public int getLatestWeek() throws Exception {

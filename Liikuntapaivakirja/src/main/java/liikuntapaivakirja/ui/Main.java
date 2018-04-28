@@ -56,6 +56,7 @@ public class Main extends Application {
     private VBox highscoreNodes;
     private VBox weeklyPoints;
     private VBox weeklyGoal;
+    private VBox allWeekPointsNodes;
     
     @Override
     public void init() throws Exception {
@@ -227,7 +228,7 @@ public class Main extends Application {
     }
     
     public void loggedIn(Stage primaryStage, String username) throws Exception {
-        BorderPane borderTestPane = new BorderPane();
+        BorderPane borderPane = new BorderPane();
                 
         Label titelText = new Label("Liikuntapäiväkirja");
         titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
@@ -249,7 +250,7 @@ public class Main extends Application {
         topBox.getChildren().addAll(welcomeBox, buttonBox);
         topBox.setPadding(new Insets(20));
         topBox.setStyle("-fx-background-color: #d3efff;");
-        borderTestPane.setTop(topBox);
+        borderPane.setTop(topBox);
         
         logoutButton.setOnAction(ev-> {
             diaryService.logout();
@@ -317,9 +318,9 @@ public class Main extends Application {
                     newDayField.clear();
                     newWeekField.clear();
                     newContentField.clear();
+                    
                     try {
                         redrawAll();
-
                     } catch (Exception ex) {
                         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -348,7 +349,7 @@ public class Main extends Application {
         
         viewAll.setOnAction(ev-> {
             try {
-                getAllEntries(primaryStage, username);
+                allEntriesScene(primaryStage, username);
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -362,7 +363,7 @@ public class Main extends Application {
         allEntries.setStyle("-fx-background-color: #f4f8ff;");
 
         allEntries.getChildren().addAll(addExerciseLabel, createPane, entriesLabel, entriesScrollbar, viewAll);
-        borderTestPane.setCenter(allEntries);
+        borderPane.setCenter(allEntries);
 
         VBox userHighscores = new VBox();
         Label userHighscoreLabel = new Label("Parhaat viikkopisteeesi");
@@ -381,7 +382,7 @@ public class Main extends Application {
         highscoreNodes = new VBox();
         highscoreNodes.setMaxWidth(200);
         highscoreNodes.setMinWidth(100);
-        redrawhighscoreList();
+        redrawHighscoreList();
         highscores.getChildren().addAll(highscoreLabel, highscoreNodes);
         
         VBox allHighscores = new VBox();
@@ -391,7 +392,7 @@ public class Main extends Application {
         allHighscores.setSpacing(10);
         allHighscores.setPadding(new Insets(20));
         allHighscores.getChildren().addAll(allHighscoresLabel, userHighscores, highscores);
-        borderTestPane.setRight(allHighscores);
+        borderPane.setRight(allHighscores);
         
         Label infoText =new Label("Jokaisesta liikuntatunnista ansaitset 10 pistettä (eli esim. 2.5 tuntia = 25 pistettä)");
         infoText.setWrapText(true);
@@ -414,7 +415,7 @@ public class Main extends Application {
         allPointsAndGoals.setAlignment(Pos.CENTER);
         allPointsAndGoals.setPadding(new Insets(10));
         allPointsAndGoals.getChildren().addAll(infoText, weeklyPoints, weeklyGoal, goalFieldAndButton, goalLabel);
-        borderTestPane.setLeft(allPointsAndGoals);
+        borderPane.setLeft(allPointsAndGoals);
         
         newGoalButton.setOnAction(ev-> {
             String goalS = newGoalField.getText();
@@ -435,14 +436,15 @@ public class Main extends Application {
             }
         });
         
-        Scene scene = new Scene(borderTestPane, 1000, 600);
+        Scene scene = new Scene(borderPane, 1000, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
          
     }
     
-    public void getAllEntries(Stage primaryStage, String username) throws Exception {
+    public void allEntriesScene(Stage primaryStage, String username) throws Exception {
         // get all entries-view
+        BorderPane borderPane = new BorderPane();
         
         Label titelText = new Label("Liikuntapäiväkirja");
         titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
@@ -455,6 +457,7 @@ public class Main extends Application {
 
         welcomeBox.getChildren().addAll(titelText, loginText);
         welcomeBox.setStyle("-fx-background-color: #d3efff;");
+        borderPane.setTop(welcomeBox);
         
         //Yllä melkein sama koodi kun loggedIn alussa, muutetaan omaksi metodiksi?
         // + muutetaan ehkä pohja BorderPane:ksi, niin voidaan myös helposti listätä esim. kaikkien viikkojem tuloslista sivulle
@@ -488,11 +491,18 @@ public class Main extends Application {
         allEntries.getChildren().addAll(entriesLabel, entriesScrollbar, backButton);
         allEntries.setStyle("-fx-background-color: #f4f8ff;");
         allEntries.setSpacing(10);
+        borderPane.setCenter(allEntries);
         
-        VBox allEntriesView = new VBox();
-        allEntriesView.getChildren().addAll(welcomeBox, allEntries);
+        Label weekPointsLabel = new Label("Kaikki viikkopisteet");
+        weekPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+        allWeekPointsNodes = new VBox(10);
+        VBox weekPointsBox = new VBox();
+        weekPointsBox.getChildren().addAll(weekPointsLabel, allWeekPointsNodes);
+        redrawAllWeekPoints();
+
+        borderPane.setRight(weekPointsBox);
         
-        Scene scene = new Scene(allEntriesView, 1000, 700);
+        Scene scene = new Scene(borderPane, 1000, 700);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -518,10 +528,9 @@ public class Main extends Application {
     public void redrawAll() throws Exception {
         redrawDiaryList();
         redrawUserHighscoreList();
-        redrawhighscoreList();
+        redrawHighscoreList();
         redrawWeeklyPoints();
         redrawWeeklyGoal();
-        
     }
     
     public void redrawDiaryList() throws Exception {
@@ -554,7 +563,7 @@ public class Main extends Application {
         }
     }
     
-    private void redrawhighscoreList() throws Exception {
+    private void redrawHighscoreList() throws Exception {
         highscoreNodes.getChildren().clear();
         
         Map<String, Double> allBestWeeks = diaryService.getBestWeeks();
@@ -562,7 +571,7 @@ public class Main extends Application {
         Iterator<Map.Entry<String, Double>> entries = allBestWeeks.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry<String, Double> entry = entries.next();
-            highscoreNodes.getChildren().add(createhighscoreNode(entry, number));
+            highscoreNodes.getChildren().add(createHighscoreNode(entry, number));
             number++;
         }
     }
@@ -606,6 +615,18 @@ public class Main extends Application {
         weeklyGoal.getChildren().add(goalBox);    
         
     }
+    
+    private void redrawAllWeekPoints() throws Exception {
+        allWeekPointsNodes.getChildren().clear();
+        
+        Map<Double, Integer> allPoints = diaryService.getAllWeekPoints();
+        Iterator<Map.Entry<Double, Integer>> entries = allPoints.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<Double, Integer> entry = entries.next();
+            allWeekPointsNodes.getChildren().add(createAllWeekPointsNode(entry));        
+        }     
+    }
+    
         
     public Node createDiaryNode(DiaryEntry entry) {
         HBox box = new HBox(10);
@@ -619,17 +640,25 @@ public class Main extends Application {
         return box;
     }
     
-    public Node createUserHighscoreNode(Entry entry, int number) throws Exception {
+    public Node createUserHighscoreNode(Entry entry, int number) {
         HBox box = new HBox();
-        Label label = new Label(number + ". Pisteet: " + entry.getKey() + ", viikko: " + entry.getValue());
+        Label label = new Label(number + ". Pisteet: " + entry.getValue() + ", viikko: " + entry.getKey());
         label.setPadding(new Insets(5));
         box.getChildren().add(label);
         return box;
     }
     
-    public Node createhighscoreNode(Entry entry, int number) throws Exception {
+    public Node createHighscoreNode(Entry entry, int number) {
         HBox box = new HBox();
         Label label = new Label(number + ". Pisteet: " + entry.getValue() + ", käyttäjä: " + entry.getKey()); 
+        label.setPadding(new Insets(5));
+        box.getChildren().add(label);
+        return box;
+    }
+    
+    public Node createAllWeekPointsNode (Entry entry) {
+        HBox box = new HBox();
+        Label label = new Label("Viikko: " + entry.getKey() + ", pisteet: " + entry.getValue());
         label.setPadding(new Insets(5));
         box.getChildren().add(label);
         return box;
