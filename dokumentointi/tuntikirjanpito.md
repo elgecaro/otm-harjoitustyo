@@ -30,6 +30,8 @@
 | 24.4 |  0,5h  | Refraktorointia (vanha tekstuaalinen testikäyttöliittymä poistettu + testGuin uudelleennimentämistä) + github release
 | 25.4 |  1,5h  | Alustava käyttöohje aloitettu + sovelluksen tietokannan konfiguraatio ok + pientä muokkausta: käyttikseen "tavoite saavutettu"-teksti, merkinnöille kehys ja kuvaus uudelle riville
 | 26.4 |  3h    | JavaDoc otettu käyttöön + refraktorointia (Diary > DiaryEntry) ja arkkitehtuurikuvaus päivitetty
+| 28.4 |  2,5h  | Toiminallisuutta parannettu: käyttäjä näkee kaikki viikkopisteensä + tuloslistassa näkyy tietty käyttäjä vain kerran 
+| 29.4 |  2h    | Toiminallisuutta lisätty: käyttäjä voi poistaa päiväkirjamerkinnän, käyttis parannettu + sovelluslogiikkaan siirretty esim. *isDouble*-metodi.
 
 
-**Yhteensä:** 50,5h
+**Yhteensä:** 55h
