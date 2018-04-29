@@ -39,6 +39,7 @@ import liikuntapaivakirja.dao.UserDao;
 import liikuntapaivakirja.domain.DiaryEntry;
 import liikuntapaivakirja.domain.DiaryService;
 import java.util.Properties;
+import javafx.scene.layout.Region;
 import liikuntapaivakirja.dao.DiaryEntryDao;
 
 
@@ -50,7 +51,7 @@ public class Main extends Application {
     private DiaryService diaryService; 
     private Scene newUserScene;
     private Scene loginScene;
-    private VBox diaryNodes;
+    private VBox diaryEntryNodes;
     private VBox allDiaryNodes;
     private VBox userHighscoreNodes;
     private VBox highscoreNodes;
@@ -228,34 +229,8 @@ public class Main extends Application {
     }
     
     public void loggedIn(Stage primaryStage, String username) throws Exception {
-        BorderPane borderPane = new BorderPane();
-                
-        Label titelText = new Label("Liikuntapäiväkirja");
-        titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
-        Label loginText = new Label("Olet kirjautunut sisään käyttäjällä " + username);
-        loginText.setFont((Font.font(null, FontWeight.NORMAL, 14)));
-        
-        VBox welcomeBox = new VBox();
-        welcomeBox.setSpacing(10);
-
-        welcomeBox.getChildren().addAll(titelText, loginText);
-
-        Button logoutButton = new Button("kirjaudu ulos");
-        HBox buttonBox = new HBox(logoutButton);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        HBox.setHgrow(buttonBox, Priority.ALWAYS);
-        
-        HBox topBox = new HBox();
-        topBox.setSpacing(10);
-        topBox.getChildren().addAll(welcomeBox, buttonBox);
-        topBox.setPadding(new Insets(20));
-        topBox.setStyle("-fx-background-color: #d3efff;");
-        borderPane.setTop(topBox);
-        
-        logoutButton.setOnAction(ev-> {
-            diaryService.logout();
-            start(primaryStage);
-        });
+        BorderPane borderPane = new BorderPane();   
+        borderPane.setTop(getTopBox(primaryStage, username));
         
         Label newHourLabel = new Label("Tuntia:");
         TextField newHourField = new TextField();
@@ -294,13 +269,13 @@ public class Main extends Application {
             String weekS = newWeekField.getText();
             String content = newContentField.getText();
 
-            if (isDouble(hourS) != true) {
+            if (diaryService.isDouble(hourS) != true) {
                 createMessage.setText("Tunnin muoto väärä");
                 createMessage.setTextFill(Color.RED);
-            } else if (isInteger(dayS) != true) {
+            } else if (diaryService.isInteger(dayS) != true) {
                 createMessage.setText("Päivän muoto väärä");
                 createMessage.setTextFill(Color.RED);
-            } else if (isInteger(weekS) != true) {
+            } else if (diaryService.isInteger(weekS) != true) {
                 createMessage.setText("Viikon muoto väärä");
                 createMessage.setTextFill(Color.RED);
             } else if (content.length() > 200) {
@@ -310,8 +285,13 @@ public class Main extends Application {
                 double hour = Double.parseDouble(hourS);
                 int day = Integer.parseInt(dayS);
                 int week = Integer.parseInt(weekS);
-                    
-                if (diaryService.createExercise(hour, day, week, content) == true) {
+                
+                if (day > 7) {
+                    createMessage.setText("Päivän muoto väärä");
+                    createMessage.setTextFill(Color.RED);
+                }
+                                    
+                else if (diaryService.createExercise(hour, day, week, content) == true) {
                     createMessage.setText("Merkinnän lisääminen onnistui");
                     createMessage.setTextFill(Color.GREEN);
                     newHourField.clear();
@@ -333,16 +313,16 @@ public class Main extends Application {
         
         ScrollPane entriesScrollbar = new ScrollPane();
         entriesScrollbar.setPrefViewportHeight(400);   
-        entriesScrollbar.setPrefViewportWidth(400); 
+        entriesScrollbar.setPrefViewportWidth(500); 
         entriesScrollbar.setMaxSize(700, 600);
 
         Label entriesLabel = new Label("15 viimeisintä merkintää:");
         entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-        diaryNodes = new VBox(10);
-        diaryNodes.setMinWidth(280);
-        diaryNodes.setStyle("-fx-background-color: #ffffff;");
+        diaryEntryNodes = new VBox(10);
+        diaryEntryNodes.setMinWidth(280);
+        diaryEntryNodes.setStyle("-fx-background-color: #ffffff;");
         redrawDiaryList();
-        entriesScrollbar.setContent(diaryNodes);
+        entriesScrollbar.setContent(diaryEntryNodes);
         entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
         
         Button viewAll = new Button("näe kaikki merkinnät");
@@ -354,6 +334,7 @@ public class Main extends Application {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        
         Label addExerciseLabel = new Label("Lisää uusi merkintä:");
         addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
         
@@ -420,7 +401,7 @@ public class Main extends Application {
         newGoalButton.setOnAction(ev-> {
             String goalS = newGoalField.getText();
 
-            if (isInteger(goalS) != true) {
+            if (diaryService.isInteger(goalS) != true) {
                 goalLabel.setText("Muoto väärä");
                 goalLabel.setTextFill(Color.RED);
             } else {
@@ -445,22 +426,7 @@ public class Main extends Application {
     public void allEntriesScene(Stage primaryStage, String username) throws Exception {
         // get all entries-view
         BorderPane borderPane = new BorderPane();
-        
-        Label titelText = new Label("Liikuntapäiväkirja");
-        titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
-        Label loginText = new Label("Olet kirjautunut sisään käyttäjällä " + username);
-        loginText.setFont((Font.font(null, FontWeight.NORMAL, 14)));
-        
-        VBox welcomeBox = new VBox();
-        welcomeBox.setSpacing(10);
-        welcomeBox.setPadding(new Insets(20));
-
-        welcomeBox.getChildren().addAll(titelText, loginText);
-        welcomeBox.setStyle("-fx-background-color: #d3efff;");
-        borderPane.setTop(welcomeBox);
-        
-        //Yllä melkein sama koodi kun loggedIn alussa, muutetaan omaksi metodiksi?
-        // + muutetaan ehkä pohja BorderPane:ksi, niin voidaan myös helposti listätä esim. kaikkien viikkojem tuloslista sivulle
+        borderPane.setTop(getTopBox(primaryStage, username));
 
         VBox allEntries = new VBox();
         allEntries.setPadding(new Insets(10));
@@ -469,8 +435,8 @@ public class Main extends Application {
 
         ScrollPane entriesScrollbar = new ScrollPane();
         entriesScrollbar.setPrefViewportHeight(500);   
-        entriesScrollbar.setPrefViewportWidth(600); 
-        entriesScrollbar.setMaxSize(600, 600);
+        entriesScrollbar.setPrefViewportWidth(650); 
+        entriesScrollbar.setMaxSize(620, 620);
 
         allDiaryNodes = new VBox(10);
         allDiaryNodes.setMinWidth(280);
@@ -493,10 +459,12 @@ public class Main extends Application {
         allEntries.setSpacing(10);
         borderPane.setCenter(allEntries);
         
-        Label weekPointsLabel = new Label("Kaikki viikkopisteet");
+        Label weekPointsLabel = new Label("Kaikki viikkopisteet:");
         weekPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
         allWeekPointsNodes = new VBox(10);
-        VBox weekPointsBox = new VBox();
+        VBox weekPointsBox = new VBox(10);
+        weekPointsBox.setMinSize(260, 400);
+        weekPointsBox.setPadding(new Insets(20));
         weekPointsBox.getChildren().addAll(weekPointsLabel, allWeekPointsNodes);
         redrawAllWeekPoints();
 
@@ -507,22 +475,34 @@ public class Main extends Application {
         primaryStage.show();
     }
     
-    public static boolean isDouble(String s) {
-        try { 
-            Double.parseDouble(s); 
-        } catch (NumberFormatException | NullPointerException e) { 
-            return false; 
-        }
-        return true;
-    }
+    public Node getTopBox(Stage primaryStage, String username) {
+        Label titelText = new Label("Liikuntapäiväkirja");
+        titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
+        Label loginText = new Label("Olet kirjautunut sisään käyttäjällä " + username);
+        loginText.setFont((Font.font(null, FontWeight.NORMAL, 14)));
+        
+        VBox welcomeBox = new VBox();
+        welcomeBox.setSpacing(10);
 
-    public static boolean isInteger(String s) {
-        try { 
-            Integer.parseInt(s); 
-        } catch (NumberFormatException | NullPointerException e) { 
-            return false; 
-        }
-        return true;
+        welcomeBox.getChildren().addAll(titelText, loginText);
+
+        Button logoutButton = new Button("kirjaudu ulos");
+        HBox buttonBox = new HBox(logoutButton);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        HBox.setHgrow(buttonBox, Priority.ALWAYS);
+        
+        HBox topBox = new HBox();
+        topBox.setSpacing(10);
+        topBox.getChildren().addAll(welcomeBox, buttonBox);
+        topBox.setPadding(new Insets(20));
+        topBox.setStyle("-fx-background-color: #d3efff;");
+        
+        logoutButton.setOnAction(ev-> {
+            diaryService.logout();
+            start(primaryStage);
+        });
+        
+        return topBox;
     }
     
     public void redrawAll() throws Exception {
@@ -534,10 +514,10 @@ public class Main extends Application {
     }
     
     public void redrawDiaryList() throws Exception {
-        diaryNodes.getChildren().clear();
+        diaryEntryNodes.getChildren().clear();
         List<DiaryEntry> allEntries = diaryService.get15Latest();
         allEntries.forEach(diaryEntry->{
-            diaryNodes.getChildren().add(createDiaryNode(diaryEntry));
+            diaryEntryNodes.getChildren().add(createDiaryEntryNode(diaryEntry));
         });
     }
     
@@ -545,15 +525,13 @@ public class Main extends Application {
         allDiaryNodes.getChildren().clear();
         List<DiaryEntry> allEntries = diaryService.getAll();
         allEntries.forEach(diaryEntry->{
-            allDiaryNodes.getChildren().add(createDiaryNode(diaryEntry));
+            allDiaryNodes.getChildren().add(createDeleteDiaryEntryNode(diaryEntry));
         });
     }
     
     public void redrawUserHighscoreList() throws Exception {
         userHighscoreNodes.getChildren().clear();
-        
-        Map<Double, Integer> bestWeeks = diaryService.getUsersBestWeeks();
-        
+        Map<Double, Integer> bestWeeks = diaryService.getUsersBestWeeks(); 
         int number = 1;
         Iterator<Map.Entry<Double, Integer>> entries = bestWeeks.entrySet().iterator();
         while (entries.hasNext()) {
@@ -565,7 +543,6 @@ public class Main extends Application {
     
     private void redrawHighscoreList() throws Exception {
         highscoreNodes.getChildren().clear();
-        
         Map<String, Double> allBestWeeks = diaryService.getBestWeeks();
         int number = 1;
         Iterator<Map.Entry<String, Double>> entries = allBestWeeks.entrySet().iterator();
@@ -578,7 +555,6 @@ public class Main extends Application {
     
     private void redrawWeeklyPoints() throws Exception {
         weeklyPoints.getChildren().clear();
-        
         Label weeklyPointsLabel = new Label("Tämän/viimeisen viikon pisteet: ");
         weeklyPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
         
@@ -627,16 +603,49 @@ public class Main extends Application {
         }     
     }
     
-        
-    public Node createDiaryNode(DiaryEntry entry) {
+    public Node createDiaryEntryNode(DiaryEntry entry) {
         HBox box = new HBox(10);
         Label label = new Label(entry.toString());
         label.setMinHeight(28); 
         box.setPadding(new Insets(5));
         box.setStyle("-fx-border-color: #ade1ff");
-        box.setMaxWidth(600);
+        box.setMaxWidth(440);
         label.setWrapText(true);
         box.getChildren().add(label);
+        return box;
+    }
+    
+     public Node createDeleteDiaryEntryNode (DiaryEntry entry) {
+        HBox box = new HBox(10);
+        Label label = new Label(entry.toString());
+        label.setMinHeight(28);
+        box.setStyle("-fx-border-color: #ade1ff");
+        box.setMaxWidth(600);
+        label.setWrapText(true);
+        
+        Button button = new Button("poista");
+        button.setMinWidth(60);
+
+        button.setOnAction(e->{
+            try {
+                diaryService.deleteEntry(entry);
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                redrawDiaryList();
+                redrawAllDiaryList();
+                redrawAllWeekPoints();
+
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        box.setPadding(new Insets(5));
+        box.getChildren().addAll(label, spacer, button);
         return box;
     }
     
@@ -663,10 +672,9 @@ public class Main extends Application {
         box.getChildren().add(label);
         return box;
     }
-          
+        
     public static void main(String[] args) {
         launch(args);
     }
-
 
 }

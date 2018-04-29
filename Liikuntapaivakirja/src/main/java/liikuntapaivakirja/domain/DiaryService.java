@@ -196,5 +196,42 @@ public class DiaryService {
     public Map getBestWeeks() throws Exception {
         return diaryEntryDao.bestPointsWeeks();
     }
+    
+    /**
+     * Metodi poistaa tietyn merkinnän.
+     * @param entry Käyttäjän ilmoittama merkintä
+     * @throws Exception jos tapahtuu virhe?
+     */
+    public void deleteEntry(DiaryEntry entry) throws Exception {
+        diaryEntryDao.delete(entry);
+    }
+    
+    /**
+     * Metodi, joka tarkistaa jos syötetty teksti on liukuluku.
+     * @param s Käyttäjän antama syöte
+     * @return true jos on liukuluku, muuten false
+     */
+    public boolean isDouble(String s) {
+        try { 
+            Double.parseDouble(s); 
+        } catch (NumberFormatException | NullPointerException e) { 
+            return false; 
+        }
+        return true;
+    }
+    
+    /**
+     * Metodi tarkistaa jos syötetty teksti on kokonaisluku.
+     * @param s Käyttäjän antama syöte
+     * @return true jos on kokonaisluku, muuten false
+     */
+    public boolean isInteger(String s) {
+        try { 
+            Integer.parseInt(s); 
+        } catch (NumberFormatException | NullPointerException e) { 
+            return false; 
+        }
+        return true;
+    }
 
 }

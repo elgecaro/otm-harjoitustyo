@@ -9,6 +9,7 @@ import liikuntapaivakirja.domain.User;
 
 public interface DiaryEntryDao {
     void create(DiaryEntry entry) throws Exception;
+    void delete(DiaryEntry entry) throws Exception;
     List<DiaryEntry> getAll(User user) throws Exception;
     double userPointsWeek(String user, int week) throws Exception;
     int latestWeek(String user) throws Exception;

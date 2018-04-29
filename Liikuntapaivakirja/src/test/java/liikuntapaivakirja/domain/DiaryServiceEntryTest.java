@@ -97,18 +97,18 @@ public class DiaryServiceEntryTest {
     public void getUsersBestWeeks() throws Exception {
         diaryService.createExercise(1.5, 2, 1, "running again");
         diaryService.createExercise(0.5, 3, 2, "swimming");
-        assertEquals("{15.0=1, 10.0=3, 5.0=2}", diaryService.getUsersBestWeeks().toString());
+        assertEquals("{1=15.0, 3=10.0, 2=5.0}", diaryService.getUsersBestWeeks().toString());
     }
     
     @Test
     public void GetBestWeeks() throws Exception {
         diaryService.logout();
         diaryService.login("testUser2", "testpassword");
-        diaryService.createExercise(1, 1, 1, "walking");
+        diaryService.createExercise(1.2, 1, 1, "walking");
         diaryService.logout();
         diaryService.login("testUser3", "testpassword");
         diaryService.createExercise(1.5, 1, 1, "swimming");
-        assertEquals("{testUser1=15.0, testUser3=15.0, testUser2=10.0}", diaryService.getBestWeeks().toString());
+        assertEquals("{testUser1=15.0, testUser3=15.0, testUser2=12.0}", diaryService.getBestWeeks().toString());
     }
     
     @Test

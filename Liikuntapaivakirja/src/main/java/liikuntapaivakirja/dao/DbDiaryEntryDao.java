@@ -158,37 +158,7 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         connection.close();
 
         return bestWeeks;
-    }
-//    @Override
-//    public Map bestPointsWeeks() throws SQLException {
-//        Connection connection = database.getConnection();
-//        PreparedStatement stmt = connection.prepareStatement("SELECT DISTINCT username, week,  "
-//                + "SUM(hour) AS hours FROM Diary "
-//                + "GROUP BY username, week "
-//                + "ORDER BY hours DESC "
-//                + "LIMIT 3");
-//        ResultSet rs = stmt.executeQuery();
-//        int number = 1;
-//        
-//        Map<String, Double> bestWeeks = new LinkedHashMap<>();
-//        while (rs.next()) {
-//            double hour = rs.getDouble("hours");
-//            double points = hour * 10;
-//            String username = rs.getString("username");
-//            bestWeeks.put(number + ". " + username, points);
-//            number++;
-//            // Haluaisin, että kysely palauttaisi tietyn käyttäjänimen vain kerran,
-//            // muttei (vielä) toimi niin...
-//        }
-//
-//        rs.close();
-//        stmt.close();
-//        connection.close();
-//
-//        return bestWeeks;
-//    }
-    
-    
+    }  
 
     @Override
     public List<DiaryEntry> get15Latest(User user) throws Exception {
@@ -237,6 +207,26 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         connection.close();
 
         return allWeekPoints;
+    }
+
+    @Override
+    public void delete(DiaryEntry entry) throws Exception {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("DELETE FROM Diary "
+                + "WHERE rowid IN (SELECT rowid FROM diary WHERE "
+                + "username = ? AND hour = ? AND day = ? AND week = ? "
+                + "AND content = ? LIMIT 1)");
+                
+        stmt.setObject(1, entry.getUsername());
+        stmt.setObject(2, entry.getHour());
+        stmt.setObject(3, entry.getDay());
+        stmt.setObject(4, entry.getWeek());
+        stmt.setObject(5, entry.getContent());
+
+        stmt.executeUpdate();
+        stmt.close();
+        connection.close();
+        
     }
 
 }
