@@ -5,7 +5,7 @@ Lataa tiedosto liikuntapaivakirja.jar
 Ohjelma tulee olettaamaan, että sen käynnistyshakemistossa on konfiguraatiotiedosto config.properties, joka määrittelee tietokannan nimen. 
 Tiedoston muoto on seuraava
 ```
-databaseAddress=database.db
+databaseAddress=jdbc:sqlite:database.db
 ```
 
 ## Ohjelman käynnistäminen ##
