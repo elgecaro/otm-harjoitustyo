@@ -2,18 +2,46 @@
 
 ## Rakenne ##
 Ohjelman rakenne noudattelee kolmitasoista kerrosarkkitehtuuria, ja koodin pakkausrakenne on seuraava:
+
 ![rakennekaavio](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/rakennekaavio.png)
 
-Pakkaus liikuntapaivakirja.ui sisältää JavaFX:llä toteutetun käyttöliittymän, liikuntapaivakirja.domain sovelluslogiikan ja liikuntapaivakirja.dao tietojen pysyväistallennuksesta vastaavat luokat.
+Pakkaus liikuntapaivakirja.ui sisältää JavaFX:llä toteutetun **käyttöliittymän**, liikuntapaivakirja.domain **sovelluslogiikan** ja liikuntapaivakirja.dao **tietojen pysyväistallennuksesta** vastaavat luokat.
 
 
 ## Käyttöliittymä ##
-Tulossa
+
+Käyttöliittymä sisältää viisi erillistä näkymää:
+* startScene: aloitusnäkymä
+* loginScene: kirjautuminen
+* newUserScene: uuden käyttäjän luominen
+* loggedInScene: kirjautuneen käyttäjän näkymä
+* allEntriesScene: kaikki merkinnät
+
+Jokainen näistä on toteutettu omana metodina ja omalla Scene-oliona, ja näkymistä yksi kerrallaan on näkyvinä. Käyttöliittymä on rakennettu ohjelmallisesti luokassa *[liikuntapaivakirja.ui.Main](https://github.com/elgecaro/otm-harjoitustyo/blob/master/Liikuntapaivakirja/src/main/java/liikuntapaivakirja/ui/Main.java)*.
+
+Käyttöliittymä on pyritty eristämään sovelluslogiiksta, eli se kutsuu *diaryService*-sovelluslogiikan metodeja.
+
+Kun päiväkirjaan lisätään uusi merkintä, kutsutaan *redrawAll*-metodia, joka kutsuu *redrawDiaryList*, *redrawUserHighscoreList*, *redrawHighscoreList*, *redrawWeeklyPoint* sekä *redrawWeeklyGoal* -metodeja, jotka renderöivät sovelluksen kaikki merkintöihin liittyvät listat uudelleen. Kun käyttäjä lisää uuden merkinnän, uusi merkintä muuttaa listan kaikista merkinnöistä sekä käyttäjän viikottaiiset pisteet. Tämän lisäksi merkintä voi muuttaa tuloslistoja (käyttäjän oman sekä kaikkien käyttäjien kesken) sekä viikkotavoitteen (esim. jos käyttäjä saavuttaa viikkotavoitteen). 
+
+Tämä tapahtuu myös kaikki merkinnät-näkymässä (*allEntriesScene*). Jos käyttäjä poistaa merkinnän, kutsutaan *redrawAllDiaryList* sekä *redrawAllWeekPoints*-metodeja, koska lista merkinnöistä sekä kaikkien viikkojen pisteet muuttuvat.
+
 
 ## Sovelluslogiikka ##
-![luokkakaavio](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/luokkakaavio.png)
+Sovelluksen loogisen datamallin muodostavat luokat User ja DiaryEntry, jotka kuvaavat käyttäjiä ja käyttäjien päiväkirjamerkintöjä:
 
-Tulossa
+![luokkakaavio1](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/luokkakaavio1.png)
+
+Toiminnallisista kokonaisuuksista vastaa luokkan DiaryService ainoa olio. Luokka tarjoaa kaikille käyttäliittymän toiminnoille omat metodit. Näitä ovat esimerkiksi:
+* boolean createUser(String username, String password)
+* boolean login(String username, String password)
+* createExercise(double hour, int day, int week, String content)
+* boolean createWeeklyGoal(double goal)
+* double getWeeklyGoal()
+* List<DiaryEntry> get15Latest()
+* Map getAllWeekPoints()
+* void deleteEntry(DiaryEntry entry)
+
+DiaryService pääsee käsiksi käyttäjiin ja päiväkirjamerkintöihin tietojen tallennuksesta vastaavaan pakkauksessa (*liikuntapaivakirja.dao*), sijaitsevien rajapintojen *DiaryEntryDao* sekä *UserDao* toteuttavien luokkien kautta. 
 
 DiaryServicen ja ohjelman muiden osien suhdetta kuvaava luokka/pakkauskaavio:
 
