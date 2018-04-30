@@ -32,8 +32,8 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         stmt.setInt(3, entry.getDay());
         stmt.setInt(4, entry.getWeek());
         stmt.setString(5, entry.getContent());
+        
         stmt.execute();
-
         connection.close();        
     }
 
@@ -97,7 +97,6 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         }
         
         points = hours * 10;
-
         rs.close();
         stmt.close();
         connection.close();
@@ -131,18 +130,13 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         return bestWeeks;
     }
     
-
     @Override
     public Map bestPointsWeeks() throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM"
-                + " (SELECT username, week,  "
-                + "SUM(hour) AS hours FROM Diary "
-                + "GROUP BY username, week "
-                + "ORDER BY hours DESC "
-                + "LIMIT 3) "
-                + "GROUP BY username "
-                + "ORDER BY hours DESC");
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM (SELECT username, week,  "
+                + "SUM(hour) AS hours FROM Diary GROUP BY username, week "
+                + "ORDER BY hours ) "
+                + "GROUP BY username ORDER BY hours DESC LIMIT 3");
         ResultSet rs = stmt.executeQuery();
         
         Map<String, Double> bestWeeks = new LinkedHashMap<>();
@@ -225,8 +219,6 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
 
         stmt.executeUpdate();
         stmt.close();
-        connection.close();
-        
+        connection.close();   
     }
-
 }

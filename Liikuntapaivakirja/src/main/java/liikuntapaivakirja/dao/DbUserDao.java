@@ -7,14 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DbUserDao implements UserDao {
     private Database database;
-    private List<User> users;
-    private int goal;
+    private double goal;
     
     /**
      * Metodi asettaa tietokannan osoitteen.
@@ -25,12 +22,12 @@ public class DbUserDao implements UserDao {
     }
     
     @Override
-    public User create(User t) throws SQLException {
+    public User create(User user) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO User (username, password)"
                 + "VALUES (?,?)");
-        String username = t.getUsername();
-        String password = t.getPassword();
+        String username = user.getUsername();
+        String password = user.getPassword();
         stmt.setString(1, username);
         stmt.setString(2, password);
         stmt.execute();
@@ -40,10 +37,10 @@ public class DbUserDao implements UserDao {
     }
     
     @Override
-    public boolean usernameAndPasswordMatch(String user, String password) throws SQLException {
+    public boolean usernameAndPasswordMatch(String username, String password) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM User WHERE username = ? AND password = ?");
-        stmt.setString(1, user);
+        stmt.setString(1, username);
         stmt.setString(2, password);
         
         ResultSet rs = stmt.executeQuery();
@@ -56,10 +53,10 @@ public class DbUserDao implements UserDao {
     }
     
     @Override
-    public User findByUsername(String key) throws SQLException {
+    public User findByUsername(String user) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM User WHERE username = ?");
-        stmt.setObject(1, key);
+        stmt.setObject(1, user);
 
         ResultSet rs = stmt.executeQuery();
         boolean hasOne = rs.next();
@@ -69,24 +66,24 @@ public class DbUserDao implements UserDao {
 
         String username = rs.getString("username");
         String password = rs.getString("password");
-        User o = new User(username, password);
+        User newUser = new User(username, password);
         rs.close();
         stmt.close();
         connection.close();
 
-        return o;
+        return newUser;
     }
     
     @Override
-    public int getWeeklyGoal(String key) throws SQLException {
+    public double getWeeklyGoal(String username) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT weeklyGoal FROM User WHERE username = ?");
-        stmt.setObject(1, key);
+        stmt.setObject(1, username);
         goal = 0;
         
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            goal = rs.getInt("weeklyGoal");
+            goal = rs.getDouble("weeklyGoal");
         }
         
         rs.close();
@@ -97,11 +94,11 @@ public class DbUserDao implements UserDao {
     }
     
     @Override
-    public void setWeeklyGoal(int goal, String user) throws SQLException {
+    public void setWeeklyGoal(double goal, String username) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("UPDATE User SET weeklyGoal = ? WHERE username = ?");
         stmt.setObject(1, goal);
-        stmt.setObject(2, user);     
+        stmt.setObject(2, username);     
         stmt.execute();
         connection.close();
     }
@@ -111,19 +108,19 @@ public class DbUserDao implements UserDao {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM User");
         ResultSet rs = stmt.executeQuery();
-        List<User> user = new ArrayList<>();
+        List<User> users = new ArrayList<>();
 
         while (rs.next()) {
             String username = rs.getString("username");
             String password = rs.getString("password");
-            user.add(new User(username, password));
+            users.add(new User(username, password));
         }
         
         rs.close();
         stmt.close();
         connection.close();
 
-        return user;
+        return users;
     }
 
 }

@@ -2,7 +2,6 @@
 package liikuntapaivakirja.ui;
 
 import java.io.FileInputStream;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -44,13 +41,13 @@ import liikuntapaivakirja.dao.DiaryEntryDao;
 
 
 public class Main extends Application {
-    
-    // Tulossa: eri näkymät omiksi luokiksi(?) ja loggedIn-koodiin enemmän metodeja
-    // + toiminallisuutta, esim. käyttäjä näkee kaikkien viikkojen pisteet
         
     private DiaryService diaryService; 
+    private Scene startScene;
     private Scene newUserScene;
     private Scene loginScene;
+    private Scene loggedInScene;
+    private Scene allEntriesScene;
     private VBox diaryEntryNodes;
     private VBox allDiaryNodes;
     private VBox userHighscoreNodes;
@@ -81,13 +78,13 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        // login scene
+        // start scene
         
         Label loginText = new Label("Tervetuloa liikuntapäiväkirjaan");
         loginText.setTranslateY(-40);
         Button loginButton = new Button("kirjaudu sisään");
         Button createButton = new Button("luo uusi käyttäjä");
-        createButton.setTranslateY(30);
+        createButton.setTranslateY(35);
         
         loginButton.setOnAction((event)-> {
             try {
@@ -96,8 +93,7 @@ public class Main extends Application {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-            
-            
+             
         createButton.setOnAction(e-> {
             createUser(primaryStage);
         });
@@ -105,14 +101,16 @@ public class Main extends Application {
         StackPane startPane = new StackPane();
         startPane.getChildren().addAll(loginText, loginButton, createButton);
    
-        Scene startScene = new Scene(startPane, 260, 150);
-        
+        startScene = new Scene(startPane, 250, 180);
         primaryStage.setTitle("Liikuntapäiväkirja");
         primaryStage.setScene(startScene);
+        primaryStage.centerOnScreen();
         primaryStage.show();
     }
     
     public void loginUser(Stage primaryStage) throws Exception {
+        // login scene
+        
         Label loginMessage = new Label("");
         Label usernameLabel = new Label("Käyttäjänimi:");
         TextField usernameField = new TextField();
@@ -122,7 +120,6 @@ public class Main extends Application {
         Button goBackButton = new Button("takaisin");
             
         loginUserButton.setOnAction(e-> {
-
             String username = usernameField.getText();
             String password = passwordField.getText();
                 
@@ -139,7 +136,6 @@ public class Main extends Application {
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         });
             
         goBackButton.setOnAction(ev-> {
@@ -155,21 +151,20 @@ public class Main extends Application {
         loginPane.add(loginMessage, 1, 3);
         loginPane.add(goBackButton, 0, 4);
 
-        // tyylittelyä: lisätään tyhjää tilaa reunoille ym
         loginPane.setHgap(10);
         loginPane.setVgap(10);
         loginPane.setPadding(new Insets(10, 10, 10, 10));
                        
-        loginScene = new Scene(loginPane);
-
+        loginScene = new Scene(loginPane, 250, 180);
         primaryStage.setScene(loginScene);
         primaryStage.show();
 
     }
     
     public void createUser(Stage primaryStage) {
+        // new user scene
+        
         Label loginMessage = new Label("");
-
         Label newUsernameLabel = new Label("Käyttäjänimi:");
         TextField newUsernameField = new TextField();
         Label newPasswordLabel = new Label("Salasana:");
@@ -178,7 +173,6 @@ public class Main extends Application {
         Button goBackButton = new Button("takaisin");
         
         createUserButton.setOnAction(ev-> {
-
             try {
                 String username = newUsernameField.getText();
                 String password = newPasswordField.getText();
@@ -200,7 +194,6 @@ public class Main extends Application {
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }); 
         
         goBackButton.setOnAction(ev-> {
@@ -216,21 +209,219 @@ public class Main extends Application {
         createUserPane.add(loginMessage, 1, 3);
         createUserPane.add(goBackButton, 0, 4);
 
-        // tyylittelyä: lisätään tyhjää tilaa reunoille ym
         createUserPane.setHgap(10);
         createUserPane.setVgap(10);
         createUserPane.setPadding(new Insets(10, 10, 10, 10));
                        
-        newUserScene = new Scene(createUserPane);
-
+        newUserScene = new Scene(createUserPane, 250, 180);
         primaryStage.setScene(newUserScene);
         primaryStage.show();
-
     }
     
     public void loggedIn(Stage primaryStage, String username) throws Exception {
+        // logged in scene
+        
         BorderPane borderPane = new BorderPane();   
         borderPane.setTop(getTopBox(primaryStage, username));
+        GridPane createPane = createEntry(primaryStage);
+
+        ScrollPane entriesScrollbar = new ScrollPane();
+        entriesScrollbar.setPrefViewportHeight(400);   
+        entriesScrollbar.setPrefViewportWidth(500); 
+        entriesScrollbar.setMaxSize(700, 600);
+
+        Label entriesLabel = new Label("15 viimeisintä merkintää:");
+        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+        diaryEntryNodes = new VBox(10);
+        diaryEntryNodes.setMinWidth(300);
+        diaryEntryNodes.setStyle("-fx-background-color: #ffffff;");
+        redrawDiaryList();
+        entriesScrollbar.setContent(diaryEntryNodes);
+        entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
+        
+        Button viewAll = new Button("näe kaikki merkinnät");
+        
+        viewAll.setOnAction(ev-> {
+            try {
+                allEntriesScene(primaryStage, username);
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        Label addExerciseLabel = new Label("Lisää uusi merkintä:");
+        addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+        
+        VBox allEntries = new VBox();
+        allEntries.setSpacing(10);
+        allEntries.setPadding(new Insets(20));
+        allEntries.setStyle("-fx-background-color: #f4f8ff;");
+        allEntries.getChildren().addAll(addExerciseLabel, createPane, entriesLabel, entriesScrollbar, viewAll);
+        borderPane.setCenter(allEntries);
+
+        VBox userHighscores = new VBox();
+        Label userHighscoreLabel = new Label("Parhaat viikkopisteeesi");
+        userHighscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+        userHighscoreNodes = new VBox();
+        userHighscoreNodes.setMaxWidth(200);
+        userHighscoreNodes.setMinWidth(100);
+        redrawUserHighscoreList();
+        userHighscores.getChildren().addAll(userHighscoreLabel, userHighscoreNodes);
+
+        VBox highscores = new VBox();
+        Label highscoreLabel = new Label("Parhaat viikkopisteet käyttäjien kesken");
+        highscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
+        highscoreNodes = new VBox();
+        highscoreNodes.setMaxWidth(220);
+        highscoreNodes.setMinWidth(100);
+        redrawHighscoreList();
+        highscores.getChildren().addAll(highscoreLabel, highscoreNodes);
+        
+        VBox allHighscores = new VBox();
+        allHighscores.setMaxWidth(300);
+        Label allHighscoresLabel = new Label("Tuloslistat");
+        allHighscoresLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+        allHighscores.setSpacing(10);
+        allHighscores.setPadding(new Insets(20, 10, 10, 10));
+        allHighscores.getChildren().addAll(allHighscoresLabel, userHighscores, highscores);
+        borderPane.setRight(allHighscores);
+        
+        Label infoText = new Label("Jokaisesta liikuntatunnista ansaitset 10 pistettä (eli esim. 2.5 tuntia = 25 pistettä)");
+        infoText.setWrapText(true);
+        
+        weeklyPoints = new VBox(10);
+        redrawWeeklyPoints();
+        weeklyGoal = new VBox(10);
+        redrawWeeklyGoal();
+        
+        HBox goalFieldAndButton = new HBox(10);
+        TextField newGoalField = new TextField();
+        newGoalField.setMaxWidth(50);
+        Button newGoalButton = new Button("aseta uusi tavoite");
+        goalFieldAndButton.getChildren().addAll(newGoalButton, newGoalField);
+        Label goalLabel = new Label("");
+        
+        VBox allPointsAndGoals = new VBox();
+        allPointsAndGoals.setSpacing(10);
+        allPointsAndGoals.setMaxWidth(240);
+        allPointsAndGoals.setPadding(new Insets(20, 10, 10, 10));
+        allPointsAndGoals.getChildren().addAll(infoText, weeklyPoints, weeklyGoal, goalFieldAndButton, goalLabel);
+        borderPane.setLeft(allPointsAndGoals);
+        
+        newGoalButton.setOnAction(ev-> {
+            String goalS = newGoalField.getText();
+
+            if (diaryService.isDouble(goalS) != true) {
+                goalLabel.setText("Muoto väärä");
+                goalLabel.setTextFill(Color.RED);
+            } else {
+                double goal = Double.parseDouble(goalS);
+                diaryService.createWeeklyGoal(goal);
+                goalLabel.setText("");
+                newGoalField.clear();
+                try {
+                    redrawWeeklyGoal();
+                } catch (Exception ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        
+        loggedInScene = new Scene(borderPane, 1000, 700);
+        primaryStage.setScene(loggedInScene);
+        primaryStage.centerOnScreen();
+        primaryStage.show();
+         
+    }
+    
+    public void allEntriesScene(Stage primaryStage, String username) throws Exception {
+        // get all entries-scene
+        
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(getTopBox(primaryStage, username));
+
+        VBox allEntries = new VBox();
+        allEntries.setPadding(new Insets(10));
+        Label entriesLabel = new Label("Kaikki kirjoittamasi merkinnät:");
+        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+
+        ScrollPane entriesScrollbar = new ScrollPane();
+        entriesScrollbar.setPrefViewportHeight(500);   
+        entriesScrollbar.setPrefViewportWidth(650); 
+        entriesScrollbar.setMaxSize(620, 620);
+
+        allDiaryNodes = new VBox(10);
+        allDiaryNodes.setMinWidth(280);
+        redrawAllDiaryList();
+        entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
+        entriesScrollbar.setContent(allDiaryNodes);
+        
+        Button backButton = new Button("takaisin");
+        
+        backButton.setOnAction(ev-> {
+            try {
+                loggedIn(primaryStage, username);
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        allEntries.getChildren().addAll(entriesLabel, entriesScrollbar, backButton);
+        allEntries.setStyle("-fx-background-color: #f4f8ff;");
+        allEntries.setSpacing(10);
+        borderPane.setCenter(allEntries);
+        
+        Label weekPointsLabel = new Label("Kaikki viikkopisteet:");
+        weekPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+        allWeekPointsNodes = new VBox();
+        VBox weekPointsBox = new VBox(10);
+        weekPointsBox.setMinSize(240, 400);
+        weekPointsBox.setPadding(new Insets(20));
+        weekPointsBox.getChildren().addAll(weekPointsLabel, allWeekPointsNodes);
+        redrawAllWeekPoints();
+        borderPane.setRight(weekPointsBox);
+        
+        HBox emptyBox = new HBox();
+        emptyBox.setMinSize(100, 100);
+        borderPane.setLeft(emptyBox);
+        
+        allEntriesScene = new Scene(borderPane, 1000, 700);
+        primaryStage.setScene(allEntriesScene);
+        primaryStage.show();
+    }
+    
+    public Node getTopBox(Stage primaryStage, String username) {
+        Label titelText = new Label("Liikuntapäiväkirja");
+        titelText.setFont((Font.font(null, FontWeight.BOLD, 30)));
+        Label loginText = new Label("Olet kirjautunut sisään käyttäjällä " + username);
+        loginText.setFont((Font.font(null, FontWeight.NORMAL, 14)));
+        
+        VBox welcomeBox = new VBox();
+        welcomeBox.setSpacing(10);
+
+        welcomeBox.getChildren().addAll(titelText, loginText);
+
+        Button logoutButton = new Button("kirjaudu ulos");
+        HBox buttonBox = new HBox(logoutButton);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        HBox.setHgrow(buttonBox, Priority.ALWAYS);
+        
+        HBox topBox = new HBox();
+        topBox.setSpacing(10);
+        topBox.getChildren().addAll(welcomeBox, buttonBox);
+//        topBox.setPadding(new Insets(20));
+        topBox.setPadding(new Insets(20, 20, 20, 350));
+        topBox.setStyle("-fx-background-color: #d3efff;");
+        
+        logoutButton.setOnAction(ev-> {
+            diaryService.logout();
+            start(primaryStage);
+        });
+        
+        return topBox;
+    }
+    
+    public GridPane createEntry(Stage primaryStage) {
         
         Label newHourLabel = new Label("Tuntia:");
         TextField newHourField = new TextField();
@@ -244,7 +435,7 @@ public class Main extends Application {
         Label newContentLabel = new Label("Kuvaus:");
         TextArea newContentField = new TextArea();
         newContentField.setPrefWidth(400);
-        newContentField.setPrefHeight(300);
+        newContentField.setMinHeight(80);
         Label createMessage = new Label("");
         Button createExcercise = new Button("lisää");
         
@@ -311,200 +502,10 @@ public class Main extends Application {
             }
         });
         
-        ScrollPane entriesScrollbar = new ScrollPane();
-        entriesScrollbar.setPrefViewportHeight(400);   
-        entriesScrollbar.setPrefViewportWidth(500); 
-        entriesScrollbar.setMaxSize(700, 600);
-
-        Label entriesLabel = new Label("15 viimeisintä merkintää:");
-        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-        diaryEntryNodes = new VBox(10);
-        diaryEntryNodes.setMinWidth(280);
-        diaryEntryNodes.setStyle("-fx-background-color: #ffffff;");
-        redrawDiaryList();
-        entriesScrollbar.setContent(diaryEntryNodes);
-        entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
-        
-        Button viewAll = new Button("näe kaikki merkinnät");
-        
-        viewAll.setOnAction(ev-> {
-            try {
-                allEntriesScene(primaryStage, username);
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        
-        Label addExerciseLabel = new Label("Lisää uusi merkintä:");
-        addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
-        
-        VBox allEntries = new VBox();
-        allEntries.setSpacing(10);
-        allEntries.setPadding(new Insets(20));
-        allEntries.setStyle("-fx-background-color: #f4f8ff;");
-
-        allEntries.getChildren().addAll(addExerciseLabel, createPane, entriesLabel, entriesScrollbar, viewAll);
-        borderPane.setCenter(allEntries);
-
-        VBox userHighscores = new VBox();
-        Label userHighscoreLabel = new Label("Parhaat viikkopisteeesi");
-        userHighscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-
-        userHighscoreNodes = new VBox();
-        userHighscoreNodes.setMaxWidth(200);
-        userHighscoreNodes.setMinWidth(100);
-        redrawUserHighscoreList();
-        userHighscores.getChildren().addAll(userHighscoreLabel, userHighscoreNodes);
-
-        VBox highscores = new VBox();
-        Label highscoreLabel = new Label("Parhaat viikkopisteet käyttäjien kesken");
-        highscoreLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-
-        highscoreNodes = new VBox();
-        highscoreNodes.setMaxWidth(200);
-        highscoreNodes.setMinWidth(100);
-        redrawHighscoreList();
-        highscores.getChildren().addAll(highscoreLabel, highscoreNodes);
-        
-        VBox allHighscores = new VBox();
-        Label allHighscoresLabel = new Label("Tuloslistat");
-        allHighscoresLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
-
-        allHighscores.setSpacing(10);
-        allHighscores.setPadding(new Insets(20));
-        allHighscores.getChildren().addAll(allHighscoresLabel, userHighscores, highscores);
-        borderPane.setRight(allHighscores);
-        
-        Label infoText =new Label("Jokaisesta liikuntatunnista ansaitset 10 pistettä (eli esim. 2.5 tuntia = 25 pistettä)");
-        infoText.setWrapText(true);
-        
-        weeklyPoints = new VBox(10);
-        redrawWeeklyPoints();
-        weeklyGoal = new VBox(10);
-        redrawWeeklyGoal();
-        
-        HBox goalFieldAndButton = new HBox(10);
-        TextField newGoalField = new TextField();
-        newGoalField.setMaxWidth(50);
-        Button newGoalButton = new Button("aseta uusi tavoite");
-        goalFieldAndButton.getChildren().addAll(newGoalButton, newGoalField);
-        Label goalLabel = new Label("");
-        
-        VBox allPointsAndGoals = new VBox();
-        allPointsAndGoals.setSpacing(10);
-        allPointsAndGoals.setMaxWidth(240);
-        allPointsAndGoals.setAlignment(Pos.CENTER);
-        allPointsAndGoals.setPadding(new Insets(10));
-        allPointsAndGoals.getChildren().addAll(infoText, weeklyPoints, weeklyGoal, goalFieldAndButton, goalLabel);
-        borderPane.setLeft(allPointsAndGoals);
-        
-        newGoalButton.setOnAction(ev-> {
-            String goalS = newGoalField.getText();
-
-            if (diaryService.isInteger(goalS) != true) {
-                goalLabel.setText("Muoto väärä");
-                goalLabel.setTextFill(Color.RED);
-            } else {
-                int goal = Integer.parseInt(goalS);
-                diaryService.createWeeklyGoal(goal);
-                goalLabel.setText("");
-                newGoalField.clear();
-                try {
-                    redrawWeeklyGoal();
-                } catch (Exception ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        
-        Scene scene = new Scene(borderPane, 1000, 600);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-         
+        return createPane;
     }
     
-    public void allEntriesScene(Stage primaryStage, String username) throws Exception {
-        // get all entries-view
-        BorderPane borderPane = new BorderPane();
-        borderPane.setTop(getTopBox(primaryStage, username));
-
-        VBox allEntries = new VBox();
-        allEntries.setPadding(new Insets(10));
-        Label entriesLabel = new Label("Kaikki kirjoittamasi merkinnät");
-        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
-
-        ScrollPane entriesScrollbar = new ScrollPane();
-        entriesScrollbar.setPrefViewportHeight(500);   
-        entriesScrollbar.setPrefViewportWidth(650); 
-        entriesScrollbar.setMaxSize(620, 620);
-
-        allDiaryNodes = new VBox(10);
-        allDiaryNodes.setMinWidth(280);
-        redrawAllDiaryList();
-        entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
-
-        entriesScrollbar.setContent(allDiaryNodes);
-        Button backButton = new Button("takaisin");
-        
-        backButton.setOnAction(ev-> {
-            try {
-                loggedIn(primaryStage, username);
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        
-        allEntries.getChildren().addAll(entriesLabel, entriesScrollbar, backButton);
-        allEntries.setStyle("-fx-background-color: #f4f8ff;");
-        allEntries.setSpacing(10);
-        borderPane.setCenter(allEntries);
-        
-        Label weekPointsLabel = new Label("Kaikki viikkopisteet:");
-        weekPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-        allWeekPointsNodes = new VBox(10);
-        VBox weekPointsBox = new VBox(10);
-        weekPointsBox.setMinSize(260, 400);
-        weekPointsBox.setPadding(new Insets(20));
-        weekPointsBox.getChildren().addAll(weekPointsLabel, allWeekPointsNodes);
-        redrawAllWeekPoints();
-
-        borderPane.setRight(weekPointsBox);
-        
-        Scene scene = new Scene(borderPane, 1000, 700);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-    
-    public Node getTopBox(Stage primaryStage, String username) {
-        Label titelText = new Label("Liikuntapäiväkirja");
-        titelText.setFont((Font.font(null, FontWeight.BOLD, 20)));
-        Label loginText = new Label("Olet kirjautunut sisään käyttäjällä " + username);
-        loginText.setFont((Font.font(null, FontWeight.NORMAL, 14)));
-        
-        VBox welcomeBox = new VBox();
-        welcomeBox.setSpacing(10);
-
-        welcomeBox.getChildren().addAll(titelText, loginText);
-
-        Button logoutButton = new Button("kirjaudu ulos");
-        HBox buttonBox = new HBox(logoutButton);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        HBox.setHgrow(buttonBox, Priority.ALWAYS);
-        
-        HBox topBox = new HBox();
-        topBox.setSpacing(10);
-        topBox.getChildren().addAll(welcomeBox, buttonBox);
-        topBox.setPadding(new Insets(20));
-        topBox.setStyle("-fx-background-color: #d3efff;");
-        
-        logoutButton.setOnAction(ev-> {
-            diaryService.logout();
-            start(primaryStage);
-        });
-        
-        return topBox;
-    }
-    
+    // redraw-metodit:
     public void redrawAll() throws Exception {
         redrawDiaryList();
         redrawUserHighscoreList();
@@ -573,23 +574,21 @@ public class Main extends Application {
         Label goalText = new Label("");
         Label weeklyGoalLabel = new Label("Viikkotavoitteesi: ");
         weeklyGoalLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-
-        VBox goalBox = new VBox();
         
         HBox box = new HBox();
         double points = diaryService.getWeeklyGoal();
         String pointsString = String.valueOf(points);
         Label label = new Label(pointsString);
         
-        if (diaryService.getPointsWeek(diaryService.getLatestWeek()) >= points) {
+        if (diaryService.weeklyGoalAchieved(points)) {
             goalText.setText("Tavoite saavutettu!");
             goalText.setTextFill(Color.GREEN);
         }
-        
+   
         box.getChildren().addAll(weeklyGoalLabel, label);
+        VBox goalBox = new VBox();
         goalBox.getChildren().addAll(box, goalText);
-        weeklyGoal.getChildren().add(goalBox);    
-        
+        weeklyGoal.getChildren().add(goalBox);     
     }
     
     private void redrawAllWeekPoints() throws Exception {
@@ -603,13 +602,15 @@ public class Main extends Application {
         }     
     }
     
+    // Nodet
     public Node createDiaryEntryNode(DiaryEntry entry) {
         HBox box = new HBox(10);
         Label label = new Label(entry.toString());
-        label.setMinHeight(28); 
+        label.setMinHeight(28);
+        label.setPrefWidth(460);
         box.setPadding(new Insets(5));
         box.setStyle("-fx-border-color: #ade1ff");
-        box.setMaxWidth(440);
+        box.setMaxWidth(460);
         label.setWrapText(true);
         box.getChildren().add(label);
         return box;
@@ -619,6 +620,8 @@ public class Main extends Application {
         HBox box = new HBox(10);
         Label label = new Label(entry.toString());
         label.setMinHeight(28);
+        label.setPrefWidth(580);
+
         box.setStyle("-fx-border-color: #ade1ff");
         box.setMaxWidth(600);
         label.setWrapText(true);
@@ -653,6 +656,7 @@ public class Main extends Application {
         HBox box = new HBox();
         Label label = new Label(number + ". Pisteet: " + entry.getValue() + ", viikko: " + entry.getKey());
         label.setPadding(new Insets(5));
+        label.setWrapText(true);
         box.getChildren().add(label);
         return box;
     }
@@ -661,6 +665,11 @@ public class Main extends Application {
         HBox box = new HBox();
         Label label = new Label(number + ". Pisteet: " + entry.getValue() + ", käyttäjä: " + entry.getKey()); 
         label.setPadding(new Insets(5));
+        label.setWrapText(true);
+        if (entry.getKey().equals(diaryService.getUsername())) {
+            label.setTextFill(Color.GREEN);
+        }
+
         box.getChildren().add(label);
         return box;
     }

@@ -49,7 +49,7 @@ public class DiaryService {
      * @param goal Käyttäjän ilmoittama tavoite
      * @return true jos tavoitteen lisääminen onnistui, muuten false
      */
-    public boolean createWeeklyGoal(int goal) {
+    public boolean createWeeklyGoal(double goal) {
         try {
             userDao.setWeeklyGoal(goal, loggedIn.getUsername());
         } catch (Exception ex) {
@@ -63,8 +63,8 @@ public class DiaryService {
      * @return Käyttäjän tavoite
      * @throws Exception jos ilmestyy virhe?
      */
-    public int getWeeklyGoal() throws Exception {
-        int goal = userDao.getWeeklyGoal(loggedIn.getUsername());
+    public double getWeeklyGoal() throws Exception {
+        double goal = userDao.getWeeklyGoal(loggedIn.getUsername());
         return goal;
     }
     
@@ -115,11 +115,18 @@ public class DiaryService {
         loggedIn = user;
         return true;
     }
-
+    /**
+     * Metodi joka palauttaa kirjautuneen käyttäjän.
+     * @return Käyttäjä joka on kirjautunut. 
+     */
     public User getLoggedUser() {
         return loggedIn;
     }
     
+    /**
+     * Metodi joka hakee kirjautuneen käyttäjän käyttäjänimen.
+     * @return Kirjautuneen käyttäjän käyttäjänimen
+     */
     public String getUsername() {
         return loggedIn.getUsername();
     }
@@ -161,7 +168,7 @@ public class DiaryService {
     }
     
     /**
-     * Meotdi hakee käyttäjän kaikki viikkopisteet
+     * Meotdi hakee käyttäjän kaikki viikkopisteet.
      * @return Käyttäjän kaikki viikkopisteet (viikko + piste)
      * @throws Exception jos tapahtuu virhe?
      */
@@ -232,6 +239,22 @@ public class DiaryService {
             return false; 
         }
         return true;
+    }
+    
+    /**
+     * Metodi tarkistaa, jos käyttäjän viikkotavoite on saavutettu.
+     * @param points Käyttäjän viimeisen viikon pisteet
+     * @return true jos tavoite on saavutettu, muuten false
+     * @throws Exception jos tapahtuu virhe?
+     */
+    public boolean weeklyGoalAchieved(double points) throws Exception {
+        if (getWeeklyGoal() == 0.0) {
+            // Jos käyttäjällä ei ole viikkotavoitetta (= 0.0)
+            return false;
+        } else if (getPointsWeek(getLatestWeek()) >= points ) {
+            return true;
+        }
+        return false;
     }
 
 }

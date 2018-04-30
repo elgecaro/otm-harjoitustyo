@@ -47,8 +47,8 @@ public class DiaryServiceEntryTest {
     
     @Test
     public void getWeeklyGoal() throws Exception {
-        diaryService.createWeeklyGoal(10);
-        assertEquals(10, diaryService.getWeeklyGoal());
+        diaryService.createWeeklyGoal(10.5);
+        assertEquals(10.5, diaryService.getWeeklyGoal(), 0.0);
     }
     
     @Test

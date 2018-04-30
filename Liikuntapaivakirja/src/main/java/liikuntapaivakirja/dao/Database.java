@@ -59,7 +59,7 @@ public class Database {
         PreparedStatement stmt = database.getConnection().prepareStatement("CREATE TABLE User (\n" + 
             "username varchar(15) PRIMARY KEY CHECK (LENGTH (username) > 2), \n" + 
             "password varchar NOT NULL CHECK (LENGTH (password) > 5), \n" +
-            "weeklyGoal integer \n" +
+            "weeklyGoal float \n" +
             ");"); 
         stmt.executeUpdate(); 
         stmt.close();    
