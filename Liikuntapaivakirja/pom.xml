@@ -64,6 +64,11 @@
         </plugin>
         <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+        </plugin> 
+        <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.6</version>
                 <executions>
@@ -81,6 +86,7 @@
                         </configuration>
                     </execution>
                 </executions>
+                
             </plugin>
     </plugins>
 </build>

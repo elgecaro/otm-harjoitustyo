@@ -251,7 +251,7 @@ public class DiaryService {
         if (getWeeklyGoal() == 0.0) {
             // Jos käyttäjällä ei ole viikkotavoitetta (= 0.0)
             return false;
-        } else if (getPointsWeek(getLatestWeek()) >= points ) {
+        } else if (getPointsWeek(getLatestWeek()) >= points) {
             return true;
         }
         return false;
