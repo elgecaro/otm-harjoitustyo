@@ -2,6 +2,7 @@
 package liikuntapaivakirja.ui;
 
 import java.io.FileInputStream;
+import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -64,13 +65,8 @@ public class Main extends Application {
         String databaseAddress = properties.getProperty("databaseAddress");
 
         Database database = new Database(databaseAddress);
-        database.getConnection();
-        if (database.tableExist((database.getConnection()), "User") == false) {
-            database.createTableUser(database.getConnection(), database);
-        } if (database.tableExist((database.getConnection()), "Diary") == false) {
-            database.createTableDiary(database.getConnection(), database);
-        }
-        
+        Connection conn = database.getConnection();
+        database.checkForTables(conn, database);
         UserDao userdao = new DbUserDao(database);
         DiaryEntryDao diarydao = new DbDiaryEntryDao(database);
         diaryService = new DiaryService(diarydao, userdao);

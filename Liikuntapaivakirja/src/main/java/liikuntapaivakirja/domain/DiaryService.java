@@ -74,9 +74,6 @@ public class DiaryService {
      * @throws Exception jos ilmestyy virhe?
      */
     public List<DiaryEntry> getAll() throws Exception {
-        if (loggedIn == null) {
-            return new ArrayList<>();
-        }
         List<DiaryEntry> diaryEntrys = new ArrayList<>();
         diaryEntrys = diaryEntryDao.getAll(loggedIn);
         return diaryEntrys;
@@ -88,9 +85,6 @@ public class DiaryService {
      * @throws Exception jos ilmestyy virhe?
      */
     public List<DiaryEntry> get15Latest() throws Exception {
-        if (loggedIn == null) {
-            return new ArrayList<>();
-        }
         List<DiaryEntry> diaryEntrys = new ArrayList<>();
         diaryEntrys = diaryEntryDao.get15Latest(loggedIn);
         return diaryEntrys;

@@ -1,36 +1,46 @@
 package liikuntapaivakirja.domain;
 
+import java.io.File;
 import java.sql.SQLException;
-import java.util.Arrays;
 import liikuntapaivakirja.dao.Database;
 import liikuntapaivakirja.dao.DbDiaryEntryDao;
 import liikuntapaivakirja.dao.DbUserDao;
 import liikuntapaivakirja.dao.UserDao;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import liikuntapaivakirja.dao.DiaryEntryDao;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
 
 public class DiaryServiceEntryTest {
-    private DiaryEntryDao diaryDao;
-    private UserDao userDao;
-    private DiaryService diaryService;
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
+    
+    DiaryEntryDao diaryDao;
+    UserDao userDao;
+    DiaryService diaryService;
+    Database database;
+    File testDatabase;
     
     @Before
     public void setUp() throws SQLException, Exception {
-        Database database = new Database("jdbc:sqlite:test.db");
-        database.getConnection();
+        testDatabase = testFolder.newFile("test.db");
+        database = new Database("jdbc:sqlite:" + testDatabase.getAbsolutePath());
+        database.checkForTables(database.getConnection(), database);
+        
         userDao = new DbUserDao(database);
         diaryDao = new DbDiaryEntryDao(database);
         diaryService = new DiaryService(diaryDao, userDao);
         diaryService.createUser("testUser1", "testpassword");
         diaryService.createUser("testUser2", "testpassword");
         diaryService.createUser("testUser3", "testpassword");
+        diaryService.createUser("testUser4", "testpassword");
+        
         diaryService.login("testUser1", "testpassword");
+        diaryService.createExercise(1, 2, 3, "running");
     }
     
     @Test 
@@ -82,8 +92,10 @@ public class DiaryServiceEntryTest {
     
     @Test
     public void getAll() throws Exception {
-        diaryService.createExercise(1, 2, 3, "running");
-        assertEquals("[Tunteja: 1.0        Päivä: 2        Viikko: 3" + "\n" + "Kuvaus: running]", diaryService.getAll().toString());
+        diaryService.createExercise(0.5, 2, 2, "walking");
+        assertEquals("[Tunteja: 0.5        Päivä: 2        Viikko: 2" + "\n" + 
+                "Kuvaus: walking, Tunteja: 1.0        Päivä: 2        Viikko: 3" + "\n" + 
+                "Kuvaus: running]", diaryService.getAll().toString());
     }
     
     @Test
@@ -104,16 +116,79 @@ public class DiaryServiceEntryTest {
     public void GetBestWeeks() throws Exception {
         diaryService.logout();
         diaryService.login("testUser2", "testpassword");
-        diaryService.createExercise(1.2, 1, 1, "walking");
+        diaryService.createExercise(0.5, 1, 1, "walking");
         diaryService.logout();
         diaryService.login("testUser3", "testpassword");
-        diaryService.createExercise(1.5, 1, 1, "swimming");
-        assertEquals("{testUser1=15.0, testUser3=15.0, testUser2=12.0}", diaryService.getBestWeeks().toString());
+        diaryService.createExercise(1.0, 1, 1, "swimming");
+        diaryService.createExercise(0.5, 2, 1, "swimming again");
+        assertEquals("{testUser3=15.0, testUser1=10.0, testUser2=5.0}", diaryService.getBestWeeks().toString());
     }
     
     @Test
     public void getLatestWeek() throws Exception {
+        diaryService.createExercise(1, 2, 1, "running");
+        diaryService.createExercise(1, 2, 2, "running more");
+        diaryService.createExercise(1, 2, 3, "running even more");
         assertEquals(3, diaryService.getLatestWeek());
+    }
+    
+    @Test
+    public void get15Latest() throws Exception {
+        assertEquals("[Tunteja: 1.0        Päivä: 2        Viikko: 3" + "\n" + "Kuvaus: running]", diaryService.get15Latest().toString());
+    }
+    
+    @Test
+    public void weeklyGoalAchieved() throws Exception {
+        diaryService.createWeeklyGoal(10);
+        assertTrue(diaryService.weeklyGoalAchieved(diaryService.getWeeklyGoal()));
+    }
+    
+    @Test
+    public void weeklyGoalNotAchieved() throws Exception {
+        diaryService.logout();
+        diaryService.login("testUser4", "testpassword");
+        assertFalse(diaryService.weeklyGoalAchieved(diaryService.getWeeklyGoal()));
+        
+        diaryService.createWeeklyGoal(100);
+        assertFalse(diaryService.weeklyGoalAchieved(diaryService.getWeeklyGoal()));
+    }
+   
+    @Test
+    public void isDouble() throws Exception {
+        assertTrue(diaryService.isDouble("1.0"));
+        assertTrue(diaryService.isDouble("2"));
+        assertFalse(diaryService.isDouble("tuntia"));
+    }
+    
+    @Test
+    public void isInteger() throws Exception {
+        assertTrue(diaryService.isInteger("1"));
+        assertFalse(diaryService.isInteger("päivä"));
+    }
+    
+    @Test
+    public void getAllWeekPoints() throws Exception {
+        diaryService.createExercise(1.5, 2, 1, "running");
+        diaryService.createExercise(0.5, 2, 2, "running");
+        assertEquals("{1=15.0, 2=5.0, 3=10.0}", diaryService.getAllWeekPoints().toString());
+    }
+    
+    @Test
+    public void deleteEntryWorks() throws Exception {
+        diaryService.logout();
+        diaryService.login("testUser4", "testpassword");
+        diaryService.createExercise(2, 1, 2, "olin ulkona");
+        DiaryEntry entry = new DiaryEntry(diaryService.getLoggedUser(), 2, 1, 2, "olin ulkona");
+        assertEquals("[Tunteja: 2.0        Päivä: 1        Viikko: 2" + "\n" + "Kuvaus: olin ulkona]", diaryService.getAll().toString());
+        
+        diaryService.deleteEntry(entry);
+        assertEquals("[]", diaryService.getAll().toString());
+    }
+    
+    @After
+    public void tearDown() {
+        testDatabase.delete();
+        testFolder.delete();
     }
 
 }

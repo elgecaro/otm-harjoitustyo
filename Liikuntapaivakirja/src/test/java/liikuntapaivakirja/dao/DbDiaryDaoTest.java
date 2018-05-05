@@ -1,37 +1,42 @@
 
 package liikuntapaivakirja.dao;
 
-import java.sql.Connection;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 import liikuntapaivakirja.domain.DiaryEntry;
 import liikuntapaivakirja.domain.User;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
 
 public class DbDiaryDaoTest {
-        User user;
-        DiaryEntry diary;
-        UserDao userDao;
-        DiaryEntryDao diaryDao;
-        Database database;
+    
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
+            
+    User user;
+    DiaryEntry diary;
+    UserDao userDao;
+    DiaryEntryDao diaryDao;
+    Database database;
+    File testDatabase;
       
     @Before
     public void setUp() throws SQLException, Exception {
-        database = new Database("jdbc:sqlite:test.db");
-        Connection connection = database.getConnection();
-
+        testDatabase = testFolder.newFile("test.db");
+        database = new Database("jdbc:sqlite:" + testDatabase.getAbsolutePath());
+        database.checkForTables(database.getConnection(), database);
+       
         userDao = new DbUserDao(database);
         diaryDao = new DbDiaryEntryDao(database);
         user = new User("Testikayttaja", "testisalasana");
         
         diary = new DiaryEntry(user, 1, 2, 3, "juoksin");
-
     }
     
     @Test
@@ -49,6 +54,7 @@ public class DbDiaryDaoTest {
     
     @Test
     public void createdDiaryEntriesAreListed() throws Exception {
+        diaryDao.create(diary);
         diaryDao.create(new DiaryEntry(user, 0.5, 1, 2, "uin"));
         List<DiaryEntry> diaryEntries = diaryDao.getAll(user);
         assertEquals(2, diaryEntries.size());
@@ -69,6 +75,7 @@ public class DbDiaryDaoTest {
     
     @After
     public void tearDown() {
+        testDatabase.delete();
+        testFolder.delete();
     }
-
 }
