@@ -37,8 +37,13 @@ import liikuntapaivakirja.dao.UserDao;
 import liikuntapaivakirja.domain.DiaryEntry;
 import liikuntapaivakirja.domain.DiaryService;
 import java.util.Properties;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.Region;
 import liikuntapaivakirja.dao.DiaryEntryDao;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 
 public class Main extends Application {
@@ -49,6 +54,7 @@ public class Main extends Application {
     private Scene loginScene;
     private Scene loggedInScene;
     private Scene allEntriesScene;
+    private Scene statisticsScene;
     private VBox diaryEntryNodes;
     private VBox allDiaryNodes;
     private VBox userHighscoreNodes;
@@ -76,7 +82,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         // start scene
         
-        Label loginText = new Label("Tervetuloa liikuntapäiväkirjaan");
+        Label loginText = new Label("Tervetuloa liikuntapäiväkirjaan!");
+        loginText.setFont((Font.font(null, FontWeight.BOLD, 14)));
         loginText.setTranslateY(-40);
         Button loginButton = new Button("kirjaudu sisään");
         Button createButton = new Button("luo uusi käyttäjä");
@@ -235,7 +242,7 @@ public class Main extends Application {
         entriesScrollbar.setContent(diaryEntryNodes);
         entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
         
-        Button viewAll = new Button("näe kaikki merkinnät");
+        Button viewAll = new Button("kaikki merkinnät");
         
         viewAll.setOnAction(ev-> {
             try {
@@ -245,6 +252,20 @@ public class Main extends Application {
             }
         });
         
+        Button viewStatistics = new Button("tilastoja");
+        
+        viewStatistics.setOnAction(ev-> {
+            try {
+                statisticsScene(primaryStage, username);
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        HBox buttonBox = new HBox(10);
+        buttonBox.setPadding(new Insets(20, 0, 0, 0));
+        buttonBox.getChildren().addAll(viewAll, viewStatistics);
+        
         Label addExerciseLabel = new Label("Lisää uusi merkintä:");
         addExerciseLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
         
@@ -252,7 +273,7 @@ public class Main extends Application {
         allEntries.setSpacing(10);
         allEntries.setPadding(new Insets(20));
         allEntries.setStyle("-fx-background-color: #f4f8ff;");
-        allEntries.getChildren().addAll(addExerciseLabel, createPane, entriesLabel, entriesScrollbar, viewAll);
+        allEntries.getChildren().addAll(addExerciseLabel, createPane, entriesLabel, entriesScrollbar, buttonBox);
         borderPane.setCenter(allEntries);
 
         VBox userHighscores = new VBox();
@@ -338,8 +359,8 @@ public class Main extends Application {
 
         VBox allEntries = new VBox();
         allEntries.setPadding(new Insets(10));
-        Label entriesLabel = new Label("Kaikki kirjoittamasi merkinnät:");
-        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+        Label entriesLabel = new Label("Kaikki päiväkirjamerkinnät:");
+        entriesLabel.setFont((Font.font(null, FontWeight.BOLD, 16)));
 
         ScrollPane entriesScrollbar = new ScrollPane();
         entriesScrollbar.setPrefViewportHeight(500);   
@@ -367,13 +388,7 @@ public class Main extends Application {
         allEntries.setSpacing(10);
         borderPane.setCenter(allEntries);
         
-        Label weekPointsLabel = new Label("Kaikki viikkopisteet:");
-        weekPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
-        allWeekPointsNodes = new VBox();
-        VBox weekPointsBox = new VBox(10);
-        weekPointsBox.setMinSize(240, 400);
-        weekPointsBox.setPadding(new Insets(20));
-        weekPointsBox.getChildren().addAll(weekPointsLabel, allWeekPointsNodes);
+        Node weekPointsBox = createWeekPointsBox();
         redrawAllWeekPoints();
         borderPane.setRight(weekPointsBox);
         
@@ -383,6 +398,47 @@ public class Main extends Application {
         
         allEntriesScene = new Scene(borderPane, 1000, 700);
         primaryStage.setScene(allEntriesScene);
+        primaryStage.show();
+    }
+    
+    public void statisticsScene(Stage primaryStage, String username) throws Exception {
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(getTopBox(primaryStage, username));
+        
+        Button backButton = new Button("takaisin");
+        
+        backButton.setOnAction(ev-> {
+            try {
+                loggedIn(primaryStage, username);
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        Node chart = createChart();
+        chart.setStyle("-fx-background: rgb(255,255,255);");
+        
+        Node statistics = createStatistics();
+        
+        VBox centerBox = new VBox(10);
+        Label statsLabel = new Label("Tilastoja:");
+        statsLabel.setFont((Font.font(null, FontWeight.BOLD, 16)));
+        centerBox.setPadding(new Insets(10));
+        centerBox.setStyle("-fx-background-color: #f4f8ff;");
+        centerBox.getChildren().addAll(statsLabel, chart, statistics, backButton);
+        
+        borderPane.setCenter(centerBox);
+        
+        Node weekPointsBox = createWeekPointsBox();
+        redrawAllWeekPoints();
+        borderPane.setRight(weekPointsBox);
+        
+        HBox emptyBox = new HBox();
+        emptyBox.setMinSize(100, 100);
+        borderPane.setLeft(emptyBox);
+        
+        statisticsScene = new Scene(borderPane, 1000, 720);
+        primaryStage.setScene(statisticsScene);
         primaryStage.show();
     }
     
@@ -405,7 +461,6 @@ public class Main extends Application {
         HBox topBox = new HBox();
         topBox.setSpacing(10);
         topBox.getChildren().addAll(welcomeBox, buttonBox);
-//        topBox.setPadding(new Insets(20));
         topBox.setPadding(new Insets(20, 20, 20, 350));
         topBox.setStyle("-fx-background-color: #d3efff;");
         
@@ -501,6 +556,75 @@ public class Main extends Application {
         return createPane;
     }
     
+    public Node createWeekPointsBox() throws Exception {
+        Label weekPointsLabel = new Label("Kaikki viikkopisteet:");
+        weekPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
+        allWeekPointsNodes = new VBox();
+        VBox weekPointsBox = new VBox(10);
+        weekPointsBox.setMinSize(240, 400);
+        weekPointsBox.setPadding(new Insets(20));
+        weekPointsBox.getChildren().addAll(weekPointsLabel, allWeekPointsNodes);
+        
+        return weekPointsBox;
+    }
+    
+    public Node createChart() throws Exception {
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("viikko");
+        yAxis.setLabel("pisteet");
+        LineChart<String,Number> lineChart = new LineChart<>(xAxis,yAxis);
+                
+        lineChart.setTitle("Viikkojen pisteet");
+        lineChart.setLegendVisible(false);
+        XYChart.Series series = new XYChart.Series();
+        
+        lineChart.setStyle("CHART_COLOR_1: #84b3ff ;");
+        
+        Map<Integer, Double> allPoints = diaryService.getAllWeekPoints();
+        Iterator<Map.Entry<Integer, Double>> entries = allPoints.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<Integer, Double> entry = entries.next();
+            series.getData().add(new XYChart.Data(entry.getKey().toString(), entry.getValue()));
+        }     
+        
+        lineChart.getData().add(series);
+        ScrollPane lineChartPane = new ScrollPane();
+        lineChartPane.setMaxSize(600, 600);
+        lineChartPane.setContent(lineChart);
+        return lineChartPane;
+    }
+    
+    public Node createStatistics() throws Exception {
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+        
+        Map<Integer, Double> allPoints = diaryService.getAllWeekPoints();
+        Iterator<Map.Entry<Integer, Double>> entries = allPoints.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<Integer, Double> entry = entries.next();
+            stats.addValue(entry.getValue());
+        }
+
+        double mean = stats.getMean();
+        String meanS = String.valueOf(mean);
+        double min = stats.getMin();
+        String minS = String.valueOf(min);
+        double max = stats.getMax();
+        String maxS = String.valueOf(max);
+        
+        VBox statisticsBox = new VBox(10);
+        
+        Label meanLabel = new Label("Viikopisteiden keskiarvo: " + meanS);
+        Label minLabel = new Label("Viikkopisteiden pienin arvo: " + minS);
+        Label maxLabel = new Label("Viikkopisteiden suurin arvo: " + maxS);
+        
+        statisticsBox.getChildren().addAll(meanLabel, minLabel, maxLabel);
+        statisticsBox.setPadding(new Insets(10, 10, 20, 10));
+        
+        return statisticsBox;
+        
+    }
+    
     // redraw-metodit:
     public void redrawAll() throws Exception {
         redrawDiaryList();
@@ -590,10 +714,10 @@ public class Main extends Application {
     private void redrawAllWeekPoints() throws Exception {
         allWeekPointsNodes.getChildren().clear();
         
-        Map<Double, Integer> allPoints = diaryService.getAllWeekPoints();
-        Iterator<Map.Entry<Double, Integer>> entries = allPoints.entrySet().iterator();
+        Map<Integer, Double> allPoints = diaryService.getAllWeekPoints();
+        Iterator<Map.Entry<Integer, Double>> entries = allPoints.entrySet().iterator();
         while (entries.hasNext()) {
-            Map.Entry<Double, Integer> entry = entries.next();
+            Map.Entry<Integer, Double> entry = entries.next();
             allWeekPointsNodes.getChildren().add(createAllWeekPointsNode(entry));        
         }     
     }
