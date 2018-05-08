@@ -24,7 +24,7 @@
 | 19.4 |  2h    | Käyttöliittymään lisää toiminnallisuutta lisätty: käyttäjä näkee omat liikuntatiedot ja voi lisätä uusia. Database-luokkaan lisätty metodit, joka tarkistaa jos sisältää taulukot + luo niitä jos tietokanta on tyhjä
 | 20.4 |  2h    | Käyttis parannettu + toiminallisuutta lisätty: käyttäjä näkee viikkopisteet, 15 viimeiset kirjoitukset sekä 3 omaa parasta + 3 käyttäjien kesken parasta viikkotulosta
 | 21.4 |  3h    | Käyttiksen ulkomuoto vähän parannettu (vielä paljon kesken) + toiminallisuutta: käyttäjä näkee viikkotavoitteet, voi asettaa uuden viikkotavoitteen + näkee kaikki kirjoitukset
-| 22.4 |  1,5h    | 3 sekvenssikaaviota tehty ja tekstiä niihin lisätty
+| 22.4 |  1,5h  | 3 sekvenssikaaviota tehty ja tekstiä niihin lisätty
 |      |  2h    | Diary-taulukon weeklyGoal siiretty User-taulukkoon: tällöin uusi käyttäjä voi asettaa viikkotavoitteen jo ennen kuin on lisännyt kirjoituksen.
 | 23.4 |  1h    | Pieniä muutoksia tehty käyttikseen (vähän parempi layout)
 | 24.4 |  0,5h  | Refraktorointia (vanha tekstuaalinen testikäyttöliittymä poistettu + testGuin uudelleennimentämistä) + github release
@@ -32,7 +32,11 @@
 | 26.4 |  3h    | JavaDoc otettu käyttöön + refraktorointia (Diary > DiaryEntry) ja arkkitehtuurikuvaus päivitetty
 | 28.4 |  2,5h  | Toiminallisuutta parannettu: käyttäjä näkee kaikki viikkopisteensä + tuloslistassa näkyy tietty käyttäjä vain kerran 
 | 29.4 |  2h    | Toiminallisuutta lisätty: käyttäjä voi poistaa päiväkirjamerkinnän, käyttis parannettu + sovelluslogiikkaan siirretty esim. *isDouble*-metodi
-| 30.4 |  3h  | JavaDoc-kommenteja lisätty, käyttistä taas parannettu ja kaikkien käyttäjien tuloslista korjattu
-| 2.5 |  0,5h   | Pientä korjausta, testit ok ja uusi release tehty
+| 30.4 |  3h    | JavaDoc-kommenteja lisätty, käyttistä taas parannettu ja kaikkien käyttäjien tuloslista korjattu
+| 2.5  |  0,5h  | Pientä korjausta, testit ok ja uusi release tehty
+| 5.5  |  3,5h  | Testejä lisätty + testitietokannan toteutus paremmaksi TemporaryFile:n avulla + Create table if not exist kuntoon 
+| 6.5  |  4h    | Toiminallisuutta lisätty: tilasto-sivu jossa tietoa (esim. kaavio viikkopisteistä, viikkopisteiden keskiarvo)
+| 8.5  |  1h    | Gui:n virheilmoitukset kuntoon
 
-**Yhteensä:** 58,5h
+
+**Yhteensä:** 67h

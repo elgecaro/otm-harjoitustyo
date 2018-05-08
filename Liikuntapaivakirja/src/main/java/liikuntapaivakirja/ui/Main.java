@@ -3,12 +3,12 @@ package liikuntapaivakirja.ui;
 
 import java.io.FileInputStream;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
@@ -37,6 +37,7 @@ import liikuntapaivakirja.dao.UserDao;
 import liikuntapaivakirja.domain.DiaryEntry;
 import liikuntapaivakirja.domain.DiaryService;
 import java.util.Properties;
+import javafx.event.ActionEvent;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -62,14 +63,14 @@ public class Main extends Application {
     private VBox weeklyPoints;
     private VBox weeklyGoal;
     private VBox allWeekPointsNodes;
+    private Label errorMessage;
     
     @Override
     public void init() throws Exception {
         Properties properties = new Properties();
-        properties.load(new FileInputStream("config.properties"));
-    
+        properties.load(new FileInputStream("config.properties")); 
         String databaseAddress = properties.getProperty("databaseAddress");
-
+        
         Database database = new Database(databaseAddress);
         Connection conn = database.getConnection();
         database.checkForTables(conn, database);
@@ -89,12 +90,8 @@ public class Main extends Application {
         Button createButton = new Button("luo uusi käyttäjä");
         createButton.setTranslateY(35);
         
-        loginButton.setOnAction((event)-> {
-            try {
-                loginUser(primaryStage);
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        loginButton.setOnAction((ActionEvent event)-> {
+            loginUser(primaryStage);
         });
              
         createButton.setOnAction(e-> {
@@ -111,7 +108,7 @@ public class Main extends Application {
         primaryStage.show();
     }
     
-    public void loginUser(Stage primaryStage) throws Exception {
+    public void loginUser(Stage primaryStage) {
         // login scene
         
         Label loginMessage = new Label("");
@@ -137,7 +134,8 @@ public class Main extends Application {
                     loginMessage.setTextFill(Color.RED);
                 }
             } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                loginMessage.setText("Kirjautuminen ei onnistunut");      
+                loginMessage.setTextFill(Color.RED);
             }
         });
             
@@ -161,7 +159,6 @@ public class Main extends Application {
         loginScene = new Scene(loginPane, 250, 180);
         primaryStage.setScene(loginScene);
         primaryStage.show();
-
     }
     
     public void createUser(Stage primaryStage) {
@@ -195,12 +192,13 @@ public class Main extends Application {
                     loginMessage.setTextFill(Color.RED);
                 }
             } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                loginMessage.setText("Käyttäjän luominen ei onnistunut");
+                loginMessage.setTextFill(Color.RED);
             }
         }); 
         
         goBackButton.setOnAction(ev-> {
-        start(primaryStage);
+            start(primaryStage);
         });
             
         GridPane createUserPane = new GridPane();
@@ -221,11 +219,13 @@ public class Main extends Application {
         primaryStage.show();
     }
     
-    public void loggedIn(Stage primaryStage, String username) throws Exception {
+    public void loggedIn(Stage primaryStage, String username) {
         // logged in scene
         
         BorderPane borderPane = new BorderPane();   
         borderPane.setTop(getTopBox(primaryStage, username));
+        borderPane.setBottom(errorMessage);
+        
         GridPane createPane = createEntry(primaryStage);
 
         ScrollPane entriesScrollbar = new ScrollPane();
@@ -238,28 +238,21 @@ public class Main extends Application {
         diaryEntryNodes = new VBox(10);
         diaryEntryNodes.setMinWidth(300);
         diaryEntryNodes.setStyle("-fx-background-color: #ffffff;");
+        
         redrawDiaryList();
+        
         entriesScrollbar.setContent(diaryEntryNodes);
         entriesScrollbar.setStyle("-fx-background: rgb(255,255,255);");
         
         Button viewAll = new Button("kaikki merkinnät");
-        
-        viewAll.setOnAction(ev-> {
-            try {
-                allEntriesScene(primaryStage, username);
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        
         Button viewStatistics = new Button("tilastoja");
         
+        viewAll.setOnAction(ev-> {
+            allEntriesScene(primaryStage, username);
+        });
+        
         viewStatistics.setOnAction(ev-> {
-            try {
-                statisticsScene(primaryStage, username);
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            statisticsScene(primaryStage, username);
         });
         
         HBox buttonBox = new HBox(10);
@@ -336,26 +329,22 @@ public class Main extends Application {
                 diaryService.createWeeklyGoal(goal);
                 goalLabel.setText("");
                 newGoalField.clear();
-                try {
-                    redrawWeeklyGoal();
-                } catch (Exception ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                redrawWeeklyGoal();
             }
         });
         
         loggedInScene = new Scene(borderPane, 1000, 700);
         primaryStage.setScene(loggedInScene);
         primaryStage.centerOnScreen();
-        primaryStage.show();
-         
+        primaryStage.show(); 
     }
     
-    public void allEntriesScene(Stage primaryStage, String username) throws Exception {
+    public void allEntriesScene(Stage primaryStage, String username) {
         // get all entries-scene
         
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(getTopBox(primaryStage, username));
+        borderPane.setBottom(errorMessage);
 
         VBox allEntries = new VBox();
         allEntries.setPadding(new Insets(10));
@@ -376,11 +365,7 @@ public class Main extends Application {
         Button backButton = new Button("takaisin");
         
         backButton.setOnAction(ev-> {
-            try {
-                loggedIn(primaryStage, username);
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            loggedIn(primaryStage, username);
         });
         
         allEntries.getChildren().addAll(entriesLabel, entriesScrollbar, backButton);
@@ -401,23 +386,19 @@ public class Main extends Application {
         primaryStage.show();
     }
     
-    public void statisticsScene(Stage primaryStage, String username) throws Exception {
+    public void statisticsScene(Stage primaryStage, String username) {
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(getTopBox(primaryStage, username));
+        borderPane.setBottom(errorMessage);
         
         Button backButton = new Button("takaisin");
         
         backButton.setOnAction(ev-> {
-            try {
-                loggedIn(primaryStage, username);
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            loggedIn(primaryStage, username);
         });
         
         Node chart = createChart();
         chart.setStyle("-fx-background: rgb(255,255,255);");
-        
         Node statistics = createStatistics();
         
         VBox centerBox = new VBox(10);
@@ -505,7 +486,7 @@ public class Main extends Application {
         createPane.add(createExcercise, 0, 3);
         createPane.add(createMessage, 0, 4, 4, 1);
         
-        createExcercise.setOnAction(e->{
+        createExcercise.setOnAction(e-> {
             String hourS = newHourField.getText();
             String dayS = newDayField.getText();
             String weekS = newWeekField.getText();
@@ -531,21 +512,14 @@ public class Main extends Application {
                 if (day > 7) {
                     createMessage.setText("Päivän muoto väärä");
                     createMessage.setTextFill(Color.RED);
-                }
-                                    
-                else if (diaryService.createExercise(hour, day, week, content) == true) {
+                } else if (diaryService.createExercise(hour, day, week, content) == true) {
                     createMessage.setText("Merkinnän lisääminen onnistui");
                     createMessage.setTextFill(Color.GREEN);
                     newHourField.clear();
                     newDayField.clear();
                     newWeekField.clear();
                     newContentField.clear();
-                    
-                    try {
-                        redrawAll();
-                    } catch (Exception ex) {
-                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    redrawAll();
                 } else {
                     createMessage.setText("Merkinnän lisääminen ei onnistunut");
                     createMessage.setTextFill(Color.RED);
@@ -556,7 +530,7 @@ public class Main extends Application {
         return createPane;
     }
     
-    public Node createWeekPointsBox() throws Exception {
+    public Node createWeekPointsBox() {
         Label weekPointsLabel = new Label("Kaikki viikkopisteet:");
         weekPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 14)));
         allWeekPointsNodes = new VBox();
@@ -568,20 +542,26 @@ public class Main extends Application {
         return weekPointsBox;
     }
     
-    public Node createChart() throws Exception {
+    public Node createChart() {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("viikko");
         yAxis.setLabel("pisteet");
-        LineChart<String,Number> lineChart = new LineChart<>(xAxis,yAxis);
+        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
                 
         lineChart.setTitle("Viikkojen pisteet");
         lineChart.setLegendVisible(false);
         XYChart.Series series = new XYChart.Series();
-        
         lineChart.setStyle("CHART_COLOR_1: #84b3ff ;");
         
-        Map<Integer, Double> allPoints = diaryService.getAllWeekPoints();
+        Map<Integer, Double> allPoints = new LinkedHashMap<>();
+        try {
+            allPoints = diaryService.getAllWeekPoints();
+        } catch (Exception ex) {
+            errorMessage.setText("Päiväkirjamerkintöjen hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
+        
         Iterator<Map.Entry<Integer, Double>> entries = allPoints.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry<Integer, Double> entry = entries.next();
@@ -595,10 +575,17 @@ public class Main extends Application {
         return lineChartPane;
     }
     
-    public Node createStatistics() throws Exception {
+    public Node createStatistics() {
         DescriptiveStatistics stats = new DescriptiveStatistics();
+        Map<Integer, Double> allPoints = new LinkedHashMap<>();
         
-        Map<Integer, Double> allPoints = diaryService.getAllWeekPoints();
+        try {
+            allPoints = diaryService.getAllWeekPoints();
+        } catch (Exception ex) {
+            errorMessage.setText("Viikkopisteiden hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
+        
         Iterator<Map.Entry<Integer, Double>> entries = allPoints.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry<Integer, Double> entry = entries.next();
@@ -613,20 +600,17 @@ public class Main extends Application {
         String maxS = String.valueOf(max);
         
         VBox statisticsBox = new VBox(10);
-        
         Label meanLabel = new Label("Viikopisteiden keskiarvo: " + meanS);
         Label minLabel = new Label("Viikkopisteiden pienin arvo: " + minS);
-        Label maxLabel = new Label("Viikkopisteiden suurin arvo: " + maxS);
-        
+        Label maxLabel = new Label("Viikkopisteiden suurin arvo: " + maxS); 
         statisticsBox.getChildren().addAll(meanLabel, minLabel, maxLabel);
         statisticsBox.setPadding(new Insets(10, 10, 20, 10));
         
         return statisticsBox;
-        
     }
     
     // redraw-metodit:
-    public void redrawAll() throws Exception {
+    public void redrawAll() {
         redrawDiaryList();
         redrawUserHighscoreList();
         redrawHighscoreList();
@@ -634,25 +618,48 @@ public class Main extends Application {
         redrawWeeklyGoal();
     }
     
-    public void redrawDiaryList() throws Exception {
+    public void redrawDiaryList() {
         diaryEntryNodes.getChildren().clear();
-        List<DiaryEntry> allEntries = diaryService.get15Latest();
-        allEntries.forEach(diaryEntry->{
+        List<DiaryEntry> allEntries = new ArrayList<>();
+        try {
+            allEntries = diaryService.get15Latest();
+        } catch (Exception ex) {
+            errorMessage.setText("Päiväkirjamerkintöjen hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
+        
+        allEntries.forEach(diaryEntry-> {
             diaryEntryNodes.getChildren().add(createDiaryEntryNode(diaryEntry));
         });
     }
     
-    public void redrawAllDiaryList() throws Exception {
+    public void redrawAllDiaryList() {
         allDiaryNodes.getChildren().clear();
-        List<DiaryEntry> allEntries = diaryService.getAll();
-        allEntries.forEach(diaryEntry->{
+        List<DiaryEntry> allEntries = new ArrayList<>();
+        
+        try {
+            allEntries = diaryService.getAll();
+        } catch (Exception ex) {
+            errorMessage.setText("Päiväkirjamerkintöjen hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
+        
+        allEntries.forEach(diaryEntry-> {
             allDiaryNodes.getChildren().add(createDeleteDiaryEntryNode(diaryEntry));
         });
     }
     
-    public void redrawUserHighscoreList() throws Exception {
+    public void redrawUserHighscoreList() {
         userHighscoreNodes.getChildren().clear();
-        Map<Double, Integer> bestWeeks = diaryService.getUsersBestWeeks(); 
+        Map<Double, Integer> bestWeeks = new LinkedHashMap<>();
+        
+        try {
+            bestWeeks = diaryService.getUsersBestWeeks();
+        } catch (Exception ex) {
+            errorMessage.setText("Tuloslistan hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);        
+        }
+        
         int number = 1;
         Iterator<Map.Entry<Double, Integer>> entries = bestWeeks.entrySet().iterator();
         while (entries.hasNext()) {
@@ -662,9 +669,17 @@ public class Main extends Application {
         }
     }
     
-    private void redrawHighscoreList() throws Exception {
+    private void redrawHighscoreList() {
         highscoreNodes.getChildren().clear();
-        Map<String, Double> allBestWeeks = diaryService.getBestWeeks();
+        Map<String, Double> allBestWeeks = new LinkedHashMap<>();
+        
+        try {
+            allBestWeeks = diaryService.getBestWeeks();
+        } catch (Exception ex) {
+            errorMessage.setText("Tuloslistan hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
+        
         int number = 1;
         Iterator<Map.Entry<String, Double>> entries = allBestWeeks.entrySet().iterator();
         while (entries.hasNext()) {
@@ -674,13 +689,20 @@ public class Main extends Application {
         }
     }
     
-    private void redrawWeeklyPoints() throws Exception {
+    private void redrawWeeklyPoints() {
         weeklyPoints.getChildren().clear();
         Label weeklyPointsLabel = new Label("Tämän/viimeisen viikon pisteet: ");
         weeklyPointsLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-        
         HBox box = new HBox();
-        double points = diaryService.getPointsWeek(diaryService.getLatestWeek());
+        double points = 0;
+        
+        try {
+            points = diaryService.getPointsWeek(diaryService.getLatestWeek());
+        } catch (Exception ex) {
+            errorMessage.setText("Viikkopisteiden hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
+        
         String pointsString = String.valueOf(points);
         Label pointsLabel = new Label(pointsString);
         
@@ -688,21 +710,32 @@ public class Main extends Application {
         weeklyPoints.getChildren().add(box);    
     }
     
-    private void redrawWeeklyGoal() throws Exception {
+    private void redrawWeeklyGoal() {
         weeklyGoal.getChildren().clear();
         
         Label goalText = new Label("");
         Label weeklyGoalLabel = new Label("Viikkotavoitteesi: ");
         weeklyGoalLabel.setFont((Font.font(null, FontWeight.BOLD, 12)));
-        
         HBox box = new HBox();
-        double points = diaryService.getWeeklyGoal();
+        double points = 0;
+        
+        try {
+            points = diaryService.getWeeklyGoal();
+        } catch (Exception ex) {
+            errorMessage.setText("Viikkotavoitteen hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
         String pointsString = String.valueOf(points);
         Label label = new Label(pointsString);
         
-        if (diaryService.weeklyGoalAchieved(points)) {
-            goalText.setText("Tavoite saavutettu!");
-            goalText.setTextFill(Color.GREEN);
+        try {
+            if (diaryService.weeklyGoalAchieved(points)) {
+                goalText.setText("Tavoite saavutettu!");
+                goalText.setTextFill(Color.GREEN);
+            }
+        } catch (Exception ex) {
+            errorMessage.setText("Viikkotavoitteen saavuttamisen tiedon hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
         }
    
         box.getChildren().addAll(weeklyGoalLabel, label);
@@ -711,10 +744,17 @@ public class Main extends Application {
         weeklyGoal.getChildren().add(goalBox);     
     }
     
-    private void redrawAllWeekPoints() throws Exception {
+    private void redrawAllWeekPoints() {
         allWeekPointsNodes.getChildren().clear();
         
-        Map<Integer, Double> allPoints = diaryService.getAllWeekPoints();
+        Map<Integer, Double> allPoints = new LinkedHashMap<>();
+        try {
+            allPoints = diaryService.getAllWeekPoints();
+        } catch (Exception ex) {
+            errorMessage.setText("Päiväkirjamerkintöjen hakeminen ei onnistunut");      
+            errorMessage.setTextFill(Color.RED);
+        }
+        
         Iterator<Map.Entry<Integer, Double>> entries = allPoints.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry<Integer, Double> entry = entries.next();
@@ -736,7 +776,7 @@ public class Main extends Application {
         return box;
     }
     
-     public Node createDeleteDiaryEntryNode (DiaryEntry entry) {
+    public Node createDeleteDiaryEntryNode (DiaryEntry entry) {
         HBox box = new HBox(10);
         Label label = new Label(entry.toString());
         label.setMinHeight(28);
@@ -745,24 +785,19 @@ public class Main extends Application {
         box.setStyle("-fx-border-color: #ade1ff");
         box.setMaxWidth(600);
         label.setWrapText(true);
-        
         Button button = new Button("poista");
         button.setMinWidth(60);
 
-        button.setOnAction(e->{
+        button.setOnAction(e-> {
             try {
                 diaryService.deleteEntry(entry);
             } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                errorMessage.setText("Merkinnän poistaminen ei onnistunut");      
+                errorMessage.setTextFill(Color.RED);
             }
-            try {
-                redrawDiaryList();
-                redrawAllDiaryList();
-                redrawAllWeekPoints();
-
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            redrawDiaryList();
+            redrawAllDiaryList();
+            redrawAllWeekPoints();
         });
         
         Region spacer = new Region();
@@ -794,7 +829,7 @@ public class Main extends Application {
         return box;
     }
     
-    public Node createAllWeekPointsNode (Entry entry) {
+    public Node createAllWeekPointsNode(Entry entry) {
         HBox box = new HBox();
         Label label = new Label("Viikko: " + entry.getKey() + ", pisteet: " + entry.getValue());
         label.setPadding(new Insets(5));
@@ -805,5 +840,4 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

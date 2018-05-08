@@ -91,6 +91,62 @@ public class DiaryService {
     }
     
     /**
+     * Metodi palauttaa tietyn viikon pisteet.
+     * @param week Käyttäjän ilmoittama viikko
+     * @return viikon pisteet
+     * @throws Exception jos tapahtuu virhe?
+     */
+    public double getPointsWeek(int week) throws Exception {
+        return diaryEntryDao.userPointsWeek(loggedIn.getUsername(), week);
+    }
+    
+    /**
+     * Meotdi hakee käyttäjän kaikki viikkopisteet.
+     * @return Käyttäjän kaikki viikkopisteet (viikko + piste)
+     * @throws Exception jos tapahtuu virhe?
+     */
+    public Map getAllWeekPoints() throws Exception {
+        return diaryEntryDao.allPointsWeeks(loggedIn.getUsername());
+    }
+    
+    /**
+     * Metodi hakee käyttäjän viimeisen viikon päiväkirjasta.
+     * @return Käyttäjän viimeisen viikon
+     * @throws Exception jos tapahtuu virhe
+     */
+    public int getLatestWeek() throws Exception {
+        return diaryEntryDao.latestWeek(loggedIn.getUsername());
+    }
+    
+    /**
+     * Metodi hakee käyttäjän 3 parhaat viikot viikkopisteiden perusteella.
+     * @return Käyttäjän 3 parhaat viikot
+     * @throws Exception jos tapahtuu virhe?
+     */
+    public Map getUsersBestWeeks() throws Exception {
+        return diaryEntryDao.bestUserPointsWeeks(loggedIn.getUsername());
+    }
+    
+    /**
+     * Metodi hakee kaikkien käyttäjien kesken 3 parhaat viikot viikkopisteiden
+     * perusteella.
+     * @return 3 parasta viikkoa kaikkien käyttäjien kesken
+     * @throws Exception jos taoahtuu virhe?
+     */
+    public Map getBestWeeks() throws Exception {
+        return diaryEntryDao.bestPointsWeeks();
+    }
+    
+    /**
+     * Metodi poistaa tietyn merkinnän.
+     * @param entry Käyttäjän ilmoittama merkintä
+     * @throws Exception jos tapahtuu virhe?
+     */
+    public void deleteEntry(DiaryEntry entry) throws Exception {
+        diaryEntryDao.delete(entry);
+    }
+    
+    /**
      * Käyttäjän kirjautuminen sovellukseen.
      * @param username Käyttäjän ilmoittama käyttäjätunnus
      * @param password Käyttäjän ilmoittama salasana
@@ -149,62 +205,6 @@ public class DiaryService {
         User user = new User(username, password);
         userDao.create(user);
         return true;
-    }
-    
-    /**
-     * Metodi palauttaa tietyn viikon pisteet.
-     * @param week Käyttäjän ilmoittama viikko
-     * @return viikon pisteet
-     * @throws Exception jos tapahtuu virhe?
-     */
-    public double getPointsWeek(int week) throws Exception {
-        return diaryEntryDao.userPointsWeek(loggedIn.getUsername(), week);
-    }
-    
-    /**
-     * Meotdi hakee käyttäjän kaikki viikkopisteet.
-     * @return Käyttäjän kaikki viikkopisteet (viikko + piste)
-     * @throws Exception jos tapahtuu virhe?
-     */
-    public Map getAllWeekPoints() throws Exception {
-        return diaryEntryDao.allPointsWeeks(loggedIn.getUsername());
-    }
-    
-    /**
-     * Metodi hakee käyttäjän viimeisen viikon päiväkirjasta.
-     * @return Käyttäjän viimeisen viikon
-     * @throws Exception jos tapahtuu virhe
-     */
-    public int getLatestWeek() throws Exception {
-        return diaryEntryDao.latestWeek(loggedIn.getUsername());
-    }
-    
-    /**
-     * Metodi hakee käyttäjän 3 parhaat viikot viikkopisteiden perusteella.
-     * @return Käyttäjän 3 parhaat viikot
-     * @throws Exception jos tapahtuu virhe?
-     */
-    public Map getUsersBestWeeks() throws Exception {
-        return diaryEntryDao.bestUserPointsWeeks(loggedIn.getUsername());
-    }
-    
-    /**
-     * Metodi hakee kaikkien käyttäjien kesken 3 parhaat viikot viikkopisteiden
-     * perusteella.
-     * @return 3 parasta viikkoa kaikkien käyttäjien kesken
-     * @throws Exception jos taoahtuu virhe?
-     */
-    public Map getBestWeeks() throws Exception {
-        return diaryEntryDao.bestPointsWeeks();
-    }
-    
-    /**
-     * Metodi poistaa tietyn merkinnän.
-     * @param entry Käyttäjän ilmoittama merkintä
-     * @throws Exception jos tapahtuu virhe?
-     */
-    public void deleteEntry(DiaryEntry entry) throws Exception {
-        diaryEntryDao.delete(entry);
     }
     
     /**
