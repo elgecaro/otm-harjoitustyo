@@ -27,13 +27,6 @@ public interface UserDao {
     User findByUsername(String username) throws Exception;
     
     /**
-     * Metodi hakee kaikki käyttäjät.
-     * @return listan kaikista käyttäjistä
-     * @throws Exception jos tapahtuu virhe?
-     */
-    List<User> findAll() throws Exception;
-    
-    /**
      * Metodi tarkistaa, että käyttäjänimi ja salasana täsmäävät.
      * @param username Käyttäjän käyttäjänimi 
      * @param password Käyttäjän salasana

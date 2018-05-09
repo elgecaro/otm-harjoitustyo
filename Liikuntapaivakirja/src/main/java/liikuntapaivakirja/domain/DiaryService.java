@@ -250,5 +250,4 @@ public class DiaryService {
         }
         return false;
     }
-
 }

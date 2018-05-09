@@ -81,7 +81,6 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         return week;
     }
     
-    
     @Override
     public double userPointsWeek(String username, int week) throws SQLException {
         Connection connection = database.getConnection();
@@ -103,7 +102,6 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
         
         return points;
     }
-    
     
     @Override
     public Map bestUserPointsWeeks(String username) throws SQLException {

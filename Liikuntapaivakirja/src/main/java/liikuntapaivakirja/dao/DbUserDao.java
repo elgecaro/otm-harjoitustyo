@@ -102,25 +102,4 @@ public class DbUserDao implements UserDao {
         stmt.execute();
         connection.close();
     }
-    
-    @Override
-    public List<User> findAll() throws SQLException {
-        Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM User");
-        ResultSet rs = stmt.executeQuery();
-        List<User> users = new ArrayList<>();
-
-        while (rs.next()) {
-            String username = rs.getString("username");
-            String password = rs.getString("password");
-            users.add(new User(username, password));
-        }
-        
-        rs.close();
-        stmt.close();
-        connection.close();
-
-        return users;
-    }
-
 }

@@ -184,8 +184,6 @@ public class Main extends Application {
                     loginMessage.setText("Käyttäjänimi on liian lyhyt");
                     loginMessage.setTextFill(Color.RED);
                 } else if (diaryService.createUser(username, password)) {
-                    loginMessage.setText("Käyttäjäsi on nyt luotu");
-                    loginMessage.setTextFill(Color.GREEN);
                     loginUser(primaryStage);
                 } else {
                     loginMessage.setText("Käyttäjänimi on jo käyössä");
@@ -509,8 +507,14 @@ public class Main extends Application {
                 int day = Integer.parseInt(dayS);
                 int week = Integer.parseInt(weekS);
                 
-                if (day > 7) {
+                if (hour < 0) {
+                    createMessage.setText("Tunnin muoto väärä");
+                    createMessage.setTextFill(Color.RED);
+                } else if (day > 7 || day < 1) {
                     createMessage.setText("Päivän muoto väärä");
+                    createMessage.setTextFill(Color.RED);
+                } else if (week < 1) {
+                    createMessage.setText("Viikon muoto väärä");
                     createMessage.setTextFill(Color.RED);
                 } else if (diaryService.createExercise(hour, day, week, content) == true) {
                     createMessage.setText("Merkinnän lisääminen onnistui");
@@ -526,7 +530,7 @@ public class Main extends Application {
                 }
             }
         });
-        
+
         return createPane;
     }
     

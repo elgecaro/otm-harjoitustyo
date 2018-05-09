@@ -60,5 +60,4 @@ public class DiaryEntry {
     public String toString() {
         return "Tunteja: " + this.hour + "        Päivä: " + this.day + "        Viikko: " + this.week + "\n" + "Kuvaus: " + this.content;
     }
-    
 }

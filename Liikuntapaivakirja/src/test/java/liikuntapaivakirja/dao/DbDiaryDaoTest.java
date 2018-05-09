@@ -2,7 +2,6 @@
 package liikuntapaivakirja.dao;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.List;
 import liikuntapaivakirja.domain.DiaryEntry;
 import liikuntapaivakirja.domain.User;
@@ -27,7 +26,7 @@ public class DbDiaryDaoTest {
     File testDatabase;
       
     @Before
-    public void setUp() throws SQLException, Exception {
+    public void setUp() throws Exception {
         testDatabase = testFolder.newFile("test.db");
         database = new Database("jdbc:sqlite:" + testDatabase.getAbsolutePath());
         database.checkForTables(database.getConnection(), database);

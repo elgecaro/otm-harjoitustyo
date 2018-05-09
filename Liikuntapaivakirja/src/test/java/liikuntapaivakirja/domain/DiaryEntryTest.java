@@ -1,12 +1,8 @@
 package liikuntapaivakirja.domain;
 
 
-import liikuntapaivakirja.domain.DiaryEntry;
-import liikuntapaivakirja.domain.User;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -46,7 +42,6 @@ public class DiaryEntryTest {
     public void toStringWorking() {
         assertEquals("Tunteja: 1.0        Päivä: 2        Viikko: 3" + "\n" + "Kuvaus: content", entry.toString());
     }
-    
     
     @After
     public void tearDown() {

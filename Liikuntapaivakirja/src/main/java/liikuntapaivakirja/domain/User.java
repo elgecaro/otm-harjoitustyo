@@ -35,5 +35,4 @@ public class User {
     public int getWeeklyGoal() {
         return this.weeklyGoal;
     }
-    
 }
