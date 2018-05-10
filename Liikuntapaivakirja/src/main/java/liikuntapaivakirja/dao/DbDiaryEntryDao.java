@@ -40,7 +40,7 @@ public class DbDiaryEntryDao implements DiaryEntryDao {
     @Override
     public List<DiaryEntry> getAll(User user) throws SQLException {
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? ORDER BY week, day DESC");
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Diary WHERE username = ? ORDER BY week, day");
         stmt.setObject(1, user.getUsername());
 
         ResultSet rs = stmt.executeQuery();
