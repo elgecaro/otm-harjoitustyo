@@ -1,4 +1,4 @@
-# Alustava käyttöohje # 
+# Käyttöohje # 
 Lataa tiedosto [liikuntapaivakirja.jar](https://github.com/elgecaro/otm-harjoitustyo/releases/tag/loppupalautus)
 
 ## Konfigurointi ##
@@ -13,6 +13,7 @@ Ohjelma käynnistetään komennolla
 ```
 java -jar liikuntapaivakirja.jar
 ```
+(Tai tuplaklikkaamalla tiedostoa)
 
 ## Kirjautuminen ##
 Sovellus käynnistyy aloitusnäkymään:
