@@ -10,14 +10,15 @@ Pakkaus liikuntapaivakirja.ui sisältää JavaFX:llä toteutetun **käyttöliitt
 
 ## Käyttöliittymä ##
 
-Käyttöliittymä sisältää viisi erillistä näkymää:
-* startScene: aloitusnäkymä
-* loginScene: kirjautuminen
-* newUserScene: uuden käyttäjän luominen
-* loggedInScene: kirjautuneen käyttäjän näkymä
-* allEntriesScene: kaikki merkinnät
+Käyttöliittymä sisältää kuusi erillistä näkymää:
+* *startScene*: aloitusnäkymä
+* *loginScene*: kirjautuminen
+* *newUserScene*: uuden käyttäjän luominen
+* *loggedInScene*: kirjautuneen käyttäjän näkymä
+* *allEntriesScene*: kaikki merkinnät
+* *statisticsScene*: tilastoja merkinnöistä
 
-Jokainen näistä on toteutettu omana metodina ja omalla Scene-oliona, ja näkymistä yksi kerrallaan on näkyvinä. Käyttöliittymä on rakennettu ohjelmallisesti luokassa *[liikuntapaivakirja.ui.Main](https://github.com/elgecaro/otm-harjoitustyo/blob/master/Liikuntapaivakirja/src/main/java/liikuntapaivakirja/ui/Main.java)*.
+Jokainen näistä on toteutettu omana metodina ja omalla *Scene*-oliona, ja näkymistä yksi kerrallaan on näkyvinä. Käyttöliittymä on rakennettu ohjelmallisesti luokassa *[liikuntapaivakirja.ui.Main](https://github.com/elgecaro/otm-harjoitustyo/blob/master/Liikuntapaivakirja/src/main/java/liikuntapaivakirja/ui/Main.java)*.
 
 Käyttöliittymä on pyritty eristämään sovelluslogiiksta, eli se kutsuu *diaryService*-sovelluslogiikan metodeja.
 
@@ -27,11 +28,11 @@ Tämä tapahtuu myös kaikki merkinnät-näkymässä (*allEntriesScene*). Jos k�
 
 
 ## Sovelluslogiikka ##
-Sovelluksen loogisen datamallin muodostavat luokat User ja DiaryEntry, jotka kuvaavat käyttäjiä ja käyttäjien päiväkirjamerkintöjä:
+Sovelluksen loogisen datamallin muodostavat luokat *User* ja *DiaryEntry*, jotka kuvaavat käyttäjiä ja käyttäjien päiväkirjamerkintöjä:
 
 ![luokkakaavio1](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/luokkakaavio1.png)
 
-Toiminnallisista kokonaisuuksista vastaa luokkan DiaryService ainoa olio. Luokka tarjoaa kaikille käyttäliittymän toiminnoille omat metodit. Näitä ovat esimerkiksi:
+Toiminnallisista kokonaisuuksista vastaa luokan *DiaryService* ainoa olio. Luokka tarjoaa kaikille käyttäliittymän toiminnoille omat metodit. Näitä ovat esimerkiksi:
 * boolean createUser(String username, String password)
 * boolean login(String username, String password)
 * createExercise(double hour, int day, int week, String content)
@@ -48,9 +49,35 @@ DiaryServicen ja ohjelman muiden osien suhdetta kuvaava luokka/pakkauskaavio:
 ![luokka-pakkauskaavio](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/luokka-pakkauskaavio.png)
 
 ## Tietojen pysyväistallennus ##
-Tulossa
+Pakkauksen liikuntapaivakirja.dao luokat *DbUserDao* sekä *DbDiaryEntryDao* huolehtivat tietojen tallettamisesta tietokantaan. Luokat noudattavat Data Access Object -suunnittelumallia, ja näitä voisi korjata uusilla toteutuksilla jos esim. talletustapaa vaihdettaisiin. Luokat ovat myös eristetty *UserDao* ja *DiaryEntryDao*-rajapintojen taakse, eikä sovelluslogiikka käytä luokkia suoraan. 
+
+Sovellus tallettaa käyttäjien ja päiväkirjamerkintöjen tiedot tietokantaan, jossa on kaksi taulukkoa:
 
 ![tietokannan rakenne](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/relaatiokaavio_db.png)
+
+Sovelluksen juureen sijoitettu konfiguraatiotiedosto *config.properties* määrittelee tietokannan nimen, joka oletusarvoisesti on *database.db*.
+
+**User**-taulukkoa luodaan *Database*-luokan metodissa *checkForTables*:
+
+```
+CREATE TABLE IF NOT EXISTS User (
+username varchar(15) PRIMARY KEY CHECK (LENGTH (username) > 2)
+password varchar NOT NULL CHECK (LENGTH (password) > 5), 
+weeklyGoal float
+);
+```
+
+**Diary**-taulukkoa luodaan samassa metodissa:
+```
+CREATE TABLE IF NOT EXISTS Diary (
+username varchar(15),
+hour float NOT NULL,
+day integer NOT NULL,
+week INTEGER NOT NULL,
+content varchar(200), 
+FOREIGN KEY(username) REFERENCES User(username)
+);
+```
 
 ## Päätoiminnallisuudet ##
 
@@ -77,10 +104,12 @@ Kun kirjautuneena oleva käyttäjä klikkaa painiketta *createExercise*, etenee 
 
 Tapahtumakäsittelijä tarkistaa ensin jos käyttäjän ilmoittaman tietojen muodot ovat oikeat (*isDouble* ja *isInteger*-metodien avulla), ja jos ovat, niin muuttavat nämä *String*-muodosta *Double* ja *Integer* muotoihin (*hour = parseDouble(hourS) mm*). Tämän jälkeen tapahtumakäsittelijä kutsuu sovelluslogiikan metodia *createExercise(hour, day, week, content)* annettujen parametrien mukaan. Sovelluslogiikka luo silloin uuden *Diary*-olion, ja tallettaa sen diaryDao:n avulla *create(diary)*-metodilla. Sovelluslogiikka palauttaa arvon *true* jos liikunnan lisääminen onnistui, ja tämän jälkeen käyttöliittymä päivittää näytettävät kirjoitukset/liikunnat metodilla *redrawDiaryList*, käyttäjän ja sovelluksen tuloslistat (*redrawHighscorelist* ja *redrawUserHighscoreList*) sekä käyttäjän viikkopisteet (*redrawWeeklyPoints*)
 
-Tästä seurauksena on se, että käyttöliittymä päivittää näytettävät todot kutsumalla omaa metodiaan redrawTodolist.
-
-### Muut toiminallisuudet ###
-Tulossa
-
 ## Ohjelman rakenteeseen jääneet heikkoudet ##
-Tulossa
+### Käyttöliittymä ###
+
+Käyttöliittymässä luokan eri näkymät ovat toteutettu eri metodeina, mutta kaikki koodi löytyy yhdestä isosta luokasta.  Sen vuoksi nämä pitäisi erottaa omiksi luokiksi. 
+
+Graafinen käyttöliittymä on myös toteutettu *JavaFX*:n avulla, käyttöliittymän rakenteen ohjelmallinen määrittely voisi korvata FXML-määrittelyllä. 
+
+### Muuta ###
+(Tulossa)
