@@ -9,12 +9,16 @@
 
 [Arkkitehtuurikuvaus](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/arkkitehtuuri.md)
 
+[Testaus](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/testaus.md)
+
 [Tuntikirjanpito](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/tuntikirjanpito.md)
 
 ## Releaset ##
 [Release viikko 5](https://github.com/elgecaro/otm-harjoitustyo/releases/tag/viikko5)
 
 [Release viikko 6](https://github.com/elgecaro/otm-harjoitustyo/releases/tag/viikko6)
+
+[Loppupalautus](https://github.com/elgecaro/otm-harjoitustyo/releases/tag/loppupalautus)
 
 ## Komentorivitoiminnot ##
 ### Testaus ###
