@@ -104,12 +104,16 @@ Kun kirjautuneena oleva käyttäjä klikkaa painiketta *createExercise*, etenee 
 
 Tapahtumakäsittelijä tarkistaa ensin jos käyttäjän ilmoittaman tietojen muodot ovat oikeat (*isDouble* ja *isInteger*-metodien avulla), ja jos ovat, niin muuttavat nämä *String*-muodosta *Double* ja *Integer* muotoihin (*hour = parseDouble(hourS) mm*). Tämän jälkeen tapahtumakäsittelijä kutsuu sovelluslogiikan metodia *createExercise(hour, day, week, content)* annettujen parametrien mukaan. Sovelluslogiikka luo silloin uuden *Diary*-olion, ja tallettaa sen diaryDao:n avulla *create(diary)*-metodilla. Sovelluslogiikka palauttaa arvon *true* jos liikunnan lisääminen onnistui, ja tämän jälkeen käyttöliittymä päivittää näytettävät kirjoitukset/liikunnat metodilla *redrawDiaryList*, käyttäjän ja sovelluksen tuloslistat (*redrawHighscorelist* ja *redrawUserHighscoreList*) sekä käyttäjän viikkopisteet (*redrawWeeklyPoints*)
 
+### Viikkotavoitteen asettaminen/muokkaaminen ###
+
+Kun käyttäjä kirjoittaa viikkotavoite-kenttään uuden tavoitteen, ja klikkaa *newGoalButton*, etenee sovellus seuraavasti:
+
+![Viikkotavoite](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/kuvat/sekvenssikaavio_viikkotavoite.png)
+
+Tapahtumakäsittelijä tarkistaa ensin sovelluslogiikan kautta jos käyttäjän ilmoittama viikkotavoite on oikeassa muodossa (*isDouble*-metodin avulla), ja jos ovat, niin arvo muuttuu *String*-muodosta *Double*-muotoon *parseDouble(goalS)* avulla. Tämän jälkeen sovelluslogiikka asettaa *userDao*:n kautta käyttäjän uuden viikkotavoitteen, ja palauttaa arvon *true*. Viikkotavoite-tekstikenttä tyhjennetään (*nweGoalField.clear()*) ja päivitetään viikkotavoite-näkymä (*redrawWeeklyGoal*).
+
 ## Ohjelman rakenteeseen jääneet heikkoudet ##
-### Käyttöliittymä ###
 
-Käyttöliittymässä luokan eri näkymät ovat toteutettu eri metodeina, mutta kaikki koodi löytyy yhdestä isosta luokasta.  Sen vuoksi nämä pitäisi erottaa omiksi luokiksi. 
+Käyttöliittymässä luokan eri näkymät ovat toteutettu eri metodeina, mutta kaikki koodi löytyy yhdestä isosta luokasta.  Sen vuoksi nämä pitäisi erottaa omiksi luokiksi, eli jokainen näkymä olisi toteutettu omana luokkana.
 
-Graafinen käyttöliittymä on myös toteutettu *JavaFX*:n avulla, käyttöliittymän rakenteen ohjelmallinen määrittely voisi korvata FXML-määrittelyllä. 
-
-### Muuta ###
-(Tulossa)
+Graafinen käyttöliittymä on myös toteutettu *JavaFX*:n avulla, käyttöliittymän rakenteen ohjelmallinen määrittely voisi korvata FXML-määrittelyllä, niin luokka olisi selkeämpi.
