@@ -2,10 +2,10 @@
 
   Päivä     |    Aika   | Kuvaus 
 ----------- | ----------| ------------
-| 22.3 |  2h | Alustavan määrittelydokumentin täyttäminen + projektin luominen
-| 25.3 | 1,5h| Sovelluksen tarkempi suunnittelu
-| 26.3 |  3h | Sovelluksen luokat ja rajapintat luotu + sovelluksen alustava runko tehty
-| 28.3 |  3h | Ohjelman luokat ja rajapinnat muokattu ja toiminallisuutta parannettu + pientä toiminnallisuutta "testattu" (uuden käyttäjän lisääminen, tuntien lisääminen ym)
+| 22.3 |  2h    | Alustavan määrittelydokumentin täyttäminen + projektin luominen
+| 25.3 | 1,5h   | Sovelluksen tarkempi suunnittelu
+| 26.3 |  3h    | Sovelluksen luokat ja rajapintat luotu + sovelluksen alustava runko tehty
+| 28.3 |  3h    | Ohjelman luokat ja rajapinnat muokattu ja toiminallisuutta parannettu + pientä toiminnallisuutta "testattu" (uuden käyttäjän lisääminen, tuntien lisääminen ym)
 | 5.4  |  3h    | Sovelluksen muokkaaminen + toiminallisuutta lisätty. Testi"pohjat" lisätty
 | 9.4  |  1h    | Pientä fiksailua: README.md, gitignore ja ohjelman testipakkaukset kuntoon
 | 11.4 |  0,5h  | Checkstyle otettu käyttöön ja pienet virheet korjattu
@@ -37,6 +37,8 @@
 | 5.5  |  3,5h  | Testejä lisätty + testitietokannan toteutus paremmaksi TemporaryFile:n avulla + Create table if not exist kuntoon 
 | 6.5  |  4h    | Toiminallisuutta lisätty: tilasto-sivu jossa tietoa (esim. kaavio viikkopisteistä, viikkopisteiden keskiarvo)
 | 8.5  |  1h    | Gui:n virheilmoitukset kuntoon
+| 9.5  |  1h    | Pieniä virheitä korjattu (käyttäjä ei esim. voi syöttää negatiivisa arvoja) + vaatimusmäärittely päivitetty
+| 10.5 |  2h    | Sovellusta testattu + kuvia otettu ja lisätty käyttöohjeeseen
+| 11.5 |  2h    | Kaikki kuntoon loppupalautusta ja deadlinea varten (testausdokumentti, arkkitehtuuri ym).
 
-
-**Yhteensä:** 67h
+**Yhteensä:** 72h
