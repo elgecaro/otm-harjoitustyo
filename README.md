@@ -9,7 +9,7 @@
 
 [Arkkitehtuurikuvaus](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/arkkitehtuuri.md)
 
-[Testaus](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/testaus.md)
+[Testausdokumentti](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/testaus.md)
 
 [Tuntikirjanpito](https://github.com/elgecaro/otm-harjoitustyo/blob/master/dokumentointi/tuntikirjanpito.md)
 
